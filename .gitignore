@@ -1,0 +1,8 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local helper scripts and editor backup artifacts
+scripts/
+*~
