@@ -1,9 +1,24 @@
+# Virtual environments
+backend/venv/
+venv/
+.venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test and coverage files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build files
+build/
+dist/
+*.egg-info/
+
 # Environment variables
 .env
 .env.*
 !.env.example
-
-# Local helper scripts and editor backup artifacts
-scripts/
-backend/venv/
-*~
