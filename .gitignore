@@ -5,4 +5,5 @@
 
 # Local helper scripts and editor backup artifacts
 scripts/
+backend/venv/
 *~
