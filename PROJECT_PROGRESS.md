@@ -73,3 +73,9 @@ And the user table was shown in the pgAdmin tool:
 Now it was time to create some more tables. The most important one is the **book** table, as this is supposed to be a book review webpage. I created this simple model schema:
 
 ![initial_database_models.png](/media/initial_database_models.png)
+
+The next thing to do was to create a **SIMPLE PAGE** to **connect database, backend and frontend**. The idea was to load many books into the database from a .csv file (https://zenodo.org/records/4265096), create a multilayer logic in the backend **(repository + service + API endpoint)** and a frontend view that would call the backend endpoint and load the books.
+
+To do this, I started by adding a new table **book** and a relationship **favourite** (Core Table for many-to-many relationship), which for now was not essential, but anyway.
+
+Next I needed to load the .csv data into the database (in the future I was planning to do a startup service for this, but for now a Python script would be enough).
