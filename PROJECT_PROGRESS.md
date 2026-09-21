@@ -62,8 +62,14 @@ Finally, I found out that it was all about specifying the name of the environmen
 
 The first alembic migration was created successfully:
 
-![screenshot1.png](/media/initial_migration.png)
+![initial_migration.png](/media/initial_migration.png)
 
 And the user table was shown in the pgAdmin tool:
 
-![screenshot2.png](/media/user_table.png)
+![user_table.png](/media/user_table.png)
+
+---
+
+Now it was time to create some more tables. The most important one is the **book** table, as this is supposed to be a book review webpage. I created this simple model schema:
+
+![initial_database_models.png](/media/initial_database_models.png)
