@@ -86,4 +86,47 @@ Next I needed to load the .csv data into the database (in the future I was plann
 
 ## September 22nd
 
-Now it was time to connect all three subsystems.
+Now that the books were loaded, it was time to implement the backend logic responsible for extracting the data from the database and transfer it to the frontend.
+
+I decided to start with the upper layer (the API layer). In order to create endpoints properly using in FastAPI, we have to wire up a router to our FastAPI app. To do this, we use `app.include_router(router.router)`. The main router can include "subrouters", or endpoint routers. To do this, we also use `include_router` function. For example: `router.include_router(auth.router, prefix="/auth", tags=["authentication"])`.
+
+After having done the router configuration, I implemented a three layer logic to extract ten random books from the database and return them.
+
+I created a Pydantic model for Book DTO, a book repository, a book service and **_*get_ten_books()*_** API function.
+
+API layer:
+
+```python
+@router.get("/ten-books", response_model=list[BookBaseDTO])
+async def get_ten_books(session: AsyncSession = Depends(get_session)):
+    service = BookService()
+    return await service.get_ten_books(session)
+```
+
+Service layer:
+
+```python
+async def get_ten_books(self, session: AsyncSession) -> list[BookBaseDTO]:
+    book_repository = BookRepository(session)
+    books_database = await book_repository.get_ten_books()
+
+    if books_database is None:
+        # TEMPORARY OF COURSE
+        raise Exception
+
+    books_dto = []
+    for book in books_database:
+        books_dto.append(BookBaseDTO.model_validate(book))
+    return books_dto
+```
+
+CRUD layer:
+
+```python
+async def get_ten_books(self) -> list[Book] | None:
+    result = await self.session.execute(
+        select(Book)
+        .order_by(func.random()).limit(10)
+    )
+    return result.scalars().all()
+```
