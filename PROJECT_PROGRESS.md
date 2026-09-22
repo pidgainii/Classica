@@ -86,6 +86,8 @@ Next I needed to load the .csv data into the database (in the future I was plann
 
 ## September 22nd
 
+### Backend
+
 Now that the books were loaded, it was time to implement the backend logic responsible for extracting the data from the database and transfer it to the frontend.
 
 I decided to start with the upper layer (the API layer). In order to create endpoints properly using in FastAPI, we have to wire up a router to our FastAPI app. To do this, we use `app.include_router(router.router)`. The main router can include "subrouters", or endpoint routers. To do this, we also use `include_router` function. For example: `router.include_router(auth.router, prefix="/auth", tags=["authentication"])`.
@@ -130,3 +132,15 @@ async def get_ten_books(self) -> list[Book] | None:
     )
     return result.scalars().all()
 ```
+
+---
+
+### Frontend
+
+Good, now it is time for the frontend. Although I am familiar with React, I have to re-learn how to build a React application. I first organized the folders inside **_/src_**. Next was to create a base from which I could create new pages and add routes. As I have used React Router before, I decided I would use it in this project too.
+
+After searching different web and video tutorials on the best way to start a React app, I came to the conclusion that everyone has it's own way, and it depends much on the libraries, frameworks and technologies used.
+
+I asked ChatGPT to create me a simple base from which I would start: `main.tsx`, `App.tsx` and `router.tsx`
+
+This is what I learned: The first thing we need to do is to create a root, and the second thing is to render the root. This way we will be able to display React elements inside a browser DOM node. This we will do in `main.tsx`. Then, we will create a router with the **_createBrowserRouter()_** function, and we will pass it inside a RouterProvider component when rendering the root.
