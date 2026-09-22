@@ -26,7 +26,7 @@ Then, I created two new services in the **docker-compose.yml** file: The Postgre
 
 ---
 
-## September 21th
+## September 21st
 
 I created the first database model:
 
@@ -78,4 +78,12 @@ The next thing to do was to create a **SIMPLE PAGE** to **connect database, back
 
 To do this, I started by adding a new table **book** and a relationship **favourite** (Core Table for many-to-many relationship), which for now was not essential, but anyway.
 
-Next I needed to load the .csv data into the database (in the future I was planning to do a startup service for this, but for now a Python script would be enough).
+Next I needed to load the .csv data into the database (in the future I was planning to do a startup service for this, but for now a Python script would be enough). To create this Python script I used ChatGPT. After adjusting some things that were not working correctly, the script worked and I executed it from the backend terminal, and 6864 books were added to the database:
+
+![books_added.png](/media/books_added.png)
+
+---
+
+## September 22nd
+
+Now it was time to connect all three subsystems.

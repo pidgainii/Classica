@@ -2,7 +2,7 @@ import csv
 import ast
 from uuid import uuid4
 
-from .session import get_session, AsyncLocalSession
+from .session import AsyncLocalSession
 from .models.book import Book
 
 import asyncio
@@ -53,7 +53,7 @@ async def import_books():
                     books.append(book)
 
                 db.add_all(books)
-                db.commit()
+                await db.commit()
 
                 print(f"Se han insertado {len(books)} libros.")
 
@@ -62,7 +62,7 @@ async def import_books():
             raise
 
         finally:
-            db.close()
+            await db.close()
 
     
 if __name__ == "__main__":
