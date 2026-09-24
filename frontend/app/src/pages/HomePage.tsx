@@ -1,4 +1,4 @@
-import BookCard from "../components/BookCard";
+import BookCardList from "../components/CardList";
 import useBooks from "../hooks/useBooks";
 
 export default function HomePage() {
@@ -9,12 +9,8 @@ export default function HomePage() {
 
   return (
     <div>
-      <div>HomePage</div>
-      <div>
-        {books.map((book) => (
-          <BookCard key={book.id} book={book}></BookCard>
-        ))}
-      </div>
+      <h1>Home Page: Classica</h1>
+      <BookCardList books={books}></BookCardList>
     </div>
   );
 }
