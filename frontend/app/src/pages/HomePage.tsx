@@ -1,22 +1,5 @@
+import BookCard from "../components/BookCard";
 import useBooks from "../hooks/useBooks";
-import type { Book } from "../models/book";
-
-interface BookCardProps {
-  book: Book;
-}
-
-function BookCard({ book }: BookCardProps) {
-  return (
-    <div>
-      <p>{book.title}</p>
-      <p>{book.author}</p>
-      <p>{book.description}</p>
-      <p>{book.language}</p>
-      <p>{book.isbn}</p>
-      <p>{book.cover_url}</p>
-    </div>
-  );
-}
 
 export default function HomePage() {
   const { books, isLoading, error } = useBooks();

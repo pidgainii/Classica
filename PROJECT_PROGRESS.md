@@ -144,3 +144,7 @@ After searching different web and video tutorials on the best way to start a Rea
 I asked ChatGPT to create me a simple base from which I would start: `main.tsx`, `App.tsx` and `router.tsx`
 
 This is what I learned: The first thing we need to do is to create a root, and the second thing is to render the root. This way we will be able to display React elements inside a browser DOM node. This we will do in `main.tsx`. Then, we will create a router with the **_createBrowserRouter()_** function, and we will pass it inside a RouterProvider component when rendering the root.
+
+## September 23rd
+
+Today I have been learning React basics: Nested components, hooks, custom hooks and more. I have decided to use Axios for data fetching. Maybe later I'll implement also TanStack Query, but for now I'll fetch data manually. I've created an Axios instance and some custom functions for GET, POST, PATCH and DELETE requests. I have also made a custom hook for book fetching. I also organized the router and created the HomePage, where I wanted the list of books to be rendered. Nevertheless, I have had some trouble with the frontend container and had to configure Nginx to serve the React app properly. Also, I have configured the backend to avoid CORS problems.

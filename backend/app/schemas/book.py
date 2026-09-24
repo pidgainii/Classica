@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+from typing import Optional
 from uuid import UUID
 
 
@@ -9,7 +10,7 @@ class BookBaseDTO(BaseModel):
     id: UUID
     title: str
     author: str
-    description: str
-    language: str
-    isbn: str
+    description: Optional[str] = None
+    language: Optional[str] = None
+    isbn: Optional[str] = None
     cover_url: str

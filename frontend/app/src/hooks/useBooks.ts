@@ -12,11 +12,12 @@ export default function useBooks() {
     const fetchData = async () => {
       try {
         const books = await getBooks();
+        console.log(books);
         setBooks(books);
-        setIsLoading(true);
+        setIsLoading(false);
       } catch {
         setError(true);
-        setIsLoading(true);
+        setIsLoading(false);
       } finally {
       }
     };
