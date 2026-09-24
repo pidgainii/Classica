@@ -148,3 +148,41 @@ This is what I learned: The first thing we need to do is to create a root, and t
 ## September 23rd
 
 Today I have been learning React basics: Nested components, hooks, custom hooks and more. I have decided to use Axios for data fetching. Maybe later I'll implement also TanStack Query, but for now I'll fetch data manually. I've created an Axios instance and some custom functions for GET, POST, PATCH and DELETE requests. I have also made a custom hook for book fetching. I also organized the router and created the HomePage, where I wanted the list of books to be rendered. Nevertheless, I have had some trouble with the frontend container and had to configure Nginx to serve the React app properly. Also, I have configured the backend to avoid CORS problems.
+
+**The books were being loaded into the screen !!!**
+
+## September 24th
+
+I have started building the frontend. But I have been stuck in order to configure Docker with the React app for it to work correctly.
+
+### Docker frontend container issues:
+
+As I started programming the frontend, I saw that in order to see changes I had to stop the containers, build the frontend container for it to update changes, and start all containers again. This development method was not okay, as it is **very unefficient**. I therefore decided I needed the frontend container to have live update, what is called hot reload. There are plenty of tutorials on how to create development Dockerfiles with hot reload but nothing was working for me.
+
+#### Issue 1
+
+I was getting a problem related to node_modules folder and Rolldown. I found a similar issue here: https://github.com/vitejs/vite/discussions/15532. After investigating for a while, I could not find the solution.
+
+I asked ChatGPT, and I got an answer. I changed from node Alpine to node Slim. The reason is that Rolldown was not finding a binding for Alpine. When changing to Slim, Rolldown changes to another binding and works.
+
+#### Issue 2
+
+After changing to Slim, I fixed that problem, but got another one. The app running in the Docker container was not recognizing Vite. ChatGPT gave me the answer: The **_node_modules_** folder was being installed with the `RUN npm install` command, but it was being overwritten when copying my local **_/frontend/app_** to the container's **_/app_**. The solution was to create an **anonymous volume** for the **_node_modules_** folder inside the **_docker-compose.yml_**. Like this:
+
+```
+volumes:
+    - ./frontend/app:/app
+    - /app/node_modules
+```
+
+#### Issue 3
+
+Now the container was startng correctly, but it was not reloading when I made changes. This was related with how Vite detected changes when working Docker. Changes were not being detected. The solution was to activate `usePolling` option inside the **_vite.config.ts_** file.
+
+And finally, IT WAS WORKING !
+
+### Creating first components.
+
+I decided to use HeroUI (https://heroui.com/) library. I installed TailwindCSS and started building my first component: `BookCard`. Here is what I built:
+
+![first_component.png](/media/first_component.png)

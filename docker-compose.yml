@@ -4,9 +4,12 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:80"
+      # FOR DEV
+      - "3000:5173"
     volumes:
       - ./frontend/app:/app
+      # FOR DEV
+      - /app/node_modules
 
   backend:
     build: ./backend

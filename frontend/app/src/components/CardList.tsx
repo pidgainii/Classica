@@ -7,7 +7,7 @@ interface BookCardListProps {
 
 export default function BookCardList({ books }: BookCardListProps) {
   return (
-    <div style={display: block}>
+    <div>
       {books.map((book) => (
         <BookCard key={book.id} book={book}></BookCard>
       ))}
