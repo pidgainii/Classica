@@ -1,4 +1,4 @@
-import type { Book } from "../../models/book";
+import type { Book } from "../../Models/book";
 import { getRequest } from "./api";
 
 export async function getBooks(): Promise<Book[]> {

@@ -10,6 +10,6 @@ class BookRepository:
     async def get_ten_books(self) -> list[Book] | None:
         result = await self.session.execute(
             select(Book)
-            .order_by(func.random()).limit(10)
+            .order_by(func.random()).limit(30)
         )
         return result.scalars().all()
