@@ -1,26 +1,26 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+from api import router
 
-app = FastAPI(title="FastAPI Docker Example")
+app = FastAPI(title="CLASSICA")
 
-class Item(BaseModel):
-    name: str
-    description: str = None
-    price: float
-    tax: float = None
+app.include_router(router.router)
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to FastAPI in Docker!"}
+
 
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
 
-@app.post("/items/")
-def create_item(item: Item):
-    return {"item_name": item.name, "price_with_tax": item.price * 1.1}
+# ALLOW FRONTEND TO MAKE REQUESTS
+origins = [
+    "http://localhost:3000"
+]
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

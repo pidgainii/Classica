@@ -26,7 +26,7 @@ Then, I created two new services in the **docker-compose.yml** file: The Postgre
 
 ---
 
-## September 21th
+## September 21st
 
 I created the first database model:
 
@@ -73,3 +73,186 @@ And the user table was shown in the pgAdmin tool:
 Now it was time to create some more tables. The most important one is the **book** table, as this is supposed to be a book review webpage. I created this simple model schema:
 
 ![initial_database_models.png](/media/initial_database_models.png)
+
+The next thing to do was to create a **SIMPLE PAGE** to **connect database, backend and frontend**. The idea was to load many books into the database from a .csv file (https://zenodo.org/records/4265096), create a multilayer logic in the backend **(repository + service + API endpoint)** and a frontend view that would call the backend endpoint and load the books.
+
+To do this, I started by adding a new table **book** and a relationship **favourite** (Core Table for many-to-many relationship), which for now was not essential, but anyway.
+
+Next I needed to load the .csv data into the database (in the future I was planning to do a startup service for this, but for now a Python script would be enough). To create this Python script I used ChatGPT. After adjusting some things that were not working correctly, the script worked and I executed it from the backend terminal, and 6864 books were added to the database:
+
+![books_added.png](/media/books_added.png)
+
+---
+
+## September 22nd
+
+### Backend
+
+Now that the books were loaded, it was time to implement the backend logic responsible for extracting the data from the database and transfer it to the frontend.
+
+I decided to start with the upper layer (the API layer). In order to create endpoints properly using in FastAPI, we have to wire up a router to our FastAPI app. To do this, we use `app.include_router(router.router)`. The main router can include "subrouters", or endpoint routers. To do this, we also use `include_router` function. For example: `router.include_router(auth.router, prefix="/auth", tags=["authentication"])`.
+
+After having done the router configuration, I implemented a three layer logic to extract ten random books from the database and return them.
+
+I created a Pydantic model for Book DTO, a book repository, a book service and **_*get_ten_books()*_** API function.
+
+API layer:
+
+```python
+@router.get("/ten-books", response_model=list[BookBaseDTO])
+async def get_ten_books(session: AsyncSession = Depends(get_session)):
+    service = BookService()
+    return await service.get_ten_books(session)
+```
+
+Service layer:
+
+```python
+async def get_ten_books(self, session: AsyncSession) -> list[BookBaseDTO]:
+    book_repository = BookRepository(session)
+    books_database = await book_repository.get_ten_books()
+
+    if books_database is None:
+        # TEMPORARY OF COURSE
+        raise Exception
+
+    books_dto = []
+    for book in books_database:
+        books_dto.append(BookBaseDTO.model_validate(book))
+    return books_dto
+```
+
+CRUD layer:
+
+```python
+async def get_ten_books(self) -> list[Book] | None:
+    result = await self.session.execute(
+        select(Book)
+        .order_by(func.random()).limit(10)
+    )
+    return result.scalars().all()
+```
+
+---
+
+### Frontend
+
+Good, now it is time for the frontend. Although I am familiar with React, I have to re-learn how to build a React application. I first organized the folders inside **_/src_**. Next was to create a base from which I could create new pages and add routes. As I have used React Router before, I decided I would use it in this project too.
+
+After searching different web and video tutorials on the best way to start a React app, I came to the conclusion that everyone has it's own way, and it depends much on the libraries, frameworks and technologies used.
+
+I asked ChatGPT to create me a simple base from which I would start: `main.tsx`, `App.tsx` and `router.tsx`
+
+This is what I learned: The first thing we need to do is to create a root, and the second thing is to render the root. This way we will be able to display React elements inside a browser DOM node. This we will do in `main.tsx`. Then, we will create a router with the **_createBrowserRouter()_** function, and we will pass it inside a RouterProvider component when rendering the root.
+
+## September 23rd
+
+Today I have been learning React basics: Nested components, hooks, custom hooks and more. I have decided to use Axios for data fetching. Maybe later I'll implement also TanStack Query, but for now I'll fetch data manually. I've created an Axios instance and some custom functions for GET, POST, PATCH and DELETE requests. I have also made a custom hook for book fetching. I also organized the router and created the HomePage, where I wanted the list of books to be rendered. Nevertheless, I have had some trouble with the frontend container and had to configure Nginx to serve the React app properly. Also, I have configured the backend to avoid CORS problems.
+
+**The books were being loaded into the screen !!!**
+
+## September 24th
+
+I have started building the frontend. But I have been stuck in order to configure Docker with the React app for it to work correctly.
+
+### Docker frontend container issues:
+
+As I started programming the frontend, I saw that in order to see changes I had to stop the containers, build the frontend container for it to update changes, and start all containers again. This development method was not okay, as it is **very unefficient**. I therefore decided I needed the frontend container to have live update, what is called hot reload. There are plenty of tutorials on how to create development Dockerfiles with hot reload but nothing was working for me.
+
+#### Issue 1
+
+I was getting a problem related to node_modules folder and Rolldown. I found a similar issue here: https://github.com/vitejs/vite/discussions/15532. After investigating for a while, I could not find the solution.
+
+I asked ChatGPT, and I got an answer. I changed from node Alpine to node Slim. The reason is that Rolldown was not finding a binding for Alpine. When changing to Slim, Rolldown changes to another binding and works.
+
+#### Issue 2
+
+After changing to Slim, I fixed that problem, but got another one. The app running in the Docker container was not recognizing Vite. ChatGPT gave me the answer: The **_node_modules_** folder was being installed with the `RUN npm install` command, but it was being overwritten when copying my local **_/frontend/app_** to the container's **_/app_**. The solution was to create an **anonymous volume** for the **_node_modules_** folder inside the **_docker-compose.yml_**. Like this:
+
+```
+volumes:
+    - ./frontend/app:/app
+    - /app/node_modules
+```
+
+#### Issue 3
+
+Now the container was startng correctly, but it was not reloading when I made changes. This was related with how Vite detected changes when working Docker. Changes were not being detected. The solution was to activate `usePolling` option inside the **_vite.config.ts_** file.
+
+And finally, IT WAS WORKING !
+
+### Creating first components.
+
+I decided to use HeroUI (https://heroui.com/) library. I installed TailwindCSS and started building my first component: `BookCard`. Here is what I built:
+
+![first_component.png](/media/first_component.png)
+
+## September 25th
+
+### UI design
+
+Although I have coursed a subject called UI/UX, I don't consider myself a good UI designer. Therefore I decided it would be better for me to focus on software engineering concepts and not so deeply in UI design. For that reason, I asked Gemini to create a basic HomePage for me. Gemini gave me all the code in one single page. I decided to separate each component into it's own file. This is what I got:
+
+![UI_initial_page.png](/media/UI_initial_page.png)
+
+Not bad for a start (none of those buttons are functional yet).
+
+### Authentication (Frontend)
+
+I decided it was better to move to some core functionality of the application. Authentication is the first thing to do.
+
+For this project, I will use JWT authentication. I will use access and refresh tokens. I started by thinking how should I implement the authentication logic in the frontend layer: **Authentication Context** is the answer.
+
+In order to implement an Authentication Context in a clean way we need:
+
+- Authentication Context (with **_createContext()_**)
+- Authentication Provider
+- Custom hook to use the Context
+
+I started by creating something simple:
+
+```typescript
+interface AuthContextType {
+  user?: User;
+  loading: boolean;
+  error?: any;
+  login: (user: UserLogin) => void;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+```
+
+```typescript
+export function AuthProvider({ children }: PropsWithChildren) {
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+
+  async function login(user: UserLogin) {
+    // login logic
+  }
+  async function logout() {
+    // logout logic
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+```
+
+```typescript
+export function useAuthContext() {
+  const authContext = useContext(AuthContext);
+
+  if (authContext === undefined) {
+    throw new Error("useAuthContext must be used inside AuthProvider!!!");
+  }
+
+  const { user, loading, error, login, logout } = authContext;
+  return { user, loading, error, login, logout };
+}
+```

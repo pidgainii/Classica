@@ -1,11 +1,14 @@
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from typing import Optional
-from sqlalchemy import (String, DateTime, Enum, Boolean)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
+
+from typing import List
+
 import uuid
 
 from ..base import Base
+from .book import Book
+from .favourite import user_favourite_books
 
 class User(Base):
     __tablename__ = "user"
@@ -15,3 +18,4 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String, nullable=False)
     password_hash: Mapped[str] = mapped_column(String, nullable=True)
     
+    favourites: Mapped[List[Book]] = relationship(secondary=user_favourite_books)
