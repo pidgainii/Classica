@@ -9,7 +9,7 @@ export default function useBooks() {
 
   useEffect(() => {
     setIsLoading(true);
-    const fetchData = async () => {
+    async function fetchData() {
       try {
         const books = await getBooks();
         console.log(books);
@@ -20,7 +20,7 @@ export default function useBooks() {
         setIsLoading(false);
       } finally {
       }
-    };
+    }
 
     fetchData();
   }, []);

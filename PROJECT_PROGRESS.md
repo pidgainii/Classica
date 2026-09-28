@@ -186,3 +186,73 @@ And finally, IT WAS WORKING !
 I decided to use HeroUI (https://heroui.com/) library. I installed TailwindCSS and started building my first component: `BookCard`. Here is what I built:
 
 ![first_component.png](/media/first_component.png)
+
+## September 25th
+
+### UI design
+
+Although I have coursed a subject called UI/UX, I don't consider myself a good UI designer. Therefore I decided it would be better for me to focus on software engineering concepts and not so deeply in UI design. For that reason, I asked Gemini to create a basic HomePage for me. Gemini gave me all the code in one single page. I decided to separate each component into it's own file. This is what I got:
+
+![UI_initial_page.png](/media/UI_initial_page.png)
+
+Not bad for a start (none of those buttons are functional yet).
+
+### Authentication (Frontend)
+
+I decided it was better to move to some core functionality of the application. Authentication is the first thing to do.
+
+For this project, I will use JWT authentication. I will use access and refresh tokens. I started by thinking how should I implement the authentication logic in the frontend layer: **Authentication Context** is the answer.
+
+In order to implement an Authentication Context in a clean way we need:
+
+- Authentication Context (with **_createContext()_**)
+- Authentication Provider
+- Custom hook to use the Context
+
+I started by creating something simple:
+
+```typescript
+interface AuthContextType {
+  user?: User;
+  loading: boolean;
+  error?: any;
+  login: (user: UserLogin) => void;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+```
+
+```typescript
+export function AuthProvider({ children }: PropsWithChildren) {
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+
+  async function login(user: UserLogin) {
+    // login logic
+  }
+  async function logout() {
+    // logout logic
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+```
+
+```typescript
+export function useAuthContext() {
+  const authContext = useContext(AuthContext);
+
+  if (authContext === undefined) {
+    throw new Error("useAuthContext must be used inside AuthProvider!!!");
+  }
+
+  const { user, loading, error, login, logout } = authContext;
+  return { user, loading, error, login, logout };
+}
+```

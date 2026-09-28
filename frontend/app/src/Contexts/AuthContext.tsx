@@ -4,12 +4,14 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
-import type { User } from "../Models/user";
+import type { User, UserLogin } from "../Models/user";
 
 interface AuthContextType {
   user?: User;
   loading: boolean;
   error?: any;
+  login: (user: UserLogin) => void;
+  logout: () => void;
 }
 
 // The default value will be undefined. Therefore if we useContext(AuthContext) and get undefined
@@ -28,10 +30,29 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   Also we should create login and logout functions
   */
+  async function login(user: UserLogin) {
+    setLoading(true);
+
+    if (user.email == "pepito@gmail.com" && user.password == "1234") {
+      const user: User = {
+        id: "1234",
+        email: "pepito@gmail.com",
+        first_name: "Pepito",
+        last_name: "García",
+      };
+      setUser(user);
+
+      setError(false);
+      setLoading(false);
+    }
+  }
+  async function logout() {
+    setUser(undefined);
+  }
 
   // TODO: Check useMemo for returning these values
   return (
-    <AuthContext.Provider value={{ user, loading, error }}>
+    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -46,6 +67,6 @@ export function useAuthContext() {
     throw new Error("useAuthContext must be used inside AuthProvider!!!");
   }
 
-  const { user, loading, error } = authContext;
-  return { user, loading, error };
+  const { user, loading, error, login, logout } = authContext;
+  return { user, loading, error, login, logout };
 }
