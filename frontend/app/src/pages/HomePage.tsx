@@ -2,10 +2,12 @@ import BookGrid from "../Components/BookGrid";
 import Footer from "../Components/Footer";
 import Header from "../Components/Header";
 import TopBar from "../Components/ui/TopBar";
+import { useAuthContext } from "../Contexts/AuthContext";
 import useBooks from "../Hooks/useBooks";
 
 export default function HomePage() {
   const { books, isLoading, error } = useBooks();
+  const { user } = useAuthContext();
 
   if (isLoading)
     return (
@@ -24,6 +26,8 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#f4f4f4] font-sans text-gray-800">
       {/* 1. BARRA SUPERIOR (Top Bar oscura) */}
       <TopBar />
+
+      <h2>{user ? user.email + "logged in" : ""}</h2>
 
       {/* 2. CABECERA PRINCIPAL (Logo y Buscador) */}
       <Header />

@@ -256,3 +256,51 @@ export function useAuthContext() {
   return { user, loading, error, login, logout };
 }
 ```
+
+And of course, we need to wrap our app in this custom Authentication Provider in order to be able to use the custom hook:
+
+```typescript
+export default function App() {
+  return (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  );
+}
+```
+
+Now everything inside App should be able to access the Authentication Context variables and functions.
+
+## September 28th
+
+### Authentication (Backend)
+
+I decided it was time to implement the authentication logic in the backend. First I did the **registration logic**:
+
+- **API layer**: Receives http request and validates data with Pydantic model, calls service function. If everything goes good, returns 200 OK.
+
+- **Service layer**: Checks if a user with that email already exists. If not, hashes password and creates new User object. Calls user repository to add new user to DB.
+
+- **Repository layer (CRUD)**: Adds new user to DB. The id is created on insertion. Therefore the repository refreshes the user and returns it.
+
+\*I did not implement custom exceptions yet. I decided I will do that a bit later.
+
+---
+
+Now, the **login logic** was a bit more complicated:
+
+1. The **API layer** receives http request and validates data with Pydantic. Calls service layer to get two tokens: _access token_ and _refresh token_.
+
+2. The **service layer** calls repository to get the user. If the user exists, it verifies the hashed password with the password provided in the request. If the password is correct, it creates the refresh and access tokens:
+   - _Access token_: For now it just contains the id, email, iat timestamp and expire timestamp. I decided access token would expire every 15 minutes.
+   - _Refresh token_: Only contains the id, iat timestamp and expire timestamp.
+
+   To create these tokens, we need to encode them with a **hashing key** and a **hashing algorithm**, which I store in my .env file. I am using _python-jose_ library for this.
+
+3. When the **API layer** receives both tokens, it stores the _refresh token_ in an HTTP-only cookie by using `set_cookie()` function. I decided that the refresh token would expire after 30 days. I may implement rotation later. The access token is returned in the http response.
+
+### Authentication (Frontend)
+
+To check if the Authentication Context was working, I created a mock login function. If the email was `pepito@gmail.com` and the password `1234` then it changed the state variable **user** from undefined to a mock user. It was working correctly.
+
+After this, I decided to investigate and think how would all this token logic work in the frontend. I searched and understood that the _access token_ should be stored in state memory. When the page reloads or the token expires, we would use the _refresh token_ to get a new _access token_. In order to implement this logic, it was a good idea to store the _access token_ in the Authentication Context and to use Axios interceptors to implement the refresh logic.
