@@ -9,18 +9,4 @@ const api = axios.create({
   },
 });
 
-export function getRequest(URL: string) {
-  return api.get(URL).then((response) => response.data);
-}
-
-export function postRequest(URL: string) {
-  return api.post(`/${URL}`).then((response) => response.data);
-}
-
-export function patchRequest(URL: string) {
-  return api.patch(`/${URL}`).then((response) => response.data);
-}
-
-export function deleteRequest(URL: string) {
-  return api.delete(`/${URL}`).then((response) => response.data);
-}
+export default api;
