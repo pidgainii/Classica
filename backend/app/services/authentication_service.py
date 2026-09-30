@@ -63,6 +63,8 @@ class AuthenticationService:
     async def refresh(self, refresh_token: str, session: AsyncSession):
         user_repository = UserRepository(session)
         
+        # TODO: Check if token is valid: Expire date etc
+        
         user_id = get_user_id_from_refresh_token(refresh_token)
         
         if not user_id:

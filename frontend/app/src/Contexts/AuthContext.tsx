@@ -1,23 +1,29 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useLayoutEffect,
   useState,
   type PropsWithChildren,
 } from "react";
 import type { User, UserLogin } from "../Models/user";
+import type { Result } from "../Models/result";
 
 import api from "../Services/api/api";
 
-import { currentUserRequest, loginRequest } from "../Services/api/service";
+import {
+  currentUserRequest,
+  loginRequest,
+  logoutRequest,
+} from "../Services/api/service";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: any | null;
   accessToken: string | null;
-  login: (user: UserLogin) => void;
-  logout: () => void;
+  login: (user: UserLogin) => Promise<Result>;
+  logout: () => Promise<Result>;
 }
 
 // The default value will be undefined. Therefore if we useContext(AuthContext) and get undefined
@@ -31,8 +37,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [error, setError] = useState<any | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  // TAKING THIS CODE OUT OF LAYOUT EFFECT IN ORDER TO BE ABLE TO CALL IT FROM LOGIN FUNCTION
-  const updateRequestInterceptor = () => {
+  // This layout effect is supposed to execute every time accessToken changes it's value.
+  // It is supposed to add an interceptor for http requests that will add the access token to Authorization header.
+  useLayoutEffect(() => {
     /////////////// debugging /////////////////////
     console.log("Access token has changed, running useLayoutEffect");
 
@@ -46,14 +53,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return () => {
       api.interceptors.request.eject(authInterceptor);
     };
-  };
-
-  // This layout effect is supposed to execute every time accessToken changes it's value
-  // It is supposed to add an interceptor for http requests that will add the access token to Authorization header
-  useLayoutEffect(() => {
-    updateRequestInterceptor();
   }, [accessToken]);
 
+  // This layout effect will add a response interceptor. On failed responses due to authorization problem
+  // the interceptor will try to get a new access token from the backend.
   useLayoutEffect(() => {
     const refreshInterceptor = api.interceptors.response.use(
       // If the response is normal, then ok
@@ -63,15 +66,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
         const originalRequest = error.config;
 
         if (
-          error.response.status === 403 &&
-          error.response.data.message === "Unauthorized" &&
+          error.response.status === 401 &&
+          error.response.statusText === "Unauthorized" &&
           !originalRequest._retry
         ) {
           try {
-            const response = await api.get("/auth/refresh");
-            setAccessToken(response.data.accessToken);
+            //////////////////////////////////////////////
+            console.log("Response interceptor: Trying refresh");
+            //////////////////////////////////////////////
 
-            originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+            const response = await api.get("/auth/refresh");
+            setAccessToken(response.data.access_token);
+
+            originalRequest.headers.Authorization = `Bearer ${response.data.access_token}`;
             originalRequest._retry = true;
 
             return api(originalRequest);
@@ -79,7 +86,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
             setAccessToken(null);
           }
         }
-
         return Promise.reject(error);
       },
     );
@@ -89,48 +95,52 @@ export function AuthProvider({ children }: PropsWithChildren) {
     };
   }, []);
 
+  // This useEffect will load the user context variable on every render
+  useEffect(() => {
+    setLoading(true);
+
+    const loadUser = async () => {
+      try {
+        const currentUser = await currentUserRequest();
+        setUser(currentUser);
+
+        //////////////////////////////////////////////
+        console.log("UseEffect: User set to " + currentUser);
+        //////////////////////////////////////////////
+
+        setLoading(false);
+      } catch {
+        setError(true);
+        setLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
+
   async function login(user: UserLogin) {
     setLoading(true);
 
-    try {
-      /////////////// debugging /////////////////////
-      console.log("Attempting login...");
-
-      const newAccessToken = await loginRequest(user);
-
-      /////////////// debugging /////////////////////
-      console.log("Access token is " + newAccessToken);
-
+    const newAccessToken = await loginRequest(user);
+    if (newAccessToken) {
       setAccessToken(newAccessToken);
-
-      // PROBLEM FOUND: AFTER CHANGING ACCESS TOKEN, LAYOUT EFFECT FOR SOME REASON RUNS
-      // AFTER THE next intruction -> await currentUserRequest().
-      // IT SHOULD RUN BEFORE, TO ATTACH A NEW INTERCEPTOR WITH THE NEW ACCESS TOKEN
-
-      // LETS TRY TO SOLVE IT WITH THIS
-      updateRequestInterceptor();
-      //STILL DOESNT WORK, THE LAYOUT EFFECT IS THEN BEING RUN. THIS MEANS THE ACCESS TOKEN STATE TAKES A WHILE TO UPDATE
-
-      /////////////// debugging /////////////////////
-      console.log("Getting current user...");
-      const currentUser = await currentUserRequest();
-
-      /////////////// debugging /////////////////////
-      console.log("Current user is " + currentUser);
-      setUser(currentUser);
-
       setLoading(false);
-    } catch {
+      const result: Result = { success: true };
+      return result;
+    } else {
       setError(true);
-
-      /////////////// debugging /////////////////////
-      console.log("Something went wrong while logging in...");
-
       setLoading(false);
+      const result: Result = { success: false };
+      return result;
     }
   }
+
   async function logout() {
+    await logoutRequest();
     setUser(null);
+    setAccessToken(null);
+    const result: Result = { success: true };
+    return result;
   }
 
   // TODO: Check useMemo for returning these values

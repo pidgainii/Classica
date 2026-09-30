@@ -19,6 +19,14 @@ export const loginRequest = async (user: UserLogin) => {
   }
 };
 
+export const logoutRequest = async () => {
+  try {
+    await api.post("/auth/logout");
+  } catch (error: any) {
+    return null;
+  }
+};
+
 export const currentUserRequest = async () => {
   try {
     const { data: result } = await api.get("/auth/me");
@@ -39,6 +47,15 @@ export const currentUserRequest = async () => {
 export const tenBooksRequest = async (): Promise<Book[] | null> => {
   try {
     const { data: result } = await api.get("items/ten-books");
+    return result;
+  } catch (error: any) {
+    return null;
+  }
+};
+
+export const bookRequest = async (id: string): Promise<Book | null> => {
+  try {
+    const { data: result } = await api.get("items/book", { params: id });
     return result;
   } catch (error: any) {
     return null;

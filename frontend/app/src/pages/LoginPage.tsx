@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthContext } from "../Contexts/AuthContext";
 import type { UserLogin } from "../Models/user";
+import { useNavigate } from "react-router";
 
 export default function LoginPage() {
   const { user, login } = useAuthContext();
@@ -8,14 +9,24 @@ export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const onClickLogin = () => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+
+  const onClickLogin = async () => {
     const user: UserLogin = {
       email: email,
       password: password,
     };
-
-    login(user);
+    const result = await login(user);
+    if (result.success) navigate("/");
+    else setErrorMessage("Incorrect username or password");
   };
+
+  // If a user is logged in, then we should navigate to HomePage
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user]);
 
   return (
     <div className="bg-white rounded-2xl shadow-2xl flex flex-col w-full md:w-1/3 items-center max-w-4xl transition duration-1000 ease-out">
@@ -56,7 +67,7 @@ export default function LoginPage() {
         Create a New Account?
       </p>
 
-      <h2>{user ? "Pepito logged in" : ""}</h2>
+      <h2>{errorMessage ? errorMessage : ""}</h2>
     </div>
   );
 }

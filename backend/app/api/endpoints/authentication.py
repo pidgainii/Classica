@@ -19,18 +19,27 @@ async def login(response: Response, user_login: UserLoginDTO, session: AsyncSess
     service = AuthenticationService()
     tokens = await service.login(user_login, session)
 
-    app_env = APP_ENV
-
     response.set_cookie(
         key="refresh_token",
         value=tokens.get("refresh_token"),
         httponly=True,
-        secure=(app_env != "local"),
+        secure=(APP_ENV != "local"),
         samesite="lax",
         max_age=60 * 60 * 24 * int(REFRESH_TOKEN_EXPIRE_DAYS),
     )
 
     return {"access_token": tokens.get("access_token")}
+
+@router.post("/logout")
+async def logout(response: Response):
+
+    response.delete_cookie(
+        key="refresh_token",
+        httponly=True,
+        secure=(APP_ENV != "local"),
+        samesite="lax"
+    )
+
 
 @router.post("/register")
 async def register(user_register: UserRegisterDTO, session: AsyncSession = Depends(get_session)):

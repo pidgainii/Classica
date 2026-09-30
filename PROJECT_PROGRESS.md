@@ -301,6 +301,38 @@ Now, the **login logic** was a bit more complicated:
 
 ### Authentication (Frontend)
 
-To check if the Authentication Context was working, I created a mock login function. If the email was `pepito@gmail.com` and the password `1234` then it changed the state variable **user** from undefined to a mock user. It was working correctly.
+To check if the Authentication Context was working, I created a mock login function. If the email was `pepito@gmail.com` and the password `1234` then it changed the state variable user from undefined to a mock user. It was working correctly.
 
-After this, I decided to investigate and think how would all this token logic work in the frontend. I searched and understood that the _access token_ should be stored in state memory. When the page reloads or the token expires, we would use the _refresh token_ to get a new _access token_. In order to implement this logic, it was a good idea to store the _access token_ in the Authentication Context and to use Axios interceptors to implement the refresh logic.
+After this, I decided to investigate and think how would all this token logic work in the frontend. I searched and understood that **the _access token_ should be stored in state memory**. When the page reloads or the token expires, we would use the _refresh token_ to get a new _access token_. In order to implement this logic, it was a good idea to store the _access token_ in the Authentication Context and to use Axios interceptors to implement the refresh logic.
+
+## September 29th
+
+### Authentication (Backend)
+
+Before implementing all the login logic in the frontend, i needed to complete it in the backend. I needed to create the refresh endpoint. So I did it. When calling the `/auth/refresh` endpoint, the backend needs to extract the _refresh token_ from the HTTP-only cookie. In order to do this, I attached a dependency function that would do it. Then, the authentication service is called, and it checks whether the _refresh token_ is valid and extracts user's id. Then, it loads the user from the database in order to create a new _access token_, and returns it.
+
+```python
+@router.get("/refresh")
+async def refresh(refresh_token = Depends(get_token_from_cookie), session: AsyncSession = Depends(get_session)):
+    service = AuthenticationService()
+    return await service.refresh(refresh_token, session)
+```
+
+Then I also created a **protected endpoint** `/auth/me` that would return current user's info only if a valid access token was passed in the Authentication Header of the HTTP Request. This I also did with a dependency function.
+
+```python
+@router.get("/me")
+async def current_user(current_user = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    service = UserService()
+    return await service.get_user_information(current_user, session)
+```
+
+### Authentication (Frontend)
+
+Now it was time to put all together. I created an Axios **request interceptor** that attaches the _access token_ to the Authentication Header of every request. I did it inside a `useLayoutEffect()`, adding the accessToken context variable as a dependency. This way, it would update the interceptor each time the accessToken context variable updated. Doing it inside a `useLayoutEffect()` is useful because it blocks the rendering so that all components use the updated accessToken in their requests.
+
+I also created the **response interceptor**, which checks if the response contains an authentication error. If it does, then saves the original request, calls the `/auth/refresh` endpoint to get a new _access token_. And if a new _access token_ is returned, it udpates the context variable accessToken. Then, it triggers the original request but this time with the new _access token_.
+
+I learnt these concepts and implemented them thanks to: https://www.youtube.com/watch?v=AcYF18oGn6Y.
+
+Now it was time to create a functional login function. It should call the login endpoint with the email and password, and if everything is correct, receive an _access token_ and update context variable accessToken (which would trigger the `useLayoutEffect()` and update the interceptor). The backend sets the **_refresh token_ in the browser's cookies** without the frontend even noticing it.
