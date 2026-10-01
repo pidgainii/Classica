@@ -4,6 +4,8 @@ from crud.user_repository import UserRepository
 
 from schemas.user import UserTokenInfoDTO, UserApiDTO
 
+from core.errors import UserNotFoundError
+
 class UserService:
     
     async def get_user_information(self, user_token_info: UserTokenInfoDTO, session: AsyncSession) -> UserApiDTO:
@@ -12,8 +14,7 @@ class UserService:
         user = await user_repository.get_by_id(user_token_info.id)
         
         if not user:
-            # TODO: Custom exception
-            raise Exception
+            raise UserNotFoundError()
         
         userAPI = UserApiDTO.model_validate(user)
         

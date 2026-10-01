@@ -51,14 +51,7 @@ def get_user_from_access_token(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ) -> UserTokenInfoDTO | None:
     try:
-        ############# debugging ################
-        print(f"\ncredentials is \n{credentials.credentials}\n", flush=True)
-        
-        
         token = credentials.credentials
-        ############# debugging ################
-        print(f"\ntoken is\n{token}\n", flush=True)
-        
         
         payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASHING_ALGORITHM])
 

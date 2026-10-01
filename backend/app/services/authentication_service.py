@@ -7,6 +7,8 @@ from schemas.refresh import RefreshResponseDTO
 
 from db.models.user import User
 
+from core.errors import UserNotFoundError, IncorrectPasswordError, UserAlreadyExistsError, EntityCreationError, EntityFetchingError, RefreshTokenError
+
 from utils.security import hash_password, verify_password, create_access_token, create_refresh_token, get_user_id_from_refresh_token
 
 class AuthenticationService:
@@ -17,13 +19,10 @@ class AuthenticationService:
         user = await user_repository.get_by_email(user_login.email)
         
         if not user:
-            # TODO: Custom error
-            raise Exception("User not found")
+            raise UserNotFoundError()
         
         if not verify_password(user_login.password, user.password_hash):
-            # TODO: Custom error
-            raise Exception("Incorrect password")
-            
+            raise IncorrectPasswordError()
             
         # Creating refresh token:
         refresh_token = create_refresh_token(user.id)
@@ -42,8 +41,7 @@ class AuthenticationService:
         existing_user = await user_repository.get_by_email(user_register.email)
         
         if existing_user:
-            # TODO: custom error
-            raise Exception("User already exists")
+            raise UserAlreadyExistsError()
         
         password_hash = hash_password(user_register.password)
         
@@ -57,8 +55,7 @@ class AuthenticationService:
         user = await user_repository.create(user)
         
         if not user:
-            # TODO: custom error
-            raise Exception
+            raise EntityCreationError("UNABLE TO CREATE USER")
         
     async def refresh(self, refresh_token: str, session: AsyncSession):
         user_repository = UserRepository(session)
@@ -68,14 +65,12 @@ class AuthenticationService:
         user_id = get_user_id_from_refresh_token(refresh_token)
         
         if not user_id:
-            # TODO: Custom exception
-            raise Exception("Refresh token not valid or not available")
+            raise RefreshTokenError()
         
         user = await user_repository.get_by_id(user_id)
         
         if not user:
-            # TODO: Custom exception
-            raise Exception("User does not exist")
+            raise EntityFetchingError(f"USER WITH ID {user_id} NOT FOUND")
         
         access_token = create_access_token(user.id, user.email)
         

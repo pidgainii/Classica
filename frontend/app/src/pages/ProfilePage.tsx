@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import { useAuthContext } from "../Contexts/AuthContext";
+import { useEffect } from "react";
 
 export default function ProfilePage() {
   const { user, logout } = useAuthContext();
@@ -10,6 +11,10 @@ export default function ProfilePage() {
     const result = await logout();
     if (result.success) navigate("/");
   };
+
+  useEffect(() => {
+    if (!user) navigate("/");
+  }, [user]);
 
   return (
     <div>

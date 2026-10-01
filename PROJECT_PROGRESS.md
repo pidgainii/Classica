@@ -336,3 +336,19 @@ I also created the **response interceptor**, which checks if the response contai
 I learnt these concepts and implemented them thanks to: https://www.youtube.com/watch?v=AcYF18oGn6Y.
 
 Now it was time to create a functional login function. It should call the login endpoint with the email and password, and if everything is correct, receive an _access token_ and update context variable accessToken (which would trigger the `useLayoutEffect()` and update the interceptor). The backend sets the **_refresh token_ in the browser's cookies** without the frontend even noticing it.
+
+## September 30th
+
+I have created the login function inside the Authentication Context so that every component could use it. I have also created a `useEffect()` that would load the current user from the backend. **It executes on each reload**, because the user context variable is stored in state memory and disappears on each reload. **This is not very efficient**. Later, I'll have to store some information in **cache**, but for now I'll keep it like this.
+
+For some reason it was not working: The backend was not able to set the refresh token in the browser cookies. After searching for a while, I found the answer: I had to set `withCredentials` to true in the Axios instance (Axios does not send cookies by default).
+
+After a while, the login and refresh logic were working correctly !!!
+
+### Frontend Navigation Logic
+
+Now I decided to create some frontend navigation logic. In the HomePage, I included a user button (👤). If there is no user logged in, this button will send the user to the Login Page. If there IS a logged in user, this button will send the user to the Profile Page. Also, if a logged in user by any chance enters the Login Page writing the URL manually, it automatically redirects him to the HomePage.
+
+I also made the Book Card Components be clickable. When clicking it, it navigates the user to the Book Details Page. The route of this page includes the id of the book as a **route parameter**.
+
+## October 1st

@@ -13,10 +13,7 @@ export default function BookCard(props: BookCardProps) {
   };
 
   return (
-    <div
-      key={props.book.id}
-      className="flex flex-col items-center group cursor-pointer"
-    >
+    <div>
       {/* Contenedor de la portada con sombra similar a un libro real */}
       <button onClick={onClickCard}>
         <div className="relative w-full aspect-[2/3] shadow-[5px_5px_15px_rgba(0,0,0,0.15)] group-hover:shadow-[5px_5px_20px_rgba(0,0,0,0.3)] transition-shadow duration-300 bg-white">
