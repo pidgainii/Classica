@@ -256,3 +256,180 @@ export function useAuthContext() {
   return { user, loading, error, login, logout };
 }
 ```
+
+And of course, we need to wrap our app in this custom Authentication Provider in order to be able to use the custom hook:
+
+```typescript
+export default function App() {
+  return (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  );
+}
+```
+
+Now everything inside App should be able to access the Authentication Context variables and functions.
+
+## September 28th
+
+### Authentication (Backend)
+
+I decided it was time to implement the authentication logic in the backend. First I did the **registration logic**:
+
+- **API layer**: Receives http request and validates data with Pydantic model, calls service function. If everything goes good, returns 200 OK.
+
+- **Service layer**: Checks if a user with that email already exists. If not, hashes password and creates new User object. Calls user repository to add new user to DB.
+
+- **Repository layer (CRUD)**: Adds new user to DB. The id is created on insertion. Therefore the repository refreshes the user and returns it.
+
+\*I did not implement custom exceptions yet. I decided I will do that a bit later.
+
+---
+
+Now, the **login logic** was a bit more complicated:
+
+1. The **API layer** receives http request and validates data with Pydantic. Calls service layer to get two tokens: _access token_ and _refresh token_.
+
+2. The **service layer** calls repository to get the user. If the user exists, it verifies the hashed password with the password provided in the request. If the password is correct, it creates the refresh and access tokens:
+   - _Access token_: For now it just contains the id, email, iat timestamp and expire timestamp. I decided access token would expire every 15 minutes.
+   - _Refresh token_: Only contains the id, iat timestamp and expire timestamp.
+
+   To create these tokens, we need to encode them with a **hashing key** and a **hashing algorithm**, which I store in my .env file. I am using _python-jose_ library for this.
+
+3. When the **API layer** receives both tokens, it stores the _refresh token_ in an HTTP-only cookie by using `set_cookie()` function. I decided that the refresh token would expire after 30 days. I may implement rotation later. The access token is returned in the http response.
+
+### Authentication (Frontend)
+
+To check if the Authentication Context was working, I created a mock login function. If the email was `pepito@gmail.com` and the password `1234` then it changed the state variable user from undefined to a mock user. It was working correctly.
+
+After this, I decided to investigate and think how would all this token logic work in the frontend. I searched and understood that **the _access token_ should be stored in state memory**. When the page reloads or the token expires, we would use the _refresh token_ to get a new _access token_. In order to implement this logic, it was a good idea to store the _access token_ in the Authentication Context and to use Axios interceptors to implement the refresh logic.
+
+## September 29th
+
+### Authentication (Backend)
+
+Before implementing all the login logic in the frontend, i needed to complete it in the backend. I needed to create the refresh endpoint. So I did it. When calling the `/auth/refresh` endpoint, the backend needs to extract the _refresh token_ from the HTTP-only cookie. In order to do this, I attached a dependency function that would do it. Then, the authentication service is called, and it checks whether the _refresh token_ is valid and extracts user's id. Then, it loads the user from the database in order to create a new _access token_, and returns it.
+
+```python
+@router.get("/refresh")
+async def refresh(refresh_token = Depends(get_token_from_cookie), session: AsyncSession = Depends(get_session)):
+    service = AuthenticationService()
+    return await service.refresh(refresh_token, session)
+```
+
+Then I also created a **protected endpoint** `/auth/me` that would return current user's info only if a valid access token was passed in the Authentication Header of the HTTP Request. This I also did with a dependency function.
+
+```python
+@router.get("/me")
+async def current_user(current_user = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    service = UserService()
+    return await service.get_user_information(current_user, session)
+```
+
+### Authentication (Frontend)
+
+Now it was time to put all together. I created an Axios **request interceptor** that attaches the _access token_ to the Authentication Header of every request. I did it inside a `useLayoutEffect()`, adding the accessToken context variable as a dependency. This way, it would update the interceptor each time the accessToken context variable updated. Doing it inside a `useLayoutEffect()` is useful because it blocks the rendering so that all components use the updated accessToken in their requests.
+
+I also created the **response interceptor**, which checks if the response contains an authentication error. If it does, then saves the original request, calls the `/auth/refresh` endpoint to get a new _access token_. And if a new _access token_ is returned, it udpates the context variable accessToken. Then, it triggers the original request but this time with the new _access token_.
+
+I learnt these concepts and implemented them thanks to: https://www.youtube.com/watch?v=AcYF18oGn6Y.
+
+Now it was time to create a functional login function. It should call the login endpoint with the email and password, and if everything is correct, receive an _access token_ and update context variable accessToken (which would trigger the `useLayoutEffect()` and update the interceptor). The backend sets the **_refresh token_ in the browser's cookies** without the frontend even noticing it.
+
+## September 30th
+
+I have created the login function inside the Authentication Context so that every component could use it. I have also created a `useEffect()` that would load the current user from the backend. **It executes on each reload**, because the user context variable is stored in state memory and disappears on each reload. **This is not very efficient**. Later, I'll have to store some information in **cache**, but for now I'll keep it like this.
+
+For some reason it was not working: The backend was not able to set the refresh token in the browser cookies. After searching for a while, I found the answer: I had to set `withCredentials` to true in the Axios instance (Axios does not send cookies by default).
+
+After a while, the login and refresh logic were working correctly !!!
+
+### Frontend Navigation Logic
+
+Now I decided to create some frontend navigation logic. In the HomePage, I included a user button (👤). If there is no user logged in, this button will send the user to the Login Page. If there IS a logged in user, this button will send the user to the Profile Page. Also, if a logged in user by any chance enters the Login Page writing the URL manually, it automatically redirects him to the HomePage.
+
+I also made the Book Card Components be clickable. When clicking it, it navigates the user to the Book Details Page. The route of this page includes the id of the book as a **route parameter**.
+
+## October 1st
+
+### Refresh endpoint error message
+
+The `localhost:8000/auth/me` endpoint is called on every render (`useEffect()`) by the Authentication Provider to get the current user from the _access token_. It was working fine. But while checking the browser DevTools Console, I noticed something. When reloading the app, two requests were being made to this endpoint with **401 Unauthorized** response.
+I started debugging the backend but these specific requests did not even reach the backend. I searched on the Internet and asked ChatGPT, but did not find any real answer. I decided to investigate this issue later.
+
+---
+
+### Backend: Global Exception Handler
+
+It was time to create a scalable error handling system.
+To do this, I created an Error class:
+
+```python
+class Error(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+    def __str__(self):
+        return self.message
+```
+
+And specific error classes:
+
+```python
+class EntityFetchingError(Error):
+    def __init__(self, message ="UNABLE TO FETCH ENTITY"):
+        super().__init__(message)
+
+class UserNotFoundError(Error):
+    def __init__(self, message ="USER NOT FOUND"):
+        super().__init__(message)
+```
+
+Then I registered an exception handler for each error using `@app.exception_handler()`:
+
+```python
+@app.exception_handler(UserNotFoundError)
+async def user_not_found_error_handler(request: Request, exc: UserNotFoundError):
+    print(f"\n\nUserNotFoundError: {exc}\n\n")
+    return JSONResponse(
+        status_code=401,
+        content={
+            "detail": "Unauthorized"
+        }
+    )
+```
+
+---
+
+### Frontend: Fetching
+
+At the moment, my fetching functions looked like this:
+
+```typescript
+export const currentUserRequest = async (): Promise<User | Result> => {
+  try {
+    const { data: result } = await api.get("/auth/me");
+    return result;
+  } catch (error: any) {
+    const result: Result = { success: false };
+    return result;
+  }
+};
+
+export const tenBooksRequest = async (): Promise<Book[] | Result> => {
+  try {
+    const { data: result } = await api.get("items/ten-books");
+    return result;
+  } catch (error: any) {
+    const result: Result = { success: false };
+    return result;
+  }
+};
+```
+
+As the app will continue to grow, more and more fetching functions will be created. And that is **a lot of repeated code**.
+
+## October 2nd
+
+**Therefore, I have to create a custom hook to fetch data.**

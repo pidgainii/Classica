@@ -1,4 +1,17 @@
+import { UserCircleIcon } from "lucide-react";
+import { useNavigate } from "react-router";
+import { useAuthContext } from "../../Contexts/AuthContext";
+
 export default function TopBar() {
+  const { user } = useAuthContext();
+
+  const navigate = useNavigate();
+
+  const onClickUserButton = () => {
+    if (user) navigate("/profile");
+    else navigate("/login");
+  };
+
   return (
     <div className="bg-[#2a2a2a] text-gray-300 text-xs py-2 px-6 flex flex-col sm:flex-row justify-between items-center">
       <div className="tracking-wide">DEFAULT WELCOME MSG!</div>
@@ -18,16 +31,10 @@ export default function TopBar() {
         <a href="#" className="hover:text-white transition-colors text-white">
           CHECKOUT
         </a>
-        <a href="#" className="hover:text-white transition-colors text-white">
-          LOG IN
-        </a>
-        <div className="flex items-center ml-4 space-x-2">
-          <span className="text-gray-400 capitalize">Currencies:</span>
-          <select className="bg-white text-black px-2 py-0.5 text-xs outline-none cursor-pointer">
-            <option>US Dollar</option>
-            <option>Euro</option>
-          </select>
-        </div>
+
+        <button onClick={onClickUserButton}>
+          <UserCircleIcon />
+        </button>
       </div>
     </div>
   );

@@ -1,0 +1,11 @@
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+APP_ENV = os.getenv("APP_ENV")
+HASHING_SECRET_KEY = os.getenv("HASHING_SECRET_KEY")
+HASHING_ALGORITHM = os.getenv("HASHING_ALGORITHM")
+REFRESH_TOKEN_EXPIRE_DAYS = os.getenv("REFRESH_TOKEN_EXPIRE_DAYS")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
