@@ -1,8 +1,8 @@
-import type { Book } from "../Models/book";
+import type { BookType } from "../Models/book";
 import BookCard from "./ui/BookCard";
 
 interface BookGridProps {
-  books: Book[];
+  books: BookType[];
 }
 
 export default function BookGrid(props: BookGridProps) {

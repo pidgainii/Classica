@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import type { Book } from "../Models/book";
+import type { BookType } from "../Models/book";
 import { bookRequest } from "../Services/api/service";
 
 export default function BookDetailsPage() {
@@ -8,13 +8,13 @@ export default function BookDetailsPage() {
 
   // TODO: Add LOADING VARIABLE. MAYBE GLOBAL. (While loading book). Same for HomePage.
 
-  const [book, setBook] = useState<Book | null>(null);
+  const [book, setBook] = useState<BookType | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!book && params.id) {
-        const bookLoad = await bookRequest(params.id);
-        setBook(bookLoad);
+        const response = await bookRequest(params.id);
+        if (response.success) setBook(response.data);
       }
     };
     fetchData();

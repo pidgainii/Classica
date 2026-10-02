@@ -1,19 +1,26 @@
-export interface UserBase {
-  email: string;
-}
+import z from "zod";
 
-export interface User extends UserBase {
-  id: string;
-  first_name: string;
-  last_name: string;
-}
+const userBaseSchema = z.object({
+  email: z.string(),
+});
 
-export interface UserLogin extends UserBase {
-  password: string;
-}
+export const userSchema = userBaseSchema.extend({
+  first_name: z.string(),
+  last_name: z.string(),
+});
 
-export interface UserRegister extends UserBase {
-  first_name: string;
-  last_name: string;
-  password: string;
-}
+export type UserType = z.infer<typeof userSchema>;
+
+export const userLoginSchema = userBaseSchema.extend({
+  password: z.string(),
+});
+
+export type UserLoginType = z.infer<typeof userLoginSchema>;
+
+export const userRegisterSchema = userBaseSchema.extend({
+  first_name: z.string(),
+  last_name: z.string(),
+  password: z.string(),
+});
+
+export type UserRegisterType = z.infer<typeof userRegisterSchema>;

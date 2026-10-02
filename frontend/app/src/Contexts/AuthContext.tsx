@@ -6,8 +6,8 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
-import type { User, UserLogin } from "../Models/user";
-import type { Result } from "../Models/result";
+import type { UserType, UserLoginType } from "../Models/user";
+import type { Response } from "../Models/result";
 
 import api from "../Services/api/api";
 
@@ -18,12 +18,12 @@ import {
 } from "../Services/api/service";
 
 interface AuthContextType {
-  user: User | null;
+  user: UserType | null;
   loading: boolean;
   error: any | null;
   accessToken: string | null;
-  login: (user: UserLogin) => Promise<Result>;
-  logout: () => Promise<Result>;
+  login: (user: UserLoginType) => Promise<Response>;
+  logout: () => Promise<Response>;
 }
 
 // The default value will be undefined. Therefore if we useContext(AuthContext) and get undefined
@@ -32,7 +32,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Custom Auth Provider component
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<any | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -100,16 +100,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setLoading(true);
 
     const loadUser = async () => {
-      try {
-        const currentUser = await currentUserRequest();
-        setUser(currentUser);
-
-        //////////////////////////////////////////////
-        console.log("UseEffect: User set to " + currentUser);
-        //////////////////////////////////////////////
-
+      setLoading(true);
+      const response = await currentUserRequest();
+      if (response.success) {
+        setUser(response.data);
         setLoading(false);
-      } catch {
+      } else {
+        setUser(null);
         setError(true);
         setLoading(false);
       }
@@ -118,29 +115,36 @@ export function AuthProvider({ children }: PropsWithChildren) {
     loadUser();
   }, []);
 
-  async function login(user: UserLogin) {
+  async function login(user: UserLoginType) {
     setLoading(true);
 
-    const newAccessToken = await loginRequest(user);
-    if (newAccessToken) {
-      setAccessToken(newAccessToken);
+    const response = await loginRequest(user);
+    if (response.success) {
+      setAccessToken(response.data.access_token);
       setLoading(false);
-      const result: Result = { success: true };
-      return result;
+      const loginResponse: Response = { success: true };
+      return loginResponse;
     } else {
       setError(true);
       setLoading(false);
-      const result: Result = { success: false };
-      return result;
+      const loginResponse: Response = { success: false };
+      return loginResponse;
     }
   }
 
   async function logout() {
-    await logoutRequest();
-    setUser(null);
-    setAccessToken(null);
-    const result: Result = { success: true };
-    return result;
+    setLoading(true);
+
+    const response = await logoutRequest();
+    if (response.success) {
+      setUser(null);
+      setAccessToken(null);
+      const logoutResponse: Response = { success: true };
+      return logoutResponse;
+    } else {
+      const logoutResponse: Response = { success: false };
+      return logoutResponse;
+    }
   }
 
   // TODO: Check useMemo for returning these values

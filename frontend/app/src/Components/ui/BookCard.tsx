@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router";
-import type { Book } from "../../Models/book";
+import type { BookType } from "../../Models/book";
 
 interface BookCardProps {
-  book: Book;
+  book: BookType;
 }
 
 export default function BookCard(props: BookCardProps) {

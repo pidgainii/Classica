@@ -13,6 +13,7 @@ export default function useBooks() {
     const fetchData = async () => {
       try {
         const books = await tenBooksRequest();
+        if 
 
         if (books) setBooks(books);
         setIsLoading(false);

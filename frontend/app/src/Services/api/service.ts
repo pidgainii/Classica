@@ -1,64 +1,30 @@
-import type { Book } from "../../Models/book";
-import type { Result } from "../../Models/result";
-import type { User, UserLogin } from "../../Models/user";
-import api from "./api";
+import type { Response } from "../../Models/result";
+import type { UserLoginType } from "../../Models/user";
+import { userSchema } from "../../Models/user";
+import { bookSchema } from "../../Models/book";
+import { tokenSchema } from "../../Models/token";
+import { getMethod, postMethod } from "./fetch";
 
-///////////////////////////////////////////////////
-// TODO: Create error handling system
-///////////////////////////////////////////////////
-
-export const loginRequest = async (
-  user: UserLogin,
-): Promise<string | Result> => {
-  try {
-    const { data: result } = await api.post("/auth/login", {
-      email: user.email,
-      password: user.password,
-    });
-    return result.access_token;
-  } catch (error: any) {
-    const result: Result = { success: false };
-    return result;
-  }
+export const loginRequest = async (user: UserLoginType): Promise<Response> => {
+  return await postMethod("/auth/login", tokenSchema, {
+    email: user.email,
+    password: user.password,
+  });
 };
 
-export const logoutRequest = async (): Promise<Result> => {
-  try {
-    await api.post("/auth/logout");
-    const result: Result = { success: true };
-    return result;
-  } catch (error: any) {
-    const result: Result = { success: false };
-    return result;
-  }
+export const logoutRequest = async (): Promise<Response> => {
+  return await postMethod("/auth/logout");
 };
 
-export const currentUserRequest = async (): Promise<User | Result> => {
-  try {
-    const { data: result } = await api.get("/auth/me");
-    return result;
-  } catch (error: any) {
-    const result: Result = { success: false };
-    return result;
-  }
+// Should work
+export const currentUserRequest = async (): Promise<Response> => {
+  return await getMethod("/auth/me", userSchema);
 };
 
-export const tenBooksRequest = async (): Promise<Book[] | Result> => {
-  try {
-    const { data: result } = await api.get("items/ten-books");
-    return result;
-  } catch (error: any) {
-    const result: Result = { success: false };
-    return result;
-  }
+export const tenBooksRequest = async (): Promise<Response> => {
+  return await getMethod("/items/ten-books", bookSchema.array());
 };
 
-export const bookRequest = async (id: string): Promise<Book | Result> => {
-  try {
-    const { data: result } = await api.get("items/book", { params: { id } });
-    return result;
-  } catch (error: any) {
-    const result: Result = { success: false };
-    return result;
-  }
+export const bookRequest = async (id: string): Promise<Response> => {
+  return await getMethod(`items/book/${id}`, bookSchema);
 };
