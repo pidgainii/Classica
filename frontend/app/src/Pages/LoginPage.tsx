@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../Contexts/AuthContext";
-import type { UserLogin } from "../Models/user";
+import type { UserLoginType } from "../Models/user";
 import { useNavigate } from "react-router";
 
 export default function LoginPage() {
@@ -14,7 +14,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const onClickLogin = async () => {
-    const user: UserLogin = {
+    const user: UserLoginType = {
       email: email,
       password: password,
     };

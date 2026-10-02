@@ -14,7 +14,7 @@ async def get_ten_books(session: AsyncSession = Depends(get_session)):
     service = BookService()
     return await service.get_ten_books(session)
 
-@router.get("/book", response_model=BookBaseDTO)
-async def get_book(id: str = Query(), session: AsyncSession = Depends(get_session)):
+@router.get("/book/{id}", response_model=BookBaseDTO)
+async def get_book(id: str, session: AsyncSession = Depends(get_session)):
     service = BookService()
     return await service.get_book(id, session)
