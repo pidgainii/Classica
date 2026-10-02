@@ -352,3 +352,84 @@ Now I decided to create some frontend navigation logic. In the HomePage, I inclu
 I also made the Book Card Components be clickable. When clicking it, it navigates the user to the Book Details Page. The route of this page includes the id of the book as a **route parameter**.
 
 ## October 1st
+
+### Refresh endpoint error message
+
+The `localhost:8000/auth/me` endpoint is called on every render (`useEffect()`) by the Authentication Provider to get the current user from the _access token_. It was working fine. But while checking the browser DevTools Console, I noticed something. When reloading the app, two requests were being made to this endpoint with **401 Unauthorized** response.
+I started debugging the backend but these specific requests did not even reach the backend. I searched on the Internet and asked ChatGPT, but did not find any real answer. I decided to investigate this issue later.
+
+---
+
+### Backend: Global Exception Handler
+
+It was time to create a scalable error handling system.
+To do this, I created an Error class:
+
+```python
+class Error(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+    def __str__(self):
+        return self.message
+```
+
+And specific error classes:
+
+```python
+class EntityFetchingError(Error):
+    def __init__(self, message ="UNABLE TO FETCH ENTITY"):
+        super().__init__(message)
+
+class UserNotFoundError(Error):
+    def __init__(self, message ="USER NOT FOUND"):
+        super().__init__(message)
+```
+
+Then I registered an exception handler for each error using `@app.exception_handler()`:
+
+```python
+@app.exception_handler(UserNotFoundError)
+async def user_not_found_error_handler(request: Request, exc: UserNotFoundError):
+    print(f"\n\nUserNotFoundError: {exc}\n\n")
+    return JSONResponse(
+        status_code=401,
+        content={
+            "detail": "Unauthorized"
+        }
+    )
+```
+
+---
+
+### Frontend: Fetching
+
+At the moment, my fetching functions looked like this:
+
+```typescript
+export const currentUserRequest = async (): Promise<User | Result> => {
+  try {
+    const { data: result } = await api.get("/auth/me");
+    return result;
+  } catch (error: any) {
+    const result: Result = { success: false };
+    return result;
+  }
+};
+
+export const tenBooksRequest = async (): Promise<Book[] | Result> => {
+  try {
+    const { data: result } = await api.get("items/ten-books");
+    return result;
+  } catch (error: any) {
+    const result: Result = { success: false };
+    return result;
+  }
+};
+```
+
+As the app will continue to grow, more and more fetching functions will be created. And that is **a lot of repeated code**.
+
+## October 2nd
+
+**Therefore, I have to create a custom hook to fetch data.**
