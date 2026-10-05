@@ -432,4 +432,69 @@ As the app will continue to grow, more and more fetching functions will be creat
 
 ## October 2nd
 
-**Therefore, I have to create a custom hook to fetch data.**
+**Therefore, I decided it was a good idea to do a common GET and POST function in order to avoid repeting code**.
+
+### Zod validation
+
+But in order to do do this generic request functions, I needed an **efficient way to validate data**. Therefore, I investigated what is the best way to validate data in Typescript. I found out that Zod what the best library to do this. It gives you to possibility to create Zod Objects, infer Typescript types from them and parse data models in a safe way.
+
+This is the Zod object I created for the Book model:
+
+```typescript
+import z from "zod";
+
+export const bookSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  author: z.string(),
+  description: z.string().nullish(),
+  language: z.string().nullish(),
+  isbn: z.string().nullish(),
+  cover_url: z.string().nullish(),
+});
+
+export type BookType = z.infer<typeof bookSchema>;
+```
+
+After watching examples, reading documentation, watching tutorials and thinking, I managed to create this generic GET function:
+
+```typescript
+export const getMethod = async (
+  url: string,
+  expected_schema: z.ZodObject | z.ZodArray,
+): Promise<Response> => {
+  try {
+    const { data: result } = await api.get(url);
+
+    const zodResult = expected_schema.safeParse(result);
+
+    if (!zodResult.success) {
+      const response: Response = {
+        success: false,
+        message: "Data parsing error",
+      };
+      return response;
+    }
+
+    const response: Response = { success: true, data: zodResult.data };
+    return response;
+  } catch (error: any) {
+    const result: Response = { success: false, message: "API request error" };
+    return result;
+  }
+};
+```
+
+Using this function, my API calls now looked like this:
+
+```typescript
+export const currentUserRequest = async (): Promise<Response> => {
+  return await getMethod("/auth/me", userSchema);
+};
+
+export const tenBooksRequest = async (): Promise<Response> => {
+  return await getMethod("/items/ten-books", bookSchema.array());
+};
+```
+
+I did the same with POST function.

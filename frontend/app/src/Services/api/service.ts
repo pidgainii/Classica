@@ -16,7 +16,6 @@ export const logoutRequest = async (): Promise<Response> => {
   return await postMethod("/auth/logout");
 };
 
-// Should work
 export const currentUserRequest = async (): Promise<Response> => {
   return await getMethod("/auth/me", userSchema);
 };
