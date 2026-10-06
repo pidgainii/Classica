@@ -498,3 +498,24 @@ export const tenBooksRequest = async (): Promise<Response> => {
 ```
 
 I did the same with POST function.
+
+## October 5th
+
+### Global loading context?
+
+I have been thinking on how to implement a global loading screen, and a global loading variable that every component can set to true when loading. But first I decided to investigate what is the best way to manage loading state.
+
+I saw in some forums and in a Youtube video that `useNavigation()` hook provides a state variable. By checking `navigation.state === "loading"` we could display a loading screen.
+I created a LoadingScreen that would display a loading UI if `state==="loading"` and {children} in the rest of the cases. But for some reason it did not show the loading UI. I think the state takes the value `"loading"` only when using React Router **loaders**. I was not planing to use those, so I continued researching on other possibilities.
+
+### Local loading variables?
+
+I thought that maybe managing loading states in each page/component was a good idea, but I soon saw that this is not recommended at all. For simple applications it may work, but when creating a scalable system, managing fetching logic with state variables like `isSuccess`, `error`, `isLoading` is a bad practice. The problem of using these state variables is that they produce **inconsistent states**, which makes it difficult to debug and may introduce unexpected behaviour.
+
+### TanStack Query?
+
+I saw that TanStack Query library can help me manage fetching states in a consistent way. **I decided to use this library**.
+
+### State Management
+
+After watching some more videos on React development, I found out about **state management**. I think that a lot of problems I was currently thinking how to solve would disappear using a state management tool.

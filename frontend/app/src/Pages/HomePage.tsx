@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Outlet } from "react-router";
 import BookGrid from "../Components/BookGrid";
 import Footer from "../Components/Footer";
 import Header from "../Components/Header";
@@ -29,8 +30,8 @@ export default function HomePage() {
       {/* 2. CABECERA PRINCIPAL (Logo y Buscador) */}
       <Header />
 
-      {/* 5. SECCIÓN PRINCIPAL: GRID DE LIBROS */}
-      <BookGrid books={books} />
+      {/* Books or Blog Page */}
+      <Outlet />
 
       {/* 6. FOOTER */}
       <Footer />
