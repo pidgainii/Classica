@@ -1,24 +1,23 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import type { BookType } from "../Models/book";
 import { bookRequest } from "../Services/api/service";
+import { useQuery } from "@tanstack/react-query";
 
 export default function BookDetailsPage() {
-  const params = useParams();
+  const { id } = useParams();
 
-  // TODO: Add LOADING VARIABLE. MAYBE GLOBAL. (While loading book). Same for HomePage.
-
-  const [book, setBook] = useState<BookType | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!book && params.id) {
-        const response = await bookRequest(params.id);
-        if (response.success) setBook(response.data);
-      }
-    };
-    fetchData();
+  const {
+    data: book,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["book"],
+    queryFn: () => bookRequest(id),
+    gcTime: 0,
   });
+
+  if (isPending) return <h1>Loading...</h1>;
+
+  if (error) return <h1>Error</h1>;
 
   return (
     <div>

@@ -1,18 +1,21 @@
-import { useEffect, useState } from "react";
-import type { BookType } from "../Models/book";
 import { tenBooksRequest } from "../Services/api/service";
 import BookCard from "../Components/ui/BookCard";
+import { useQuery } from "@tanstack/react-query";
 
 export default function HomeBooksPage() {
-  const [books, setBooks] = useState<BookType[]>([]);
+  const {
+    data: books,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["books"],
+    queryFn: () => tenBooksRequest(),
+    staleTime: Infinity,
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await tenBooksRequest();
-      if (response.success) setBooks(response.data);
-    };
-    fetchData();
-  }, []);
+  if (isPending) return <h1>Loading</h1>;
+
+  if (error) return <h1>Error</h1>;
 
   return (
     <main className="bg-[#e8e8e8] py-16 px-8 min-h-screen border-t border-gray-300 shadow-inner">
