@@ -1,30 +1,37 @@
-import type { Response } from "../../Models/result";
-import type { UserLoginType } from "../../Models/user";
+import type {
+  UserLoginType,
+  UserRegisterType,
+  UserType,
+} from "../../Models/user";
 import { userSchema } from "../../Models/user";
-import { bookSchema } from "../../Models/book";
-import { tokenSchema } from "../../Models/token";
-import { getMethod, postMethod } from "./fetch";
+import { bookSchema, type BookType } from "../../Models/book";
+import { tokenSchema, type TokenType } from "../../Models/token";
+import api from "./api";
 
-export const loginRequest = async (user: UserLoginType): Promise<Response> => {
-  return await postMethod("/auth/login", tokenSchema, {
-    email: user.email,
-    password: user.password,
-  });
+export const loginRequest = async (user: UserLoginType): Promise<TokenType> => {
+  const { data: result } = await api.post("/auth/login", user);
+  return tokenSchema.parse(result);
 };
 
-export const logoutRequest = async (): Promise<Response> => {
-  return await postMethod("/auth/logout");
+export const registerRequest = async (user: UserRegisterType) => {
+  return await api.post("/auth/register", user);
 };
 
-// Should work
-export const currentUserRequest = async (): Promise<Response> => {
-  return await getMethod("/auth/me", userSchema);
+export const logoutRequest = async () => {
+  return await api.post("/auth/logout");
 };
 
-export const tenBooksRequest = async (): Promise<Response> => {
-  return await getMethod("/items/ten-books", bookSchema.array());
+export const currentUserRequest = async (): Promise<UserType> => {
+  const { data: result } = await api.get("/auth/me");
+  return userSchema.parse(result);
 };
 
-export const bookRequest = async (id: string): Promise<Response> => {
-  return await getMethod(`items/book/${id}`, bookSchema);
+export const bookRequest = async (id: any): Promise<BookType> => {
+  const { data: result } = await api.get(`items/book/${id}`);
+  return bookSchema.parse(result);
+};
+
+export const tenBooksRequest = async (): Promise<BookType[]> => {
+  const { data: result } = await api.get("/items/ten-books");
+  return bookSchema.array().parse(result);
 };

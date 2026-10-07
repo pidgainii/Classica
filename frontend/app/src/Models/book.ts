@@ -7,7 +7,7 @@ export const bookSchema = z.object({
   description: z.string().nullish(),
   language: z.string().nullish(),
   isbn: z.string().nullish(),
-  cover_url: z.string().nullish(),
+  cover_url: z.string().optional(),
 });
 
 export type BookType = z.infer<typeof bookSchema>;

@@ -2,6 +2,10 @@ import api from "./api";
 import z from "zod";
 import type { Response } from "../../Models/result";
 
+//////////////////////////////////////////////////////////////
+// THESE METHODS ARE NOT USED
+//////////////////////////////////////////////////////////////
+
 export const getMethod = async (
   url: string,
   expected_schema: z.ZodObject | z.ZodArray,

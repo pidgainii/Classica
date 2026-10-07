@@ -432,4 +432,140 @@ As the app will continue to grow, more and more fetching functions will be creat
 
 ## October 2nd
 
-**Therefore, I have to create a custom hook to fetch data.**
+**Therefore, I decided it was a good idea to do a common GET and POST function in order to avoid repeting code**.
+
+### Zod validation
+
+But in order to do do this generic request functions, I needed an **efficient way to validate data**. Therefore, I investigated what is the best way to validate data in Typescript. I found out that Zod what the best library to do this. It gives you to possibility to create Zod Objects, infer Typescript types from them and parse data models in a safe way.
+
+This is the Zod object I created for the Book model:
+
+```typescript
+import z from "zod";
+
+export const bookSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  author: z.string(),
+  description: z.string().nullish(),
+  language: z.string().nullish(),
+  isbn: z.string().nullish(),
+  cover_url: z.string().nullish(),
+});
+
+export type BookType = z.infer<typeof bookSchema>;
+```
+
+After watching examples, reading documentation, watching tutorials and thinking, I managed to create this generic GET function:
+
+```typescript
+export const getMethod = async (
+  url: string,
+  expected_schema: z.ZodObject | z.ZodArray,
+): Promise<Response> => {
+  try {
+    const { data: result } = await api.get(url);
+
+    const zodResult = expected_schema.safeParse(result);
+
+    if (!zodResult.success) {
+      const response: Response = {
+        success: false,
+        message: "Data parsing error",
+      };
+      return response;
+    }
+
+    const response: Response = { success: true, data: zodResult.data };
+    return response;
+  } catch (error: any) {
+    const result: Response = { success: false, message: "API request error" };
+    return result;
+  }
+};
+```
+
+Using this function, my API calls now looked like this:
+
+```typescript
+export const currentUserRequest = async (): Promise<Response> => {
+  return await getMethod("/auth/me", userSchema);
+};
+
+export const tenBooksRequest = async (): Promise<Response> => {
+  return await getMethod("/items/ten-books", bookSchema.array());
+};
+```
+
+I did the same with POST function.
+
+## October 5th
+
+### Global loading context?
+
+I have been thinking on how to implement a global loading screen, and a global loading variable that every component can set to true when loading. But first I decided to investigate what is the best way to manage loading state.
+
+I saw in some forums and in a Youtube video that `useNavigation()` hook provides a state variable. By checking `navigation.state === "loading"` we could display a loading screen.
+I created a LoadingScreen that would display a loading UI if `state==="loading"` and {children} in the rest of the cases. But for some reason it did not show the loading UI. I think the state takes the value `"loading"` only when using React Router **loaders**. I was not planing to use those, so I continued researching on other possibilities.
+
+### Local loading variables?
+
+I thought that maybe managing loading states in each page/component was a good idea, but I soon saw that this is not recommended at all. For simple applications it may work, but when creating a scalable system, managing fetching logic with state variables like `isSuccess`, `error`, `isLoading` is a bad practice. The problem of using these state variables is that they produce **inconsistent states**, which makes it difficult to debug and may introduce unexpected behaviour.
+
+### TanStack Query?
+
+I saw that TanStack Query library can help me manage fetching states in a consistent way. **I decided to use this library**.
+
+### State Management
+
+After watching some more videos on React development, I found out about **state management**. I think that a lot of problems I was currently thinking how to solve would disappear using a state management tool.
+
+## October 6th
+
+I decided I would use Zustand for state management.
+
+In order to understand properly how to combine TanStack Query and Zustand, I watched this video: https://youtu.be/QTZTUrAbjeo, and this is what I learnt:
+
+### TanStack Query + Zustand
+
+We should use Zustand and TanStack Query in a smart way, giving each of them their own responsability:
+
+- **TanStack Query** should be used for **server state** management, as it is a asynchronous state management solution. Example: fetching books from server.
+
+- **Zustand** on the other hand should be used for **client state management** (the state of the React application). This could be some options that the user has selected, for example the filters that the user has set for the book page.
+
+### Introducing TanStack Query in my application
+
+In order to avoid managing complex loading states, I decided to refactor my code to use `useQuery()`.
+
+Example loading books in home page:
+
+```typescript
+export default function HomeBooksPage() {
+  const {
+    data: books,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["books"],
+    queryFn: () => booksRequest(),
+    staleTime: Infinity,
+  });
+
+  if (isPending) return <h1>Loading</h1>;
+
+  if (error) return <h1>Error</h1>;
+
+  return (...)
+```
+
+I also made API service functions way more simple:
+
+```typescript
+export const booksRequest = async (): Promise<BookType[]> => {
+  const { data: result } = await api.get("/items/books");
+  return bookSchema.array().parse(result);
+};
+```
+
+Now I had to understand how could I refactor my Authentication Provider in order to use TanStack Query...
