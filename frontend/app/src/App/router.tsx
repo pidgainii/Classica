@@ -8,6 +8,8 @@ import BookDetailsPage from "../Pages/BookDetailsPage";
 import HomeBooksPage from "../Pages/HomeBooksPage";
 import HomeBlogPage from "../Pages/HomeBlogPage";
 import RegisterPage from "../Pages/RegisterPage";
+import UserRoutes from "../Utils/UserRoutes";
+import NoUserRoutes from "../Utils/NoUserRoutes";
 
 export const router = createBrowserRouter([
   {
@@ -22,16 +24,15 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        path: "login",
-        element: <LoginPage />,
+        element: <UserRoutes />,
+        children: [{ path: "profile", element: <ProfilePage /> }],
       },
       {
-        path: "register",
-        element: <RegisterPage />,
-      },
-      {
-        path: "profile",
-        element: <ProfilePage />,
+        element: <NoUserRoutes />,
+        children: [
+          { path: "login", element: <LoginPage /> },
+          { path: "register", element: <RegisterPage /> },
+        ],
       },
       {
         path: "book/:id",

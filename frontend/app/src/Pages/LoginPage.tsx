@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuthContext } from "../Contexts/AuthContext";
 import type { UserLoginType } from "../Models/user";
 import { Link, useNavigate } from "react-router";
 
 export default function LoginPage() {
-  const { user, login } = useAuthContext();
+  const { login } = useAuthContext();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -22,11 +22,6 @@ export default function LoginPage() {
     if (result.success) navigate("/");
     else setErrorMessage("Incorrect username or password");
   };
-
-  // TODO: REDO THIS WITH SOME PROTECTED ROUTE LOGIC
-  useEffect(() => {
-    if (user) navigate("/");
-  }, [user]);
 
   return (
     <div className="bg-white rounded-2xl shadow-2xl flex flex-col w-full md:w-1/3 items-center max-w-4xl transition duration-1000 ease-out">

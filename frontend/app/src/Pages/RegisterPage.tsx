@@ -1,12 +1,8 @@
-import { useEffect, useState } from "react";
-import { useAuthContext } from "../Contexts/AuthContext";
-import { useNavigate } from "react-router";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { registerRequest } from "../Services/api/service";
 
 export default function RegisterPage() {
-  const { user } = useAuthContext();
-
   const [email, setEmail] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
@@ -34,13 +30,6 @@ export default function RegisterPage() {
       setErrorMessage("Not able to register");
     },
   });
-
-  const navigate = useNavigate();
-
-  // TODO: REDO THIS WITH SOME PROTECTED ROUTE LOGIC
-  useEffect(() => {
-    if (user) navigate("/");
-  }, [user]);
 
   return (
     <div>
