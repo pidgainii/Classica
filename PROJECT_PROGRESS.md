@@ -519,3 +519,53 @@ I saw that TanStack Query library can help me manage fetching states in a consis
 ### State Management
 
 After watching some more videos on React development, I found out about **state management**. I think that a lot of problems I was currently thinking how to solve would disappear using a state management tool.
+
+## October 6th
+
+I decided I would use Zustand for state management.
+
+In order to understand properly how to combine TanStack Query and Zustand, I watched this video: https://youtu.be/QTZTUrAbjeo, and this is what I learnt:
+
+### TanStack Query + Zustand
+
+We should use Zustand and TanStack Query in a smart way, giving each of them their own responsability:
+
+- **TanStack Query** should be used for **server state** management, as it is a asynchronous state management solution. Example: fetching books from server.
+
+- **Zustand** on the other hand should be used for **client state management** (the state of the React application). This could be some options that the user has selected, for example the filters that the user has set for the book page.
+
+### Introducing TanStack Query in my application
+
+In order to avoid managing complex loading states, I decided to refactor my code to use `useQuery()`.
+
+Example loading books in home page:
+
+```typescript
+export default function HomeBooksPage() {
+  const {
+    data: books,
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["books"],
+    queryFn: () => booksRequest(),
+    staleTime: Infinity,
+  });
+
+  if (isPending) return <h1>Loading</h1>;
+
+  if (error) return <h1>Error</h1>;
+
+  return (...)
+```
+
+I also made API service functions way more simple:
+
+```typescript
+export const booksRequest = async (): Promise<BookType[]> => {
+  const { data: result } = await api.get("/items/books");
+  return bookSchema.array().parse(result);
+};
+```
+
+Now I had to understand how could I refactor my Authentication Provider in order to use TanStack Query...

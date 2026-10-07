@@ -40,9 +40,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
   // This layout effect is supposed to execute every time accessToken changes it's value.
   // It is supposed to add an interceptor for http requests that will add the access token to Authorization header.
   useLayoutEffect(() => {
-    /////////////// debugging /////////////////////
-    console.log("Access token has changed, running useLayoutEffect");
-
     const authInterceptor = api.interceptors.request.use((config) => {
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
@@ -71,10 +68,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
           !originalRequest._retry
         ) {
           try {
-            //////////////////////////////////////////////
-            console.log("Response interceptor: Trying refresh");
-            //////////////////////////////////////////////
-
             const response = await api.get("/auth/refresh");
             setAccessToken(response.data.access_token);
 
@@ -97,53 +90,52 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   // This useEffect will load the user context variable on every render
   useEffect(() => {
-    setLoading(true);
-
     const loadUser = async () => {
       setLoading(true);
-      const response = await currentUserRequest();
-      if (response.success) {
-        setUser(response.data);
+      try {
+        const currentUser = await currentUserRequest();
+        setUser(currentUser);
         setLoading(false);
-      } else {
+      } catch {
         setUser(null);
         setError(true);
         setLoading(false);
       }
     };
-
     loadUser();
   }, []);
 
   async function login(user: UserLoginType) {
     setLoading(true);
 
-    const response = await loginRequest(user);
-    if (response.success) {
-      setAccessToken(response.data.access_token);
+    try {
+      const data = await loginRequest(user);
+      setAccessToken(data.access_token);
       setLoading(false);
-      const loginResponse: Response = { success: true };
-      return loginResponse;
-    } else {
-      setError(true);
+      const response: Response = { success: true };
+      return response;
+    } catch (error: any) {
+      setError(error);
       setLoading(false);
-      const loginResponse: Response = { success: false };
-      return loginResponse;
+      const response: Response = { success: false };
+      return response;
     }
   }
 
   async function logout() {
     setLoading(true);
-
-    const response = await logoutRequest();
-    if (response.success) {
+    try {
+      await logoutRequest();
       setUser(null);
       setAccessToken(null);
-      const logoutResponse: Response = { success: true };
-      return logoutResponse;
-    } else {
-      const logoutResponse: Response = { success: false };
-      return logoutResponse;
+      setLoading(false);
+      const response: Response = { success: true };
+      return response;
+    } catch (error: any) {
+      setError(error);
+      setLoading(false);
+      const response: Response = { success: false };
+      return response;
     }
   }
 

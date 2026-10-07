@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../Contexts/AuthContext";
 import type { UserLoginType } from "../Models/user";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function LoginPage() {
   const { user, login } = useAuthContext();
@@ -23,7 +23,7 @@ export default function LoginPage() {
     else setErrorMessage("Incorrect username or password");
   };
 
-  // If a user is logged in, then we should navigate to HomePage
+  // TODO: REDO THIS WITH SOME PROTECTED ROUTE LOGIC
   useEffect(() => {
     if (user) navigate("/");
   }, [user]);
@@ -63,9 +63,11 @@ export default function LoginPage() {
       </div>
       <div className="inline-block border-[1px] justify-center w-20 border-blue-400 border-solid"></div>
       <p className="text-blue-400 mt-4 text-sm">Don't have an account?</p>
-      <p className="text-blue-400 mb-4 text-sm font-medium cursor-pointer">
-        Create a New Account?
-      </p>
+      <Link to="/register">
+        <p className="text-blue-400 mb-4 text-sm font-medium cursor-pointer">
+          Create a New Account?
+        </p>
+      </Link>
 
       <h2>{errorMessage ? errorMessage : ""}</h2>
     </div>

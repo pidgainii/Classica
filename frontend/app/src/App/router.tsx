@@ -7,6 +7,7 @@ import ProfilePage from "../Pages/ProfilePage";
 import BookDetailsPage from "../Pages/BookDetailsPage";
 import HomeBooksPage from "../Pages/HomeBooksPage";
 import HomeBlogPage from "../Pages/HomeBlogPage";
+import RegisterPage from "../Pages/RegisterPage";
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginPage />,
+      },
+      {
+        path: "register",
+        element: <RegisterPage />,
       },
       {
         path: "profile",
