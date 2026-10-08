@@ -569,3 +569,54 @@ export const booksRequest = async (): Promise<BookType[]> => {
 ```
 
 Now I had to understand how could I refactor my Authentication Provider in order to use TanStack Query...
+
+## October 7th
+
+After thinking and investigating for a while how to integrate TanStack Query into my Authentication provider, I found out that it was better not to do it. I found that Dominik Dorfmeister (co-mantainer of Tan-Stack Query) says so:
+
+![alt text](media/image.png)
+
+Then I did the register logic using `useMutation()`. It was working fine.
+
+### Protected Routes
+
+I want this application to be usable by non-registered users. But still I want registered users to be able to have a profile, write comments, etc.
+Therefore, for this application there are some pages that should not be shown to logged-in users. And some other pages/elements that should not be shown to users navigating without an account.
+
+For now, login and register pages (routes) should only be accessed by unlogged users.
+
+The profile page should only be available for logged-in users.
+
+Therefore, i created two components for this:
+
+```typescript
+export default function UserRoutes() {
+  const { user, loading } = useAuthContext();
+
+  if (loading) return <Loading />;
+  return user ? <Outlet /> : <Navigate to="/login" />;
+}
+
+export default function NoUserRoutes() {
+  const { user, loading } = useAuthContext();
+
+  if (loading) return <Loading />;
+  return user ? <Navigate to="/profile" /> : <Outlet />;
+}
+```
+
+And wrapped some pages inside them (router.tsx):
+
+```typescript
+{
+  element: <UserRoutes />,
+  children: [{ path: "profile", element: <ProfilePage /> }],
+},
+{
+  element: <NoUserRoutes />,
+  children: [
+    { path: "login", element: <LoginPage /> },
+    { path: "register", element: <RegisterPage /> },
+  ],
+},
+```

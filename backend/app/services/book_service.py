@@ -3,12 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from crud.book_repository import BookRepository
 
 from schemas.book import BookBaseDTO
+from schemas.books import BooksRequestDTO
 
 from core.errors import EntityFetchingError
 
 class BookService:
     
-    async def get_ten_books(self, session: AsyncSession) -> list[BookBaseDTO]:
+    async def get_books(self, books_request: BooksRequestDTO, session: AsyncSession) -> list[BookBaseDTO]:
         book_repository = BookRepository(session)
         
         books_database = await book_repository.get_ten_books()
