@@ -59,6 +59,16 @@ def register_exception_handlers(app: FastAPI):
             }
         )
 
+    @app.exception_handler(AccessTokenError)
+    async def access_token_error_handler(request: Request, exc: AccessTokenError):
+        print(f"\n\nAccessTokenError: {exc}\n\n")
+        return JSONResponse(
+            status_code=401,
+            content={
+                "detail": "Unauthorized"
+            }
+        )
+
     @app.exception_handler(RefreshTokenError)
     async def refresh_token_error_handler(request: Request, exc: RefreshTokenError):
         print(f"\n\nRefreshTokenError: {exc}\n\n")

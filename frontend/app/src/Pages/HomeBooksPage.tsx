@@ -6,6 +6,7 @@ import {
   getLocalStorageItem,
   setLocalStorageItem,
 } from "../Utils/localStorageUtils";
+import { PaginationElement } from "../Components/ui/PaginationElement";
 
 export default function HomeBooksPage() {
   const queryClient = useQueryClient();
@@ -33,20 +34,6 @@ export default function HomeBooksPage() {
     }
   }, [paginatedBooks, page, queryClient]);
 
-  // Handler to change to next page
-  const onClickNextPage = () => {
-    if (paginatedBooks && page < paginatedBooks.pages) {
-      setPage((old) => old + 1);
-    }
-  };
-
-  // Handler to change to previous page
-  const onClickPreviousPage = () => {
-    if (page > 1) {
-      setPage((old) => old - 1);
-    }
-  };
-
   // Updating page number in local storage every time user changes page
   useEffect(() => {
     setLocalStorageItem("page", page);
@@ -71,9 +58,11 @@ export default function HomeBooksPage() {
           </div>
         ))}
       </div>
-      <button onClick={onClickPreviousPage}>{"< Previous Page "}</button>
-      <> | </>
-      <button onClick={onClickNextPage}>{" Next Page >"}</button>
+      <PaginationElement
+        page={page}
+        setPage={setPage}
+        totalPages={paginatedBooks.pages}
+      ></PaginationElement>
     </main>
   );
 }

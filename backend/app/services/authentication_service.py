@@ -1,15 +1,20 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime, timezone, timedelta
+import uuid
 
 from crud.user_repository import UserRepository
 
 from schemas.user import UserRegisterDTO, UserLoginDTO
 from schemas.refresh import RefreshResponseDTO
+from schemas.tokens import AccessTokenDTO, RefreshTokenDTO
 
 from db.models.user import User
 
 from core.errors import UserNotFoundError, IncorrectPasswordError, UserAlreadyExistsError, EntityCreationError, EntityFetchingError, RefreshTokenError
 
-from utils.security import hash_password, verify_password, create_access_token, create_refresh_token, get_user_id_from_refresh_token
+from utils.utils import hash_password, verify_password, create_access_token, create_refresh_token
+
+from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 
 class AuthenticationService:
     
@@ -23,16 +28,34 @@ class AuthenticationService:
         
         if not verify_password(user_login.password, user.password_hash):
             raise IncorrectPasswordError()
-            
-        # Creating refresh token:
-        refresh_token = create_refresh_token(user.id)
+        
         
         # Creating access token:
-        access_token = create_access_token(user.id, user.email)
+        now = datetime.now(timezone.utc)
+        expires = now + timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
+        access_token = AccessTokenDTO(
+            user_id=user.id,
+            email=user.email,
+            iat=int(now.timestamp()),
+            exp=int(expires.timestamp()),
+        )
+        encoded_access_token = create_access_token(access_token)
+        
+        
+        # Creating refresh token:
+        now = datetime.now(timezone.utc)
+        expires = now + timedelta(days=int(REFRESH_TOKEN_EXPIRE_DAYS))
+        refresh_token = RefreshTokenDTO(
+            id=uuid.uuid4(),
+            user_id=user.id,
+            iat=int(now.timestamp()),
+            exp=int(expires.timestamp()),
+        )
+        encoded_refresh_token = create_refresh_token(refresh_token)
         
         return {
-            'refresh_token': refresh_token,
-            'access_token': access_token
+            'refresh_token': encoded_refresh_token,
+            'access_token': encoded_access_token
         }
     
     async def register(self, user_register: UserRegisterDTO, session: AsyncSession):
@@ -57,21 +80,25 @@ class AuthenticationService:
         if not user:
             raise EntityCreationError("UNABLE TO CREATE USER")
         
-    async def refresh(self, refresh_token: str, session: AsyncSession):
+    async def refresh(self, refresh_token: RefreshTokenDTO, session: AsyncSession):
         user_repository = UserRepository(session)
         
-        # TODO: Check if token is valid: Expire date etc
+        # TODO: Check if token is valid: Expire date etc -> DONE IN DEPENDENCY: STILL HAVE TO CHECK IF WORKS
         
-        user_id = get_user_id_from_refresh_token(refresh_token)
-        
-        if not user_id:
-            raise RefreshTokenError()
-        
-        user = await user_repository.get_by_id(user_id)
+        user = await user_repository.get_by_id(refresh_token.user_id)
         
         if not user:
-            raise EntityFetchingError(f"USER WITH ID {user_id} NOT FOUND")
+            raise EntityFetchingError(f"USER WITH ID {refresh_token.user_id} NOT FOUND")
         
-        access_token = create_access_token(user.id, user.email)
+        # Creating access token:
+        now = datetime.now(timezone.utc)
+        expires = now + timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
+        access_token = AccessTokenDTO(
+            user_id=user.id,
+            email=user.email,
+            iat=int(now.timestamp()),
+            exp=int(expires.timestamp()),
+        )
+        encoded_access_token = create_access_token(access_token)
         
-        return RefreshResponseDTO(access_token = access_token)
+        return RefreshResponseDTO(access_token = encoded_access_token)
