@@ -5,15 +5,14 @@ from services.book_service import BookService
 
 from db.session import get_session
 
-from schemas.book import BookBaseDTO
-from schemas.books import BooksRequestDTO
+from schemas.books import BookBaseDTO, BooksRequestDTO, BooksResponseDTO
 
 router = APIRouter()
 
-@router.get("/books", response_model=list[BookBaseDTO])
-async def get_books(books_request: BooksRequestDTO, session: AsyncSession = Depends(get_session)):
+@router.get("/books", response_model=BooksResponseDTO)
+async def get_books(page: int = 1, perPage: int = 30, session: AsyncSession = Depends(get_session)):
     service = BookService()
-    return await service.get_books(session)
+    return await service.get_books(page, perPage, session)
 
 @router.get("/book/{id}", response_model=BookBaseDTO)
 async def get_book(id: str, session: AsyncSession = Depends(get_session)):

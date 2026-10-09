@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, asc
+from sqlalchemy import select, asc, func
 import uuid
+from math import ceil
 
 from db.models.book import Book
 
@@ -16,6 +17,13 @@ class BookRepository:
             .order_by(asc(Book.title))
         )
         return result.scalars().all()
+    
+    async def get_number_pages(self, perPage: int) -> int | None:
+        result = await self.session.execute(
+            select(func.count()).select_from(select(Book.id).subquery())
+        )
+        numBooks = result.scalar_one()
+        return ceil(numBooks / perPage)
     
     async def get_by_id(self, id: uuid.UUID) -> Book | None:
             statement = select(Book).where(Book.id == id)

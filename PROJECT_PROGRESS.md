@@ -620,3 +620,20 @@ And wrapped some pages inside them (router.tsx):
   ],
 },
 ```
+
+## October 8th / 9th
+
+### Pagination
+
+I thought it would be a good idea to implement pagination in this application. Therefore, I started researching about it.
+I think **server-side pagination** is the one that makes more sense, as it avoids fetching unnecessary data, which is good for both server and client.
+
+#### Backend Pagination
+
+I decided to start by modifying the `/items/books` endpoint to include pagination. To do this, the endpoint should receive two arguments: **page number, and items per page**. I created this Pydantic model for it:
+
+```python
+class BooksRequestDTO(BaseModel):
+    page: int = Field(default=1)
+    perPage: int = Field(default=20)
+```
