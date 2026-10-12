@@ -36,7 +36,10 @@ class UserAlreadyExistsError(Error):
     
     
     
-
+class AccessTokenError(Error):
+    def __init__(self, message ="INVALID ACCESS TOKEN"):
+        super().__init__(message)
+        
 class RefreshTokenError(Error):
     def __init__(self, message ="INVALID REFRESH TOKEN"):
         super().__init__(message)

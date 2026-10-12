@@ -1,6 +1,7 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 from uuid import UUID
+
 
 
 class BookBaseDTO(BaseModel):
@@ -14,3 +15,11 @@ class BookBaseDTO(BaseModel):
     language: Optional[str] = None
     isbn: Optional[str] = None
     cover_url: str
+
+class BooksRequestDTO(BaseModel):
+    page: int = Field(default=1)
+    perPage: int = Field(default=20)
+    
+class BooksResponseDTO(BaseModel):
+    pages: int
+    books: list[BookBaseDTO]

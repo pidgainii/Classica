@@ -569,3 +569,110 @@ export const booksRequest = async (): Promise<BookType[]> => {
 ```
 
 Now I had to understand how could I refactor my Authentication Provider in order to use TanStack Query...
+
+## October 7th
+
+After thinking and investigating for a while how to integrate TanStack Query into my Authentication provider, I found out that it was better not to do it. I found that Dominik Dorfmeister (co-mantainer of Tan-Stack Query) says so:
+
+![comment](media/comment.png)
+
+Then I did the register logic using `useMutation()`. It was working fine.
+
+### Protected Routes
+
+I want this application to be usable by non-registered users. But still I want registered users to be able to have a profile, write comments, etc.
+Therefore, for this application there are some pages that should not be shown to logged-in users. And some other pages/elements that should not be shown to users navigating without an account.
+
+For now, login and register pages (routes) should only be accessed by unlogged users.
+
+The profile page should only be available for logged-in users.
+
+Therefore, i created two components for this:
+
+```typescript
+export default function UserRoutes() {
+  const { user, loading } = useAuthContext();
+
+  if (loading) return <Loading />;
+  return user ? <Outlet /> : <Navigate to="/login" />;
+}
+
+export default function NoUserRoutes() {
+  const { user, loading } = useAuthContext();
+
+  if (loading) return <Loading />;
+  return user ? <Navigate to="/profile" /> : <Outlet />;
+}
+```
+
+And wrapped some pages inside them (router.tsx):
+
+```typescript
+{
+  element: <UserRoutes />,
+  children: [{ path: "profile", element: <ProfilePage /> }],
+},
+{
+  element: <NoUserRoutes />,
+  children: [
+    { path: "login", element: <LoginPage /> },
+    { path: "register", element: <RegisterPage /> },
+  ],
+},
+```
+
+## October 8th / 9th
+
+### Pagination
+
+I thought it would be a good idea to implement pagination in this application. Therefore, I started researching about it.
+I think **server-side pagination** is the one that makes more sense, as it avoids fetching unnecessary data, which is good for both server and client.
+
+#### Backend Pagination
+
+I decided to start by modifying the `/items/books` endpoint to include pagination. To do this, the endpoint should receive two arguments: **page number, and items per page**. I decided to use Query parameters for this (as it is a GET request):
+
+```python
+@router.get("/books", response_model=BooksResponseDTO)
+async def get_books(page: int = 1, perPage: int = 30, session: AsyncSession = Depends(get_session)):
+    service = BookService()
+    return await service.get_books(page, perPage, session)
+```
+
+The service layer calls the repository with the pagination parameters and returns this response model:
+
+```python
+class BooksResponseDTO(BaseModel):
+    pages: int
+    books: list[BookBaseDTO]
+```
+
+#### Frontend Pagination
+
+What I did:
+
+- I used `useQuery()` to fetch books and stored them (cache) with a queryKey.
+- I created a **state variable** that represents the **current page**.
+- I added a **prefetch next page** logic with a `useEffect()`.
+- I added a HeroUI **pagination component** and modified it to accept page, setPage and totalPages as **Props**.
+
+AND IT WAS WORKING !!!
+
+![pagination](media/pagination.png)
+
+491 pages, WOW !
+
+### State persistence with local storage
+
+I noticed that when reloading the page, the app returned to the first page. This is because the state variable was re-initializing on each render. Of course, we do not want this behaviour in our app.
+
+We need to **persist state**. Therefore, i created a utils local storage file to **set and get values with a key**. Now, the state variable `page` is stored on local storage every time it changes, and it is taken from local storage on initialization:
+
+```typescript
+const [page, setPage] = useState<number>(getLocalStorageItem("page") || 1);
+
+// Updating page number in local storage every time user changes page
+useEffect(() => {
+  setLocalStorageItem("page", page);
+}, [page]);
+```

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import type { BookType } from "../../Models/book";
 
 interface BookCardProps {
@@ -6,16 +6,10 @@ interface BookCardProps {
 }
 
 export default function BookCard(props: BookCardProps) {
-  const navigate = useNavigate();
-
-  const onClickCard = () => {
-    navigate(`/book/${props.book.id}`);
-  };
-
   return (
     <div>
       {/* Contenedor de la portada con sombra similar a un libro real */}
-      <button onClick={onClickCard}>
+      <Link to={`/book/${props.book.id}`}>
         <div className="relative w-full aspect-[2/3] shadow-[5px_5px_15px_rgba(0,0,0,0.15)] group-hover:shadow-[5px_5px_20px_rgba(0,0,0,0.3)] transition-shadow duration-300 bg-white">
           <img
             src={props.book.cover_url}
@@ -23,7 +17,7 @@ export default function BookCard(props: BookCardProps) {
             className="w-full h-full object-cover"
           />
         </div>
-      </button>
+      </Link>
 
       {/* Opcional: Mostrar título al pasar el ratón (ya que en la foto original casi no hay texto debajo) */}
       <div className="mt-3 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">

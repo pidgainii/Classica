@@ -4,7 +4,12 @@ import type {
   UserType,
 } from "../../Models/user";
 import { userSchema } from "../../Models/user";
-import { bookSchema, type BookType } from "../../Models/book";
+import {
+  bookSchema,
+  booksPaginatedSchema,
+  type BooksPaginatedType,
+  type BookType,
+} from "../../Models/book";
 import { tokenSchema, type TokenType } from "../../Models/token";
 import api from "./api";
 
@@ -31,7 +36,12 @@ export const bookRequest = async (id: any): Promise<BookType> => {
   return bookSchema.parse(result);
 };
 
-export const tenBooksRequest = async (): Promise<BookType[]> => {
-  const { data: result } = await api.get("/items/ten-books");
-  return bookSchema.array().parse(result);
+export const booksRequest = async (
+  page: number,
+  perPage: number,
+): Promise<BooksPaginatedType> => {
+  const { data: result } = await api.get(
+    `/items/books/?page=${page}&perPage=${perPage}`,
+  );
+  return booksPaginatedSchema.parse(result);
 };

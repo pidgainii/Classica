@@ -139,7 +139,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }
 
-  // TODO: Check useMemo for returning these values
   return (
     <AuthContext.Provider
       value={{ user, loading, error, accessToken, login, logout }}

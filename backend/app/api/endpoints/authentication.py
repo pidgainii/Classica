@@ -8,7 +8,7 @@ from db.session import get_session
 
 from schemas.user import UserRegisterDTO, UserLoginDTO
 
-from utils.dependencies import get_current_user, get_token_from_cookie
+from utils.utils import decode_refresh_token_from_cookie, decode_access_token_from_bearer
 
 from core.config import REFRESH_TOKEN_EXPIRE_DAYS, APP_ENV
 
@@ -47,11 +47,11 @@ async def register(user_register: UserRegisterDTO, session: AsyncSession = Depen
     return await service.register(user_register, session)
 
 @router.get("/refresh")
-async def refresh(refresh_token = Depends(get_token_from_cookie), session: AsyncSession = Depends(get_session)):
+async def refresh(refresh_token = Depends(decode_refresh_token_from_cookie), session: AsyncSession = Depends(get_session)):
     service = AuthenticationService()
     return await service.refresh(refresh_token, session)
 
 @router.get("/me")
-async def current_user(current_user = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+async def current_user(access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
     service = UserService()
-    return await service.get_user_information(current_user, session)
+    return await service.get_user_information(access_token, session)
