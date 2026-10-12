@@ -12,7 +12,7 @@ class UserService:
     async def get_user_information(self, access_token: AccessTokenDTO, session: AsyncSession) -> UserApiDTO:
         user_repository = UserRepository(session)
         
-        user = await user_repository.get_by_id(access_token.user_id)
+        user = await user_repository.get_by_email(access_token.email)
         
         if not user:
             raise UserNotFoundError()

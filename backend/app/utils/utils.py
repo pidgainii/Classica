@@ -20,7 +20,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 # This JWT token will be stored in frontend memory (state)
 def create_access_token(token: AccessTokenDTO) -> str:
     payload = {
-        "user_id": str(token.user_id),
         "email": token.email,
         "iat": token.iat,
         "exp": token.exp,
@@ -39,64 +38,44 @@ def create_refresh_token(token: RefreshTokenDTO) -> str:
 
 # This function gets user info from access token from Bearer and decodes it. Throws custom error if expired.
 def decode_access_token_from_bearer(credentials: HTTPAuthorizationCredentials = Depends(security)) -> AccessTokenDTO | None:
-    try:
-        token = credentials.credentials
-        payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASHING_ALGORITHM])
+    token = credentials.credentials
+    
+    if not token:
+        raise AccessTokenError("Unavailable Access Token")
+    
+    payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASHING_ALGORITHM])
 
+    now = int(datetime.now(timezone.utc).timestamp())
+    exp=payload.get("exp")
+    
+    if (now > exp):
+        raise AccessTokenError("Access Token Expired")
 
-
-
-
-        # TODO: CHECK IF THIS WORKS
-        #######################################################
-        now = datetime.now(timezone.utc)
-        exp=payload.get("exp")
-        if (now > exp):
-            raise AccessTokenError("Access Token Expired")
-        #######################################################
-
-
-
-        
-
-        return AccessTokenDTO(
-            user_id=payload.get("user_id"),
-            email=payload.get("email"),
-            iat=payload.get("iat"),
-            exp=payload.get("exp"),
-        )
-    except:
-        return None
+    return AccessTokenDTO(
+        email=payload.get("email"),
+        iat=payload.get("iat"),
+        exp=payload.get("exp"),
+    )
 
 # This function gets encoded token from HTTP cookie and decodes it. Throws custom error if expired.
 def decode_refresh_token_from_cookie(request: Request) -> RefreshTokenDTO | None:
-    try:
-        token = request.cookies.get("refresh_token")
-        payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASHING_ALGORITHM])
-        
-        
-        
-        
-        
-        # TODO: CHECK IF THIS WORKS
-        #######################################################
-        now = datetime.now(timezone.utc)
-        exp=payload.get("exp")
-        if (now > exp):
-            raise RefreshTokenError("Refresh Token Expired")
-        #######################################################
-        
-        
-        
-        
-        
-        
-        
-        return RefreshTokenDTO(
-            id=payload.get("id"),
-            user_id=payload.get("user_id"),
-            iat=payload.get("iat"),
-            exp=payload.get("exp"),
-        )
-    except:
-        return None
+    token = request.cookies.get("refresh_token")
+    
+    if not token:
+        raise RefreshTokenError("Unavailable Refresh Token")
+    
+    payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASHING_ALGORITHM])
+
+    now = int(datetime.now(timezone.utc).timestamp())
+    exp=payload.get("exp")
+
+
+    if (now > exp):
+        raise RefreshTokenError("Refresh Token Expired")
+
+    return RefreshTokenDTO(
+        id=payload.get("id"),
+        user_id=payload.get("user_id"),
+        iat=payload.get("iat"),
+        exp=payload.get("exp"),
+    )

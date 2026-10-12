@@ -34,7 +34,6 @@ class AuthenticationService:
         now = datetime.now(timezone.utc)
         expires = now + timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
         access_token = AccessTokenDTO(
-            user_id=user.id,
             email=user.email,
             iat=int(now.timestamp()),
             exp=int(expires.timestamp()),
@@ -82,8 +81,6 @@ class AuthenticationService:
         
     async def refresh(self, refresh_token: RefreshTokenDTO, session: AsyncSession):
         user_repository = UserRepository(session)
-        
-        # TODO: Check if token is valid: Expire date etc -> DONE IN DEPENDENCY: STILL HAVE TO CHECK IF WORKS
         
         user = await user_repository.get_by_id(refresh_token.user_id)
         

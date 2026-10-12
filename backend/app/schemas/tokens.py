@@ -3,7 +3,6 @@ from uuid import UUID
 
 
 class AccessTokenDTO(BaseModel):
-    user_id: UUID
     email: EmailStr
     iat: int
     exp: int
