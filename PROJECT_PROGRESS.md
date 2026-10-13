@@ -676,3 +676,15 @@ useEffect(() => {
   setLocalStorageItem("page", page);
 }, [page]);
 ```
+
+## October 12th / 13th
+
+### Webpage design
+
+It was time to think what elements / functionalities I wanted in my webpage. I modified the home screen and divided it into some components. This is my initial design:
+
+![homedesign](media/homedesign.png)
+
+### Filtering books
+
+In order to implement the filters and searching option in the webpage, my backend endpoint `/items/books` should receive filters in some way.

@@ -3,7 +3,7 @@ import ast
 from uuid import uuid4
 
 from .session import AsyncLocalSession
-from .models.book import Book
+from .models import Book, Genre
 
 import asyncio
 
@@ -19,7 +19,7 @@ async def import_books():
             with open(CSV_PATH, "r", encoding="utf-8-sig", newline="") as file:
                 reader = csv.DictReader(file)
 
-                books = []
+                books_db = []
 
                 for row in reader:
                     # Convertir el campo genres (lista en formato string)
@@ -35,10 +35,20 @@ async def import_books():
                     title = row["title"].strip()
                     author = row["author"].strip()
                     cover_url = row.get("coverImg", "").strip()
+                    
 
                     # Campos obligatorios
                     if not title or not author or not cover_url:
                         continue
+                    
+                    genres_db = []
+                    for genre in genres:
+                        genre_db = Genre(
+                            id=uuid4(),
+                            title=genre,
+                        )
+                        genres_db.append(genre_db)
+                    
 
                     book = Book(
                         id=uuid4(),
@@ -50,15 +60,15 @@ async def import_books():
                         cover_url=cover_url,
                     )
 
-                    books.append(book)
+                    books_db.append(book)
 
-                db.add_all(books)
+                db.add_all(books_db)
                 await db.commit()
 
-                print(f"Se han insertado {len(books)} libros.")
+                print(f"Se han insertado {len(books_db)} libros.")
 
         except Exception:
-            db.rollback()
+            await db.rollback()
             raise
 
         finally:

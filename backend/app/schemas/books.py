@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional
+from typing import Optional, Literal
 from uuid import UUID
 
 
@@ -15,10 +15,16 @@ class BookBaseDTO(BaseModel):
     language: Optional[str] = None
     isbn: Optional[str] = None
     cover_url: str
+    genres: str
 
-class BooksRequestDTO(BaseModel):
+class BooksSearchFiltersDTO(BaseModel):
     page: int = Field(default=1)
     perPage: int = Field(default=20)
+    searchQuery: str = Field(default="")
+    sortBy: Literal['random', 'rating'] = Field(default='random')
+    ascending: bool = Field(default=True)
+    genres: list[str] = Field(default=[])
+    languages: list[str] = Field(default=[])
     
 class BooksResponseDTO(BaseModel):
     pages: int

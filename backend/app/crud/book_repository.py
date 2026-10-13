@@ -1,20 +1,36 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, asc, func
+from sqlalchemy import select, desc, asc, func, or_
 import uuid
 from math import ceil
 
-from db.models.book import Book
+from db.models import Book
+
+from schemas.books import BooksSearchFiltersDTO
 
 class BookRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
         
-    async def get_books(self, page: int, perPage: int) -> list[Book] | None:
+    async def get_books(self, books_search_filters: BooksSearchFiltersDTO) -> list[Book] | None:
+        '''
+        genres_filters = []
+        for genre in books_search_filters.genres:
+            genres_filters.append(Book.genres.contains(genre))
+            
+        languages_filters = []
+        for language in books_search_filters.languages:
+            languages_filters.append(Book.language==language)
+        '''
+        
+        
+        
+        order = asc if books_search_filters.ascending else desc
+        
         result = await self.session.execute(
             select(Book)
-            .limit(perPage)
-            .offset((page-1)*perPage)
-            .order_by(asc(Book.title))
+            .limit(books_search_filters.perPage)
+            .offset((books_search_filters.page-1)*books_search_filters.perPage)
+            .order_by(order(Book.title))
         )
         return result.scalars().all()
     
