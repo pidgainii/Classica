@@ -1,6 +1,7 @@
 import csv
 import ast
 from uuid import uuid4
+from sqlalchemy import select
 
 from .session import AsyncLocalSession
 from .models import Book, Genre
@@ -20,36 +21,63 @@ async def import_books():
                 reader = csv.DictReader(file)
 
                 books_db = []
+                genres_count = 0
 
                 for row in reader:
-                    # Convertir el campo genres (lista en formato string)
                     try:
-                        genres = ast.literal_eval(row["genres"])
+                        book_genres_titles = ast.literal_eval(row["genres"])
                     except (ValueError, SyntaxError):
                         continue
 
-                    # Filtrar por género
-                    if not GENRES_ALLOWED.intersection(genres):
+                    # Selecting only books with "Classics" and "Classic Literature" genres
+                    if not GENRES_ALLOWED.intersection(book_genres_titles):
                         continue
+                    # Erasing the "Classics" and "Classic Literature" genres (they are in all books we select)
+                    book_genres_titles = list(set(book_genres_titles) ^ set(GENRES_ALLOWED))
 
                     title = row["title"].strip()
                     author = row["author"].strip()
                     cover_url = row.get("coverImg", "").strip()
                     
 
-                    # Campos obligatorios
+                    # Compulsary fields
                     if not title or not author or not cover_url:
                         continue
+                
                     
-                    genres_db = []
-                    for genre in genres:
+                    # Selecting Genres that are already in the DB
+                    statement = select(Genre).where(
+                        Genre.title.in_(book_genres_titles)
+                    )
+                    result = await db.execute(statement)
+                    existing_genres_db = list(result.scalars().all())
+                    
+                    # Extracting titles of repeated Genres
+                    existing_genres_titles = []
+                    for existing_genre_db in existing_genres_db:
+                        existing_genres_titles.append(existing_genre_db.title)
+                    
+                    # Extracting the NEW Genres (we need to create new Genre objects)
+                    non_repeated_genres_titles = list(set(book_genres_titles) ^ set(existing_genres_titles))
+                    
+                    # Calculating how many Genre objects we have
+                    genre_count += len(non_repeated_genres_titles)
+    
+                    # Creating NEW Genre objects
+                    new_genres_db = []
+                    for genre in non_repeated_genres_titles:
                         genre_db = Genre(
                             id=uuid4(),
                             title=genre,
                         )
-                        genres_db.append(genre_db)
+                        new_genres_db.append(genre_db)
+                    db.add_all(new_genres_db)
+                    await db.commit()
                     
-
+                    # All book Genre objects: existing ones and new ones
+                    book_genres_db = existing_genres_db+new_genres_db
+                    
+                    # Creating Book object
                     book = Book(
                         id=uuid4(),
                         title=title,
@@ -58,6 +86,7 @@ async def import_books():
                         language=row.get("language") or None,
                         isbn=row.get("isbn") or None,
                         cover_url=cover_url,
+                        genres=book_genres_db
                     )
 
                     books_db.append(book)
@@ -65,7 +94,9 @@ async def import_books():
                 db.add_all(books_db)
                 await db.commit()
 
-                print(f"Se han insertado {len(books_db)} libros.")
+                print(f"\n\n\n*************************************************\n\n\n")
+                print(f"\n\n\n************BOOK INSERTION STATISTICS*************")
+                print(f"\n\n\n*************************************************\n\n\n")
 
         except Exception:
             await db.rollback()

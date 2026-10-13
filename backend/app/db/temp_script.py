@@ -22,39 +22,42 @@ async def import_books():
                 reader = csv.DictReader(file)
 
                 row = next(reader)
-                row = next(reader)
-                row = next(reader)
                 
                 
                 # Convertir el campo genres (lista en formato string)
-                genres = ast.literal_eval(row["genres"])
+                book_genres_titles = ast.literal_eval(row["genres"])
                 
                 
-                statement = select(Genre.title).where(
-                    Genre.title.in_(genres)
+                statement = select(Genre).where(
+                    Genre.title.in_(book_genres_titles)
                 )
                 result = await db.execute(statement)
-                existing_genres = list(result.scalars().all())
+                existing_genres_db = list(result.scalars().all())
+                existing_genres_titles = []
+                for existing_genre_db in existing_genres_db:
+                    existing_genres_titles.append(existing_genre_db.title)
                 
-                non_repeated_genres = list(set(genres) ^ set(existing_genres))
+                non_repeated_genres_titles = list(set(book_genres_titles) ^ set(existing_genres_titles))
 
-                print(f"\n\n\nAll genres:\n{genres}\n\n\n", flush=True)
-                print(f"\n\n\nRepeated genres:\n{existing_genres}\n\n\n", flush=True)
-                print(f"\n\n\nNon repeated genres:\n{non_repeated_genres}\n\n\n", flush=True)
-                
-                genres_db = []
-                for genre in non_repeated_genres:
+
+
+                new_genres_db = []
+                for genre in non_repeated_genres_titles:
                     genre_db = Genre(
                         id=uuid4(),
                         title=genre,
                     )
-                    genres_db.append(genre_db)
+                    new_genres_db.append(genre_db)
                 
                 
-                db.add_all(genres_db)
+                db.add_all(new_genres_db)
                 await db.commit()
-
-                print(f"Se han insertado {len(genres_db)} generos.")
+                
+                book_genres_db = existing_genres_db+new_genres_db
+                
+                for genre_db in book_genres_db:
+                    await db.refresh(genre_db)
+                    print(f"\nGenre after refresh: {genre_db.id}\n", flush=True)
 
                 
                 
@@ -71,7 +74,11 @@ async def import_books():
                     language=row.get("language") or None,
                     isbn=row.get("isbn") or None,
                     cover_url=cover_url,
+                    genres=book_genres_db
                 )
+                
+                db.add(book)
+                await db.commit()
 
         except Exception:
             await db.rollback()
