@@ -681,10 +681,55 @@ useEffect(() => {
 
 ### Webpage design
 
-It was time to think what elements / functionalities I wanted in my webpage. I modified the home screen and divided it into some components. This is my initial design:
+It was time to think what elements / functionalities I wanted in my webpage. I modified the home screen and divided it into some components. This is my initial design divided in components:
 
 ![homedesign](media/homedesign.png)
 
-### Filtering books
+### GET or POST method?
 
 In order to implement the filters and searching option in the webpage, my backend endpoint `/items/books` should receive filters in some way.
+
+If we have many Query parameters, the URL of the **GET method** becomes very large. Specially if we want to filter using a list (for example, selecting multiple genres).
+
+Therefore, I investigated which were some other options to make a filtered query. **Adding a Request Body in the GET method is not recomendable**.
+
+I decided to make it a **POST request** instead.
+Here is some information about POST method (https://www.w3.org/Protocols/HTTP/Methods/Post.html):
+
+> _This method of HTTP creates a new object linked to and subordinate to the specified object. The content of the new object is enclosed as the body of the request._
+
+> _The method shall return a set (possibly empty) of object headers for the newly posted object._
+
+In this case, we are **sending** the Books Searching Filters Object:
+
+```python
+class BooksSearchFiltersDTO(BaseModel):
+    page: int = Field(default=1)
+    perPage: int = Field(default=20)
+    searchQuery: str = Field(default="")
+    sortBy: Literal['random', 'rating'] = Field(default='random')
+    ascending: bool = Field(default=True)
+    genres: list[str] = Field(default=[])
+    languages: list[str] = Field(default=[])
+```
+
+And we receiving a search response. **We are creating a new search, and receiving it's result**. Therefore, POST method is valid in this scenario.
+
+### New Genre table
+
+Until now, the Book table did not contain the genres of the books. I had to load them from the .csv file, where each book had a field _"genres"_, which was a list of strings.
+
+First, I added a **new column** to the Book model as a **list of strings**. After searching on the Internet, I found out that this is **not a good thing** to do.
+
+The best way to do it is to create a **new Genre table**, and add a new **Many-to-Many relationship**. Therefore, that is what I did. I created an association table:
+
+```python
+books_genres = Table(
+    "books_genres",
+    Base.metadata,
+    Column("book_id", ForeignKey("book.id"), primary_key=True),
+    Column("genre_id", ForeignKey("genre.id"), primary_key=True),
+)
+```
+
+Then I started modifying my book_script.py to insert all genres and associate each book with it's genres.

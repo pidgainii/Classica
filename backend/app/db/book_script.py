@@ -14,6 +14,8 @@ CSV_PATH = "./data/books_1.Best_Books_Ever.csv"
 GENRES_ALLOWED = {"Classics", "Classic Literature"}
 
 
+# THIS IS THE FUNCTIONAL VERSION
+
 async def import_books():
     async with AsyncLocalSession() as db:
         try:
@@ -61,7 +63,7 @@ async def import_books():
                     non_repeated_genres_titles = list(set(book_genres_titles) ^ set(existing_genres_titles))
                     
                     # Calculating how many Genre objects we have
-                    genre_count += len(non_repeated_genres_titles)
+                    genres_count += len(non_repeated_genres_titles)
     
                     # Creating NEW Genre objects
                     new_genres_db = []
@@ -94,9 +96,11 @@ async def import_books():
                 db.add_all(books_db)
                 await db.commit()
 
-                print(f"\n\n\n*************************************************\n\n\n")
-                print(f"\n\n\n************BOOK INSERTION STATISTICS*************")
-                print(f"\n\n\n*************************************************\n\n\n")
+                print(f"\n\n\n*************************************************")
+                print(f"************BOOK INSERTION STATISTICS************")
+                print(f"*************************************************\n\n\n")
+                print(f"\n\n\nBooks added: {len(books_db)}\n")
+                print(f"Genres added: {genres_count}\n\n\n")
 
         except Exception:
             await db.rollback()
