@@ -14,8 +14,6 @@ CSV_PATH = "./data/books_1.Best_Books_Ever.csv"
 GENRES_ALLOWED = {"Classics", "Classic Literature"}
 
 
-# THIS IS THE FUNCTIONAL VERSION
-
 async def import_books():
     async with AsyncLocalSession() as db:
         try:
@@ -23,7 +21,9 @@ async def import_books():
                 reader = csv.DictReader(file)
 
                 books_db = []
-                genres_count = 0
+                
+                # Keys -> titles. Values -> Genre objects
+                genres_db = dict()
 
                 for row in reader:
                     try:
@@ -47,37 +47,30 @@ async def import_books():
                         continue
                 
                     
-                    # Selecting Genres that are already in the DB
-                    statement = select(Genre).where(
-                        Genre.title.in_(book_genres_titles)
-                    )
-                    result = await db.execute(statement)
-                    existing_genres_db = list(result.scalars().all())
+                    # Extracting the already existing Genre titles
+                    existing_genres_titles = list(set(genres_db.keys()).intersection(set(book_genres_titles)))
+                    # We also need the existing Genre objects themselves
+                    existing_genres = []
+                    for g in existing_genres_titles:
+                        existing_genres.append(genres_db[g])
                     
-                    # Extracting titles of repeated Genres
-                    existing_genres_titles = []
-                    for existing_genre_db in existing_genres_db:
-                        existing_genres_titles.append(existing_genre_db.title)
                     
-                    # Extracting the NEW Genres (we need to create new Genre objects)
+                    # Extracting the NEW Genres titles (we need to create new Genre objects)
                     non_repeated_genres_titles = list(set(book_genres_titles) ^ set(existing_genres_titles))
                     
-                    # Calculating how many Genre objects we have
-                    genres_count += len(non_repeated_genres_titles)
-    
                     # Creating NEW Genre objects
-                    new_genres_db = []
+                    new_genres = []
                     for genre in non_repeated_genres_titles:
                         genre_db = Genre(
                             id=uuid4(),
                             title=genre,
                         )
-                        new_genres_db.append(genre_db)
-                    db.add_all(new_genres_db)
-                    await db.commit()
+                        new_genres.append(genre_db)
+                        # Adding new Genre to all Genres dict
+                        genres_db[genre] = genre_db
                     
                     # All book Genre objects: existing ones and new ones
-                    book_genres_db = existing_genres_db+new_genres_db
+                    book_genres = existing_genres+new_genres
                     
                     # Creating Book object
                     book = Book(
@@ -88,11 +81,12 @@ async def import_books():
                         language=row.get("language") or None,
                         isbn=row.get("isbn") or None,
                         cover_url=cover_url,
-                        genres=book_genres_db
+                        genres=book_genres
                     )
 
                     books_db.append(book)
-
+                
+                db.add_all(genres_db.values())
                 db.add_all(books_db)
                 await db.commit()
 
@@ -100,7 +94,7 @@ async def import_books():
                 print(f"************BOOK INSERTION STATISTICS************")
                 print(f"*************************************************\n\n\n")
                 print(f"\n\n\nBooks added: {len(books_db)}\n")
-                print(f"Genres added: {genres_count}\n\n\n")
+                print(f"Genres added: {len(genres_db)}\n\n\n")
 
         except Exception:
             await db.rollback()
