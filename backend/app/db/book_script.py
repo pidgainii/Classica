@@ -35,7 +35,7 @@ async def import_books():
                     if not GENRES_ALLOWED.intersection(book_genres_titles):
                         continue
                     # Erasing the "Classics" and "Classic Literature" genres (they are in all books we select)
-                    book_genres_titles = list(set(book_genres_titles) ^ set(GENRES_ALLOWED))
+                    book_genres_titles = list(set(book_genres_titles) - set(GENRES_ALLOWED))
 
                     title = row["title"].strip()
                     author = row["author"].strip()

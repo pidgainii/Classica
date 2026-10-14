@@ -6,6 +6,8 @@ from schemas.books import BookBaseDTO, BooksSearchFiltersDTO, BooksResponseDTO
 
 from core.errors import EntityFetchingError
 
+from utils.SQLAlchemyPydanticValidation.book_validation import book_validation
+
 class BookService:
     
     async def get_books(self, books_search_filters: BooksSearchFiltersDTO, session: AsyncSession) -> BooksResponseDTO:
@@ -25,7 +27,7 @@ class BookService:
         books_dto = []
         
         for book in books_database:
-            books_dto.append(BookBaseDTO.model_validate(book))
+            books_dto.append(book_validation(book))
         
         return BooksResponseDTO(pages=number_of_pages, books=books_dto)
     

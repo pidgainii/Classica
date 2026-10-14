@@ -33,7 +33,7 @@ class Book(Base):
     
     cover_url: Mapped[str] = mapped_column(String, nullable=False)
     
-    genres: Mapped[List['Genre']] = relationship(secondary='books_genres', back_populates="books")
+    genres: Mapped[List['Genre']] = relationship(secondary='books_genres', lazy='selectin', back_populates="books")
     
     
 class Genre(Base):

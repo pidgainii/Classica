@@ -15,7 +15,7 @@ class BookBaseDTO(BaseModel):
     language: Optional[str] = None
     isbn: Optional[str] = None
     cover_url: str
-    genres: str
+    genres: list[str]
 
 class BooksSearchFiltersDTO(BaseModel):
     page: int = Field(default=1)

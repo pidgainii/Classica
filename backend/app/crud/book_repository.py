@@ -3,7 +3,7 @@ from sqlalchemy import select, desc, asc, func, or_
 import uuid
 from math import ceil
 
-from db.models import Book
+from db.models import Book, Genre
 
 from schemas.books import BooksSearchFiltersDTO
 
@@ -21,6 +21,13 @@ class BookRepository:
         for language in books_search_filters.languages:
             languages_filters.append(Book.language==language)
         '''
+        genres_filters = []
+        for genre in books_search_filters.genres:
+                genres_filters.append(Book.genres.any(Genre.title==genre))
+        languages_filters = []
+        for language in books_search_filters.languages:
+            languages_filters.append(Book.language==language)
+        
         
         
         
@@ -31,6 +38,8 @@ class BookRepository:
             .limit(books_search_filters.perPage)
             .offset((books_search_filters.page-1)*books_search_filters.perPage)
             .order_by(order(Book.title))
+            .filter(or_(*genres_filters))
+            .filter(or_(*languages_filters))
         )
         return result.scalars().all()
     
