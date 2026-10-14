@@ -12,24 +12,12 @@ class BookRepository:
         self.session = session
         
     async def get_books(self, books_search_filters: BooksSearchFiltersDTO) -> list[Book] | None:
-        '''
-        genres_filters = []
-        for genre in books_search_filters.genres:
-            genres_filters.append(Book.genres.contains(genre))
-            
-        languages_filters = []
-        for language in books_search_filters.languages:
-            languages_filters.append(Book.language==language)
-        '''
         genres_filters = []
         for genre in books_search_filters.genres:
                 genres_filters.append(Book.genres.any(Genre.title==genre))
         languages_filters = []
         for language in books_search_filters.languages:
             languages_filters.append(Book.language==language)
-        
-        
-        
         
         order = asc if books_search_filters.ascending else desc
         
@@ -43,12 +31,24 @@ class BookRepository:
         )
         return result.scalars().all()
     
-    async def get_number_pages(self, perPage: int) -> int | None:
+    async def get_number_pages(self, books_search_filters: BooksSearchFiltersDTO) -> int | None:
+        genres_filters = []
+        for genre in books_search_filters.genres:
+                genres_filters.append(Book.genres.any(Genre.title==genre))
+        languages_filters = []
+        for language in books_search_filters.languages:
+            languages_filters.append(Book.language==language)
+        
         result = await self.session.execute(
-            select(func.count()).select_from(select(Book.id).subquery())
+            select(func.count()).select_from(
+                select(Book.id)
+                .filter(or_(*genres_filters))
+                .filter(or_(*languages_filters))
+                .subquery()
+                )
         )
         numBooks = result.scalar_one()
-        return ceil(numBooks / perPage)
+        return ceil(numBooks / books_search_filters.perPage)
     
     async def get_by_id(self, id: uuid.UUID) -> Book | None:
             statement = select(Book).where(Book.id == id)

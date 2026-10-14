@@ -7,8 +7,10 @@ import {
   setLocalStorageItem,
 } from "../Utils/localStorageUtils";
 import { PaginationElement } from "../Components/ui/PaginationElement";
+import { BOOKS_PER_PAGE } from "../Utils/Constants";
+import type { BooksSearchFiltersDTO } from "../Models/book";
 
-export default function HomeBooksPage() {
+export default function HomeBooksPage(props: BooksSearchFiltersDTO) {
   const queryClient = useQueryClient();
   const [page, setPage] = useState<number>(getLocalStorageItem("page") || 1);
 
@@ -18,7 +20,16 @@ export default function HomeBooksPage() {
     error,
   } = useQuery({
     queryKey: ["books", page],
-    queryFn: () => booksRequest(page, 14),
+    queryFn: () =>
+      booksRequest({
+        page: page,
+        perPage: BOOKS_PER_PAGE,
+        searchQuery: props.searchQuery,
+        sortBy: props.sortBy,
+        ascending: props.ascending,
+        genres: props.genres,
+        languages: props.languages,
+      }),
     staleTime: Infinity,
   });
 
@@ -28,7 +39,16 @@ export default function HomeBooksPage() {
       queryClient
         .query({
           queryKey: ["books", page + 1],
-          queryFn: () => booksRequest(page + 1, 14),
+          queryFn: () =>
+            booksRequest({
+              page: page + 1,
+              perPage: BOOKS_PER_PAGE,
+              searchQuery: props.searchQuery,
+              sortBy: props.sortBy,
+              ascending: props.ascending,
+              genres: props.genres,
+              languages: props.languages,
+            }),
         })
         .catch(noop);
     }

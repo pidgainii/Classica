@@ -8,6 +8,7 @@ import {
   bookSchema,
   booksPaginatedSchema,
   type BooksPaginatedType,
+  type BooksSearchFiltersDTO,
   type BookType,
 } from "../../Models/book";
 import { tokenSchema, type TokenType } from "../../Models/token";
@@ -37,11 +38,8 @@ export const bookRequest = async (id: any): Promise<BookType> => {
 };
 
 export const booksRequest = async (
-  page: number,
-  perPage: number,
+  filters: BooksSearchFiltersDTO,
 ): Promise<BooksPaginatedType> => {
-  const { data: result } = await api.get(
-    `/items/books/?page=${page}&perPage=${perPage}`,
-  );
+  const { data: result } = await api.post("/items/books", filters);
   return booksPaginatedSchema.parse(result);
 };

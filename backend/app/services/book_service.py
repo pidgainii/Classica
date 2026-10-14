@@ -15,8 +15,7 @@ class BookService:
         
         books_database = await book_repository.get_books(books_search_filters)
         
-        # Modify this. it should also use all filters.
-        number_of_pages = await book_repository.get_number_pages(books_search_filters.perPage)
+        number_of_pages = await book_repository.get_number_pages(books_search_filters)
         
         if books_database is None:
             raise EntityFetchingError("UNABLE TO FETCH BOOKS")
@@ -39,4 +38,4 @@ class BookService:
         if not book_database:
             raise EntityFetchingError("UNABLE TO FETCH BOOK WITH ID {id}")
         
-        return BookBaseDTO.model_validate(book_database)
+        return book_validation(book_database)
