@@ -1,28 +1,40 @@
-import { booksRequest } from "../Services/api/service";
-import BookCard from "../Components/ui/BookCard";
 import { noop, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import {
-  getLocalStorageItem,
-  setLocalStorageItem,
-} from "../Utils/localStorageUtils";
-import { PaginationElement } from "../Components/ui/PaginationElement";
-import { BOOKS_PER_PAGE } from "../Utils/Constants";
-import type { BooksSearchFiltersDTO } from "../Models/book";
+import { useEffect } from "react";
 
-export default function HomeBooksPage(props: BooksSearchFiltersDTO) {
+import { booksRequest } from "../../Services/api/service";
+import { BOOKS_PER_PAGE } from "../../Utils/Constants";
+import BookCard from "../ui/BookCard";
+import { PaginationElement } from "../ui/PaginationElement";
+
+interface BookDisplayProps {
+  page: number;
+  setPage: (page: number) => void;
+
+  searchQuery: string;
+  sortBy: "random" | "rating";
+  ascending: boolean;
+  genres: string[];
+  languages: string[];
+}
+
+export default function BookDisplay(props: BookDisplayProps) {
   const queryClient = useQueryClient();
-  const [page, setPage] = useState<number>(getLocalStorageItem("page") || 1);
 
   const {
     data: paginatedBooks,
     isPending,
     error,
   } = useQuery({
-    queryKey: ["books", page],
+    queryKey: [
+      "books",
+      props.searchQuery,
+      props.page,
+      props.genres,
+      props.languages,
+    ],
     queryFn: () =>
       booksRequest({
-        page: page,
+        page: props.page,
         perPage: BOOKS_PER_PAGE,
         searchQuery: props.searchQuery,
         sortBy: props.sortBy,
@@ -35,13 +47,19 @@ export default function HomeBooksPage(props: BooksSearchFiltersDTO) {
 
   // Prefetching the next page
   useEffect(() => {
-    if (paginatedBooks && page < paginatedBooks.pages) {
+    if (paginatedBooks && props.page < paginatedBooks.pages) {
       queryClient
         .query({
-          queryKey: ["books", page + 1],
+          queryKey: [
+            "books",
+            props.searchQuery,
+            props.page + 1,
+            props.genres,
+            props.languages,
+          ],
           queryFn: () =>
             booksRequest({
-              page: page + 1,
+              page: props.page + 1,
               perPage: BOOKS_PER_PAGE,
               searchQuery: props.searchQuery,
               sortBy: props.sortBy,
@@ -52,12 +70,7 @@ export default function HomeBooksPage(props: BooksSearchFiltersDTO) {
         })
         .catch(noop);
     }
-  }, [paginatedBooks, page, queryClient]);
-
-  // Updating page number in local storage every time user changes page
-  useEffect(() => {
-    setLocalStorageItem("page", page);
-  }, [page]);
+  }, [paginatedBooks, props.page, queryClient]);
 
   if (isPending) return <h1>Loading</h1>;
 
@@ -65,7 +78,7 @@ export default function HomeBooksPage(props: BooksSearchFiltersDTO) {
 
   return (
     <main className="bg-[#e8e8e8] py-16 px-8 min-h-screen border-t border-gray-300 shadow-inner">
-      <h3>Current Page: {page}</h3>
+      <h3>Current Page: {props.page}</h3>
       <div>&nbsp;</div>
 
       <div className="max-w-[1400px] mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-x-6 gap-y-10">
@@ -79,8 +92,8 @@ export default function HomeBooksPage(props: BooksSearchFiltersDTO) {
         ))}
       </div>
       <PaginationElement
-        page={page}
-        setPage={setPage}
+        page={props.page}
+        setPage={props.setPage}
         totalPages={paginatedBooks.pages}
       ></PaginationElement>
     </main>

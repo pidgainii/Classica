@@ -12,6 +12,11 @@ class BookRepository:
         self.session = session
         
     async def get_books(self, books_search_filters: BooksSearchFiltersDTO) -> list[Book] | None:
+        search_filters = []
+        if (books_search_filters.searchQuery != ""):
+            search_filters.append(Book.title.ilike(f"%{books_search_filters.searchQuery}%"))
+            search_filters.append(Book.author.ilike(f"%{books_search_filters.searchQuery}%"))
+        
         genres_filters = []
         for genre in books_search_filters.genres:
                 genres_filters.append(Book.genres.any(Genre.title==genre))
@@ -26,12 +31,18 @@ class BookRepository:
             .limit(books_search_filters.perPage)
             .offset((books_search_filters.page-1)*books_search_filters.perPage)
             .order_by(order(Book.title))
+            .filter(or_(*search_filters))
             .filter(or_(*genres_filters))
             .filter(or_(*languages_filters))
         )
         return result.scalars().all()
     
     async def get_number_pages(self, books_search_filters: BooksSearchFiltersDTO) -> int | None:
+        search_filters = []
+        if (books_search_filters.searchQuery != ""):
+            search_filters.append(Book.title.ilike(f"%{books_search_filters.searchQuery}%"))
+            search_filters.append(Book.author.ilike(f"%{books_search_filters.searchQuery}%"))
+            
         genres_filters = []
         for genre in books_search_filters.genres:
                 genres_filters.append(Book.genres.any(Genre.title==genre))
@@ -42,6 +53,7 @@ class BookRepository:
         result = await self.session.execute(
             select(func.count()).select_from(
                 select(Book.id)
+                .filter(or_(*search_filters))
                 .filter(or_(*genres_filters))
                 .filter(or_(*languages_filters))
                 .subquery()

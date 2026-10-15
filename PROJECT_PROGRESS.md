@@ -733,3 +733,35 @@ books_genres = Table(
 ```
 
 Then I started modifying my book_script.py to insert all genres and associate each book with it's genres.
+
+## October 14th
+
+### Backend Book filtering
+
+In the CRUD layer I created a querie to filter Books by genres and language:
+
+```python
+    async def get_books(self, books_search_filters: BooksSearchFiltersDTO) -> list[Book] | None:
+        genres_filters = []
+        for genre in books_search_filters.genres:
+                genres_filters.append(Book.genres.any(Genre.title==genre))
+        languages_filters = []
+        for language in books_search_filters.languages:
+            languages_filters.append(Book.language==language)
+
+        order = asc if books_search_filters.ascending else desc
+
+        result = await self.session.execute(
+            select(Book)
+            .limit(books_search_filters.perPage)
+            .offset((books_search_filters.page-1)*books_search_filters.perPage)
+            .order_by(order(Book.title))
+            .filter(or_(*genres_filters))
+            .filter(or_(*languages_filters))
+        )
+        return result.scalars().all()
+```
+
+Even though I am not sure if this is the most efficient way of creating this query, it was working correctly.
+
+In order to load the associated relationship `genres` when selecting a Book, it was necessary to enable _select in load_ option: `lazy='selectin'`.
