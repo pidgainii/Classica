@@ -21,7 +21,6 @@ export default function SelectionElement({
   return (
     <div>
       <label>
-        {title}
         <select multiple={true} onChange={onChangeSelect}>
           {availableElements.map((element) => (
             <option value={element}>{element}</option>

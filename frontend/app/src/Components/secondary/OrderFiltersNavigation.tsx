@@ -1,5 +1,6 @@
 import { useState } from "react";
 import SelectionElement from "../ui/SelectionElement";
+import SearchBar from "../ui/SearchBar";
 
 interface OrderFiltersNavigationProps {
   availableGenres: string[];
@@ -50,13 +51,7 @@ export default function OrderFiltersNavigation(
       />
       <button onClick={onClickApplyFilters}>Apply Filters</button>
       <button onClick={onClickClearFilters}>Clear Filters</button>
-      <input
-        type="search"
-        className="rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0"
-        placeholder="Search"
-        value={props.searchQuery}
-        onChange={(e) => props.setSearchQuery(e.target.value)}
-      ></input>
+      <SearchBar setSearchQuery={props.setSearchQuery}></SearchBar>
     </div>
   );
 }

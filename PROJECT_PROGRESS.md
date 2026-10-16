@@ -741,27 +741,45 @@ Then I started modifying my book_script.py to insert all genres and associate ea
 In the CRUD layer I created a querie to filter Books by genres and language:
 
 ```python
-    async def get_books(self, books_search_filters: BooksSearchFiltersDTO) -> list[Book] | None:
-        genres_filters = []
-        for genre in books_search_filters.genres:
-                genres_filters.append(Book.genres.any(Genre.title==genre))
-        languages_filters = []
-        for language in books_search_filters.languages:
-            languages_filters.append(Book.language==language)
+async def get_books(self, books_search_filters: BooksSearchFiltersDTO) -> list[Book] | None:
+    search_filters = []
+    if (books_search_filters.searchQuery != ""):
+        search_filters.append(Book.title.ilike(f"%{books_search_filters.searchQuery}%"))
+        search_filters.append(Book.author.ilike(f"%{books_search_filters.searchQuery}%"))
 
-        order = asc if books_search_filters.ascending else desc
+    genres_filters = []
+    for genre in books_search_filters.genres:
+            genres_filters.append(Book.genres.any(Genre.title==genre))
+    languages_filters = []
+    for language in books_search_filters.languages:
+        languages_filters.append(Book.language==language)
 
-        result = await self.session.execute(
-            select(Book)
-            .limit(books_search_filters.perPage)
-            .offset((books_search_filters.page-1)*books_search_filters.perPage)
-            .order_by(order(Book.title))
-            .filter(or_(*genres_filters))
-            .filter(or_(*languages_filters))
-        )
-        return result.scalars().all()
+    order = asc if books_search_filters.ascending else desc
+
+    result = await self.session.execute(
+        select(Book)
+        .limit(books_search_filters.perPage)
+        .offset((books_search_filters.page-1)*books_search_filters.perPage)
+        .order_by(order(Book.title))
+        .filter(or_(*search_filters))
+        .filter(or_(*genres_filters))
+        .filter(or_(*languages_filters))
+    )
+    return result.scalars().all()
 ```
 
 Even though I am not sure if this is the most efficient way of creating this query, it was working correctly.
 
 In order to load the associated relationship `genres` when selecting a Book, it was necessary to enable _select in load_ option: `lazy='selectin'`.
+
+## October 15th
+
+### Frontend Book filtering
+
+Now that I had everything working in the backend, it was time to implement the logic in the frontend. My goal for now is to make it **functional**. **Style and design** will be implemented **later**.
+
+This is what I got:
+
+![filters](media/filters.png)
+
+I know it is not very beautiful, but it worked!
