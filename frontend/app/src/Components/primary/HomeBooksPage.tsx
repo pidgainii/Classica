@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import CategoryNavigation from "../secondary/CategoryNavigation";
 import BookDisplay from "../secondary/BookDisplay";
 import OrderFiltersNavigation from "../secondary/OrderFiltersNavigation";
-import { GENRES, LANGUAGES } from "../../Utils/Constants";
 import {
   getLocalStorageItem,
   setLocalStorageItem,
 } from "../../Utils/localStorageUtils";
+import type { BookQueryFilters } from "../../Models/queryFilters";
+import { SORT_BY_OPTIONS } from "../../Utils/Constants";
 
 export default function HomeBooksPage() {
   const [page, setPage] = useState<number>(getLocalStorageItem("page") || 1);
@@ -14,8 +15,9 @@ export default function HomeBooksPage() {
   const [searchQuery, setSearchQuery] = useState<string>(
     getLocalStorageItem("searchQuery") || "",
   );
-  const [sortBy, setSortBy] = useState<"random" | "rating">("random");
-  const [ascending, setAscending] = useState<boolean>(true);
+  const [sortBy, setSortBy] = useState<string>(
+    getLocalStorageItem("sortBy") || SORT_BY_OPTIONS[0],
+  );
   const [genres, setGenres] = useState<string[]>(
     getLocalStorageItem("genres") || [],
   );
@@ -23,40 +25,33 @@ export default function HomeBooksPage() {
     getLocalStorageItem("languages") || [],
   );
 
-  useEffect(() => {
-    setLocalStorageItem("genres", genres);
-  }, [genres]);
+  const triggerNewQuery = (filters: BookQueryFilters) => {
+    setSearchQuery(filters.searchQuery);
+    setSortBy(filters.sortBy);
+    setGenres(filters.genres);
+    setLanguages(filters.languages);
 
-  useEffect(() => {
-    setLocalStorageItem("languages", languages);
-  }, [languages]);
+    setPage(1);
+
+    setLocalStorageItem("searchQuery", filters.searchQuery);
+    setLocalStorageItem("sortBy", filters.sortBy);
+    setLocalStorageItem("genres", filters.genres);
+    setLocalStorageItem("languages", filters.languages);
+  };
 
   useEffect(() => {
     setLocalStorageItem("page", page);
   }, [page]);
 
-  useEffect(() => {
-    setLocalStorageItem("searchQuery", searchQuery);
-  }, [searchQuery]);
-
   return (
     <div>
-      <OrderFiltersNavigation
-        availableGenres={GENRES}
-        setGenres={setGenres}
-        availableLanguages={LANGUAGES}
-        setLanguages={setLanguages}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        setPage={setPage}
-      />
-      <CategoryNavigation />
+      <OrderFiltersNavigation triggerNewQuery={triggerNewQuery} />
+      <CategoryNavigation triggerNewQuery={triggerNewQuery} />
       <BookDisplay
         page={page}
         setPage={setPage}
         searchQuery={searchQuery}
         sortBy={sortBy}
-        ascending={ascending}
         genres={genres}
         languages={languages}
       />

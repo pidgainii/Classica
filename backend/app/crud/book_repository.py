@@ -7,6 +7,8 @@ from db.models import Book, Genre
 
 from schemas.books import BooksSearchFiltersDTO
 
+from utils.enums import BookSortingOrder
+
 class BookRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -24,13 +26,17 @@ class BookRepository:
         for language in books_search_filters.languages:
             languages_filters.append(Book.language==language)
         
-        order = asc if books_search_filters.ascending else desc
+        
+        order = func.random()
+        if books_search_filters.sortBy == BookSortingOrder.TITLE:
+            order = asc(Book.title)
+        
         
         result = await self.session.execute(
             select(Book)
             .limit(books_search_filters.perPage)
             .offset((books_search_filters.page-1)*books_search_filters.perPage)
-            .order_by(order(Book.title))
+            .order_by(order)
             .filter(or_(*search_filters))
             .filter(or_(*genres_filters))
             .filter(or_(*languages_filters))

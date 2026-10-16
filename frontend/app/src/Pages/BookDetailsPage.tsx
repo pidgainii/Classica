@@ -38,6 +38,10 @@ export default function BookDetailsPage() {
       <p></p>
 
       <p>Language: {book?.language}</p>
+
+      <p></p>
+
+      <p>Genres: {book.genres}</p>
     </div>
   );
 }

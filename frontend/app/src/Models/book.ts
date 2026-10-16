@@ -10,6 +10,7 @@ export const bookSchema = z.object({
   language: z.string().nullish(),
   isbn: z.string().nullish(),
   cover_url: z.string().optional(),
+  genres: z.string().array(),
 });
 
 export type BookType = z.infer<typeof bookSchema>;
@@ -27,8 +28,7 @@ export interface BooksSearchFiltersDTO {
   page: number;
   perPage: number;
   searchQuery: string;
-  sortBy: "random" | "rating";
-  ascending: boolean;
+  sortBy: string;
   genres: string[];
   languages: string[];
 }

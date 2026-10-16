@@ -11,8 +11,7 @@ interface BookDisplayProps {
   setPage: (page: number) => void;
 
   searchQuery: string;
-  sortBy: "random" | "rating";
-  ascending: boolean;
+  sortBy: string;
   genres: string[];
   languages: string[];
 }
@@ -28,6 +27,7 @@ export default function BookDisplay(props: BookDisplayProps) {
     queryKey: [
       "books",
       props.searchQuery,
+      props.sortBy,
       props.page,
       props.genres,
       props.languages,
@@ -38,7 +38,6 @@ export default function BookDisplay(props: BookDisplayProps) {
         perPage: BOOKS_PER_PAGE,
         searchQuery: props.searchQuery,
         sortBy: props.sortBy,
-        ascending: props.ascending,
         genres: props.genres,
         languages: props.languages,
       }),
@@ -53,6 +52,7 @@ export default function BookDisplay(props: BookDisplayProps) {
           queryKey: [
             "books",
             props.searchQuery,
+            props.sortBy,
             props.page + 1,
             props.genres,
             props.languages,
@@ -63,7 +63,6 @@ export default function BookDisplay(props: BookDisplayProps) {
               perPage: BOOKS_PER_PAGE,
               searchQuery: props.searchQuery,
               sortBy: props.sortBy,
-              ascending: props.ascending,
               genres: props.genres,
               languages: props.languages,
             }),

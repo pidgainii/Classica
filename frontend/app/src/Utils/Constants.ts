@@ -25,3 +25,10 @@ export const LANGUAGES = [
   "Arabic",
   "Dutch",
 ];
+
+export const SORT_BY_OPTIONS = [
+  "Title: Alphabetical",
+  "Random",
+  "Rating: High to Low",
+  "Rating: Low to High",
+];

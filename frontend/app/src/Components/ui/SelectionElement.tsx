@@ -1,27 +1,23 @@
 interface SelectionElementProps {
   title: string;
   availableElements: string[];
-  setElements: (elements: string[]) => void;
+  currentElement: string;
+  setElement: (element: string) => void;
 }
 
 export default function SelectionElement({
   title,
   availableElements,
-  setElements,
+  setElement,
 }: SelectionElementProps) {
   const onChangeSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = event.currentTarget.selectedOptions;
-    const newElements = [];
-    for (let i = 0; i < selectedOptions.length; i++) {
-      newElements.push(selectedOptions[i].value);
-    }
-    setElements(newElements);
+    setElement(event.currentTarget.value);
   };
 
   return (
     <div>
       <label>
-        <select multiple={true} onChange={onChangeSelect}>
+        <select onChange={onChangeSelect}>
           {availableElements.map((element) => (
             <option value={element}>{element}</option>
           ))}

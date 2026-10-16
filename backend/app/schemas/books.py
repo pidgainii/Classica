@@ -1,7 +1,8 @@
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional, Literal
+from typing import Optional
 from uuid import UUID
 
+from utils.enums import BookSortingOrder
 
 
 class BookBaseDTO(BaseModel):
@@ -21,8 +22,7 @@ class BooksSearchFiltersDTO(BaseModel):
     page: int = Field(default=1)
     perPage: int = Field(default=20)
     searchQuery: str = Field(default="")
-    sortBy: Literal['random', 'rating'] = Field(default='random')
-    ascending: bool = Field(default=True)
+    sortBy: BookSortingOrder = Field(default=BookSortingOrder.RANDOM)
     genres: list[str] = Field(default=[])
     languages: list[str] = Field(default=[])
     
