@@ -5,8 +5,10 @@ import type {
 } from "../../Models/user";
 import { userSchema } from "../../Models/user";
 import {
+  bookIsFavouriteSchema,
   bookSchema,
   booksPaginatedSchema,
+  type BookIsFavouriteType,
   type BooksPaginatedType,
   type BooksSearchFiltersDTO,
   type BookType,
@@ -42,4 +44,11 @@ export const booksRequest = async (
 ): Promise<BooksPaginatedType> => {
   const { data: result } = await api.post("/items/books", filters);
   return booksPaginatedSchema.parse(result);
+};
+
+export const bookFavouriteRequest = async (
+  id: any,
+): Promise<BookIsFavouriteType> => {
+  const { data: result } = await api.get(`items/book-favourite/${id}`);
+  return bookIsFavouriteSchema.parse(result);
 };
