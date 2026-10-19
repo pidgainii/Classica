@@ -772,7 +772,7 @@ Even though I am not sure if this is the most efficient way of creating this que
 
 In order to load the associated relationship `genres` when selecting a Book, it was necessary to enable _select in load_ option: `lazy='selectin'`.
 
-## October 15th
+## October 15th / 16th
 
 ### Frontend Book filtering
 
@@ -783,3 +783,19 @@ This is what I got:
 ![filters](media/filters.png)
 
 I know it is not very beautiful, but it worked!
+
+#### Search Bar behaviour
+
+After this, I made the search bar work with a specific behaviour: It triggered the Query 500 ms after the user stopped typing, and only if the user typed more than 2 characters (or 0). This I achieved using a `useEffect()`:
+
+```typescript
+useEffect(() => {
+  if (searchTerm.length == 0 || searchTerm.length > 2) {
+    const delayDebounceFn = setTimeout(() => {
+      props.setSearchQuery(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }
+}, [searchTerm]);
+```
