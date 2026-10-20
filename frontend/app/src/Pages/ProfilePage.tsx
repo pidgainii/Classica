@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { useAuthContext } from "../Contexts/AuthContext";
 import { useEffect } from "react";
 
@@ -12,18 +12,32 @@ export default function ProfilePage() {
     if (result.success) navigate("/");
   };
 
+  const onClickFavourites = () => {
+    navigate("/profile/favourites");
+  };
+
   useEffect(() => {
     if (!user) navigate("/login");
   }, [user]);
 
   return (
     <div>
-      <h1>Profile Page</h1>
-      <h2>Email: {user?.email}</h2>
-      <h2>First name: {user?.first_name}</h2>
-      <h2>Last name: {user?.last_name}</h2>
+      <h2>Welcome back, {user?.first_name}</h2>
       <p></p>
-      <button onClick={onClickLogout}>Log out</button>
+      <button
+        className="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded"
+        onClick={onClickLogout}
+      >
+        Log out
+      </button>
+      <button
+        className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+        onClick={onClickFavourites}
+      >
+        Favourite Books
+      </button>
+
+      <Outlet />
     </div>
   );
 }

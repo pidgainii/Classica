@@ -14,26 +14,11 @@ export default function TopBar() {
 
   return (
     <div className="bg-[#2a2a2a] text-gray-300 text-xs py-2 px-6 flex flex-col sm:flex-row justify-between items-center">
-      <div className="tracking-wide">DEFAULT WELCOME MSG!</div>
+      <div className="tracking-wide">Classica</div>
       <div className="flex items-center space-x-4 mt-2 sm:mt-0 uppercase tracking-wider">
-        <a
-          href="#"
-          className="hover:text-white transition-colors text-[#5bb6c7]"
-        >
-          MY ACCOUNT
-        </a>
-        <a href="#" className="hover:text-white transition-colors text-white">
-          MY WISHLIST
-        </a>
-        <a href="#" className="hover:text-white transition-colors text-white">
-          MY CART
-        </a>
-        <a href="#" className="hover:text-white transition-colors text-white">
-          CHECKOUT
-        </a>
-
         <button onClick={onClickUserButton}>
           <UserCircleIcon />
+          <div>{user ? user.first_name : "Log in"}</div>
         </button>
       </div>
     </div>

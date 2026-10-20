@@ -2,17 +2,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud.book_repository import BookRepository
 
-from schemas.books import BookBaseDTO, BooksRequestDTO, BooksResponseDTO
+from schemas.books import BookBaseDTO, BooksSearchFiltersDTO, BooksResponseDTO
 
 from core.errors import EntityFetchingError
 
+from utils.SQLAlchemyPydanticValidation.book_validation import book_validation
+
 class BookService:
     
-    async def get_books(self, page: int, perPage: int, session: AsyncSession) -> BooksResponseDTO:
+    async def get_books(self, books_search_filters: BooksSearchFiltersDTO, session: AsyncSession) -> BooksResponseDTO:
         book_repository = BookRepository(session)
         
-        books_database = await book_repository.get_books(page, perPage)
-        number_of_pages = await book_repository.get_number_pages(perPage)
+        books_database = await book_repository.get_books(books_search_filters)
+        
+        number_of_pages = await book_repository.get_number_pages(books_search_filters)
         
         if books_database is None:
             raise EntityFetchingError("UNABLE TO FETCH BOOKS")
@@ -23,7 +26,7 @@ class BookService:
         books_dto = []
         
         for book in books_database:
-            books_dto.append(BookBaseDTO.model_validate(book))
+            books_dto.append(book_validation(book))
         
         return BooksResponseDTO(pages=number_of_pages, books=books_dto)
     
@@ -35,4 +38,4 @@ class BookService:
         if not book_database:
             raise EntityFetchingError("UNABLE TO FETCH BOOK WITH ID {id}")
         
-        return BookBaseDTO.model_validate(book_database)
+        return book_validation(book_database)

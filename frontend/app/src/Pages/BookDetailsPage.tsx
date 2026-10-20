@@ -1,9 +1,12 @@
 import { useParams } from "react-router";
 import { bookRequest } from "../Services/api/service";
 import { useQuery } from "@tanstack/react-query";
+import { useAuthContext } from "../Contexts/AuthContext";
+import FavouriteButton from "../Components/ui/FavouriteButton";
 
 export default function BookDetailsPage() {
   const { id } = useParams();
+  const { user } = useAuthContext();
 
   const {
     data: book,
@@ -38,6 +41,12 @@ export default function BookDetailsPage() {
       <p></p>
 
       <p>Language: {book?.language}</p>
+
+      <p></p>
+
+      <p>Genres: {book.genres}</p>
+
+      {user && <FavouriteButton book_id={id} />}
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import z from "zod";
 
+// FROM SERVER
+
 export const bookSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -8,6 +10,7 @@ export const bookSchema = z.object({
   language: z.string().nullish(),
   isbn: z.string().nullish(),
   cover_url: z.string().optional(),
+  genres: z.string().array(),
 });
 
 export type BookType = z.infer<typeof bookSchema>;
@@ -18,3 +21,14 @@ export const booksPaginatedSchema = z.object({
 });
 
 export type BooksPaginatedType = z.infer<typeof booksPaginatedSchema>;
+
+// TO SERVER
+
+export interface BooksSearchFiltersDTO {
+  page: number;
+  perPage: number;
+  searchQuery: string;
+  sortBy: string;
+  genres: string[];
+  languages: string[];
+}

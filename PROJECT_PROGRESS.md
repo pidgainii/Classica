@@ -676,3 +676,126 @@ useEffect(() => {
   setLocalStorageItem("page", page);
 }, [page]);
 ```
+
+## October 12th / 13th
+
+### Webpage design
+
+It was time to think what elements / functionalities I wanted in my webpage. I modified the home screen and divided it into some components. This is my initial design divided in components:
+
+![homedesign](media/homedesign.png)
+
+### GET or POST method?
+
+In order to implement the filters and searching option in the webpage, my backend endpoint `/items/books` should receive filters in some way.
+
+If we have many Query parameters, the URL of the **GET method** becomes very large. Specially if we want to filter using a list (for example, selecting multiple genres).
+
+Therefore, I investigated which were some other options to make a filtered query. **Adding a Request Body in the GET method is not recomendable**.
+
+I decided to make it a **POST request** instead.
+Here is some information about POST method (https://www.w3.org/Protocols/HTTP/Methods/Post.html):
+
+> _This method of HTTP creates a new object linked to and subordinate to the specified object. The content of the new object is enclosed as the body of the request._
+
+> _The method shall return a set (possibly empty) of object headers for the newly posted object._
+
+In this case, we are **sending** the Books Searching Filters Object:
+
+```python
+class BooksSearchFiltersDTO(BaseModel):
+    page: int = Field(default=1)
+    perPage: int = Field(default=20)
+    searchQuery: str = Field(default="")
+    sortBy: Literal['random', 'rating'] = Field(default='random')
+    ascending: bool = Field(default=True)
+    genres: list[str] = Field(default=[])
+    languages: list[str] = Field(default=[])
+```
+
+And we receiving a search response. **We are creating a new search, and receiving it's result**. Therefore, POST method is valid in this scenario.
+
+### New Genre table
+
+Until now, the Book table did not contain the genres of the books. I had to load them from the .csv file, where each book had a field _"genres"_, which was a list of strings.
+
+First, I added a **new column** to the Book model as a **list of strings**. After searching on the Internet, I found out that this is **not a good thing** to do.
+
+The best way to do it is to create a **new Genre table**, and add a new **Many-to-Many relationship**. Therefore, that is what I did. I created an association table:
+
+```python
+books_genres = Table(
+    "books_genres",
+    Base.metadata,
+    Column("book_id", ForeignKey("book.id"), primary_key=True),
+    Column("genre_id", ForeignKey("genre.id"), primary_key=True),
+)
+```
+
+Then I started modifying my book_script.py to insert all genres and associate each book with it's genres.
+
+## October 14th
+
+### Backend Book filtering
+
+In the CRUD layer I created a querie to filter Books by genres and language:
+
+```python
+async def get_books(self, books_search_filters: BooksSearchFiltersDTO) -> list[Book] | None:
+    search_filters = []
+    if (books_search_filters.searchQuery != ""):
+        search_filters.append(Book.title.ilike(f"%{books_search_filters.searchQuery}%"))
+        search_filters.append(Book.author.ilike(f"%{books_search_filters.searchQuery}%"))
+
+    genres_filters = []
+    for genre in books_search_filters.genres:
+            genres_filters.append(Book.genres.any(Genre.title==genre))
+    languages_filters = []
+    for language in books_search_filters.languages:
+        languages_filters.append(Book.language==language)
+
+    order = asc if books_search_filters.ascending else desc
+
+    result = await self.session.execute(
+        select(Book)
+        .limit(books_search_filters.perPage)
+        .offset((books_search_filters.page-1)*books_search_filters.perPage)
+        .order_by(order(Book.title))
+        .filter(or_(*search_filters))
+        .filter(or_(*genres_filters))
+        .filter(or_(*languages_filters))
+    )
+    return result.scalars().all()
+```
+
+Even though I am not sure if this is the most efficient way of creating this query, it was working correctly.
+
+In order to load the associated relationship `genres` when selecting a Book, it was necessary to enable _select in load_ option: `lazy='selectin'`.
+
+## October 15th / 16th
+
+### Frontend Book filtering
+
+Now that I had everything working in the backend, it was time to implement the logic in the frontend. My goal for now is to make it **functional**. **Style and design** will be implemented **later**.
+
+This is what I got:
+
+![filters](media/filters.png)
+
+I know it is not very beautiful, but it worked!
+
+#### Search Bar behaviour
+
+After this, I made the search bar work with a specific behaviour: It triggered the Query 500 ms after the user stopped typing, and only if the user typed more than 2 characters (or 0). This I achieved using a `useEffect()`:
+
+```typescript
+useEffect(() => {
+  if (searchTerm.length == 0 || searchTerm.length > 2) {
+    const delayDebounceFn = setTimeout(() => {
+      props.setSearchQuery(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }
+}, [searchTerm]);
+```

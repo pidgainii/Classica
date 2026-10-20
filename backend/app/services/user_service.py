@@ -5,7 +5,9 @@ from crud.user_repository import UserRepository
 from schemas.user import UserApiDTO
 from schemas.tokens import AccessTokenDTO
 
-from core.errors import UserNotFoundError
+from core.errors import UserNotFoundError, EntityFetchingError
+
+import uuid
 
 class UserService:
     
@@ -20,3 +22,5 @@ class UserService:
         userAPI = UserApiDTO.model_validate(user)
         
         return userAPI
+        
+        

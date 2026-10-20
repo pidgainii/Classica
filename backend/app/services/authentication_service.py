@@ -8,7 +8,7 @@ from schemas.user import UserRegisterDTO, UserLoginDTO
 from schemas.refresh import RefreshResponseDTO
 from schemas.tokens import AccessTokenDTO, RefreshTokenDTO
 
-from db.models.user import User
+from db.models import User
 
 from core.errors import UserNotFoundError, IncorrectPasswordError, UserAlreadyExistsError, EntityCreationError, EntityFetchingError, RefreshTokenError
 

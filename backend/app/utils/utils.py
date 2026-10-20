@@ -1,7 +1,7 @@
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import bcrypt
-from jose import jwt
+from jose import jwt, exceptions
 from datetime import datetime, timezone
 
 from schemas.tokens import AccessTokenDTO, RefreshTokenDTO
@@ -43,13 +43,16 @@ def decode_access_token_from_bearer(credentials: HTTPAuthorizationCredentials = 
     if not token:
         raise AccessTokenError("Unavailable Access Token")
     
-    payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASHING_ALGORITHM])
+    try:
+        payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASHING_ALGORITHM])
+    except exceptions.ExpiredSignatureError:
+        raise AccessTokenError("ACCESS TOKEN EXPIRED")
 
     now = int(datetime.now(timezone.utc).timestamp())
     exp=payload.get("exp")
     
     if (now > exp):
-        raise AccessTokenError("Access Token Expired")
+        raise AccessTokenError("ACCESS TOKEN EXPIRED")
 
     return AccessTokenDTO(
         email=payload.get("email"),
