@@ -3,10 +3,9 @@ import { useEffect } from "react";
 
 import { booksRequest } from "../../Services/api/service";
 import { BOOKS_PER_PAGE } from "../../Utils/Constants";
-import BookCard from "../ui/BookCard";
-import { PaginationElement } from "../ui/PaginationElement";
+import BookGrid from "../ui/BookGrid";
 
-interface BookDisplayProps {
+interface HomeBookDisplayProps {
   page: number;
   setPage: (page: number) => void;
 
@@ -16,7 +15,7 @@ interface BookDisplayProps {
   languages: string[];
 }
 
-export default function BookDisplay(props: BookDisplayProps) {
+export default function HomeBookDisplay(props: HomeBookDisplayProps) {
   const queryClient = useQueryClient();
 
   const {
@@ -76,25 +75,10 @@ export default function BookDisplay(props: BookDisplayProps) {
   if (error) return <h1>Error</h1>;
 
   return (
-    <main className="bg-[#e8e8e8] py-16 px-8 min-h-screen border-t border-gray-300 shadow-inner">
-      <h3>Current Page: {props.page}</h3>
-      <div>&nbsp;</div>
-
-      <div className="max-w-[1400px] mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-x-6 gap-y-10">
-        {paginatedBooks.books.map((book) => (
-          <div
-            key={book.id}
-            className="flex flex-col items-center group cursor-pointer"
-          >
-            <BookCard book={book} />
-          </div>
-        ))}
-      </div>
-      <PaginationElement
-        page={props.page}
-        setPage={props.setPage}
-        totalPages={paginatedBooks.pages}
-      ></PaginationElement>
-    </main>
+    <BookGrid
+      page={props.page}
+      setPage={props.setPage}
+      paginatedBooks={paginatedBooks}
+    />
   );
 }

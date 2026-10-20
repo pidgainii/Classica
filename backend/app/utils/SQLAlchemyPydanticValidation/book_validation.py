@@ -1,4 +1,4 @@
-from db.models import Book, Genre
+from db.models import Book
 from schemas.books import BookBaseDTO
 
 def book_validation(book_db: Book) -> BookBaseDTO:

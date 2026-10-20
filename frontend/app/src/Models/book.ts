@@ -22,9 +22,6 @@ export const booksPaginatedSchema = z.object({
 
 export type BooksPaginatedType = z.infer<typeof booksPaginatedSchema>;
 
-export const bookIsFavouriteSchema = z.boolean();
-export type BookIsFavouriteType = z.infer<typeof bookIsFavouriteSchema>;
-
 // TO SERVER
 
 export interface BooksSearchFiltersDTO {

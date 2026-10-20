@@ -16,7 +16,7 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String, nullable=False)
     password_hash: Mapped[str] = mapped_column(String, nullable=True)
     
-    favourites: Mapped[List['Book']] = relationship(secondary='users_favourite_books')
+    favourite_books: Mapped[List['Book']] = relationship(secondary='users_favourite_books', lazy='selectin', back_populates="users_favourite")
     
     
 class Book(Base):
@@ -34,6 +34,7 @@ class Book(Base):
     cover_url: Mapped[str] = mapped_column(String, nullable=False)
     
     genres: Mapped[List['Genre']] = relationship(secondary='books_genres', lazy='selectin', back_populates="books")
+    users_favourite: Mapped[List['User']] = relationship(secondary='users_favourite_books', back_populates="favourite_books")
     
     
 class Genre(Base):
@@ -57,7 +58,7 @@ users_favourite_books = Table(
     "users_favourite_books",
     Base.metadata,
     Column("user_id", ForeignKey("user.id"), primary_key=True),
-    Column("book_id", ForeignKey("book.id")),
+    Column("book_id", ForeignKey("book.id"), primary_key=True),
 )
 
 books_genres = Table(

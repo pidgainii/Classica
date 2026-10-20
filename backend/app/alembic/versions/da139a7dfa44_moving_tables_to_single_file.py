@@ -39,7 +39,7 @@ def upgrade() -> None:
     sa.Column('book_id', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['book_id'], ['book.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('user_id')
+    sa.PrimaryKeyConstraint('user_id', 'book_id')
     )
     op.drop_table('favourite')
     op.drop_column('book', 'genres')

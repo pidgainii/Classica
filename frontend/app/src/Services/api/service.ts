@@ -5,16 +5,15 @@ import type {
 } from "../../Models/user";
 import { userSchema } from "../../Models/user";
 import {
-  bookIsFavouriteSchema,
   bookSchema,
   booksPaginatedSchema,
-  type BookIsFavouriteType,
   type BooksPaginatedType,
   type BooksSearchFiltersDTO,
   type BookType,
 } from "../../Models/book";
 import { tokenSchema, type TokenType } from "../../Models/token";
 import api from "./api";
+import z from "zod";
 
 export const loginRequest = async (user: UserLoginType): Promise<TokenType> => {
   const { data: result } = await api.post("/auth/login", user);
@@ -46,9 +45,19 @@ export const booksRequest = async (
   return booksPaginatedSchema.parse(result);
 };
 
-export const bookFavouriteRequest = async (
-  id: any,
-): Promise<BookIsFavouriteType> => {
-  const { data: result } = await api.get(`items/book-favourite/${id}`);
-  return bookIsFavouriteSchema.parse(result);
+export const favouriteBooksRequest = async (
+  filters: BooksSearchFiltersDTO,
+): Promise<BooksPaginatedType> => {
+  const { data: result } = await api.post("/items/favourite-books", filters);
+  return booksPaginatedSchema.parse(result);
+};
+
+export const isBookFavouriteRequest = async (id: any): Promise<boolean> => {
+  const { data: result } = await api.get(`items/is-book-favourite/${id}`);
+  return z.boolean().parse(result);
+};
+
+export const bookFavouriteRequest = async (id: any): Promise<boolean> => {
+  const { data: result } = await api.post(`items/book-favourite/${id}`);
+  return result;
 };

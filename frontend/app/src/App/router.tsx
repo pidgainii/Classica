@@ -10,6 +10,7 @@ import HomeBlogPage from "../Components/primary/HomeBlogPage";
 import RegisterPage from "../Pages/RegisterPage";
 import UserRoutes from "../Utils/UserRoutes";
 import NoUserRoutes from "../Utils/NoUserRoutes";
+import FavouritesPage from "../Pages/FavouritesPage";
 
 export const router = createBrowserRouter([
   {
@@ -25,7 +26,13 @@ export const router = createBrowserRouter([
       },
       {
         element: <UserRoutes />,
-        children: [{ path: "profile", element: <ProfilePage /> }],
+        children: [
+          {
+            path: "profile",
+            element: <ProfilePage />,
+            children: [{ path: "favourites", element: <FavouritesPage /> }],
+          },
+        ],
       },
       {
         element: <NoUserRoutes />,

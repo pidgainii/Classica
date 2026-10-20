@@ -21,7 +21,7 @@ class BookRepository:
         
         genres_filters = []
         for genre in books_search_filters.genres:
-                genres_filters.append(Book.genres.any(Genre.title==genre))
+            genres_filters.append(Book.genres.any(Genre.title==genre))
         languages_filters = []
         for language in books_search_filters.languages:
             languages_filters.append(Book.language==language)

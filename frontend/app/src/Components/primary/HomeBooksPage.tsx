@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import CategoryNavigation from "../secondary/CategoryNavigation";
-import BookDisplay from "../secondary/BookDisplay";
+import HomeBookDisplay from "../secondary/HomeBookDisplay";
 import OrderFiltersNavigation from "../secondary/OrderFiltersNavigation";
 import {
   getLocalStorageItem,
@@ -47,7 +47,7 @@ export default function HomeBooksPage() {
     <div>
       <OrderFiltersNavigation triggerNewQuery={triggerNewQuery} />
       <CategoryNavigation triggerNewQuery={triggerNewQuery} />
-      <BookDisplay
+      <HomeBookDisplay
         page={page}
         setPage={setPage}
         searchQuery={searchQuery}
