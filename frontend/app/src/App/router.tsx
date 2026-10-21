@@ -1,50 +1,60 @@
 import { createBrowserRouter, Navigate } from "react-router";
 
-import App from "./App";
-import HomePage from "../Pages/HomePage";
-import LoginPage from "../Pages/LoginPage";
-import ProfilePage from "../Pages/ProfilePage";
-import BookDetailsPage from "../Pages/BookDetailsPage";
+import HomePage from "../Pages/main/HomePage";
+import LoginPage from "../Pages/main/LoginPage";
+import ProfilePage from "../Pages/main/ProfilePage";
+import BookDetailsPage from "../Pages/main/BookDetailsPage";
 import HomeBooksPage from "../Components/primary/HomeBooksPage";
 import HomeBlogPage from "../Components/primary/HomeBlogPage";
-import RegisterPage from "../Pages/RegisterPage";
+import RegisterPage from "../Pages/main/RegisterPage";
 import UserRoutes from "../Utils/UserRoutes";
 import NoUserRoutes from "../Utils/NoUserRoutes";
-import FavouritesPage from "../Pages/FavouritesPage";
+import MyProfilePage from "../Pages/secondary/MyProfilePage";
+import MyLibraryPage from "../Pages/secondary/MyLibraryPage";
+import MyPostsPage from "../Pages/secondary/MyPostsPage";
+import SettingsPage from "../Pages/secondary/SettingsPage";
+import FavouritesPage from "../Pages/secondary/FavouritesPage";
 
 export const router = createBrowserRouter([
   {
-    element: <App />,
-    errorElement: <Navigate to="/books" />,
+    element: <HomePage />,
+    children: [
+      { path: "books", element: <HomeBooksPage /> },
+      { path: "blog", element: <HomeBlogPage /> },
+    ],
+  },
+  {
+    element: <UserRoutes />,
     children: [
       {
-        element: <HomePage />,
+        path: "profile",
+        element: <ProfilePage />,
         children: [
-          { path: "books", element: <HomeBooksPage /> },
-          { path: "blog", element: <HomeBlogPage /> },
-        ],
-      },
-      {
-        element: <UserRoutes />,
-        children: [
+          { index: true, element: <MyProfilePage /> },
           {
-            path: "profile",
-            element: <ProfilePage />,
-            children: [{ path: "favourites", element: <FavouritesPage /> }],
+            path: "my-library",
+            element: <MyLibraryPage />,
           },
+          { path: "my-posts", element: <MyPostsPage /> },
+          { path: "settings", element: <SettingsPage /> },
         ],
       },
-      {
-        element: <NoUserRoutes />,
-        children: [
-          { path: "login", element: <LoginPage /> },
-          { path: "register", element: <RegisterPage /> },
-        ],
-      },
-      {
-        path: "book/:id",
-        element: <BookDetailsPage />,
-      },
+      { path: "favourites", element: <FavouritesPage /> },
     ],
+  },
+  {
+    element: <NoUserRoutes />,
+    children: [
+      { path: "login", element: <LoginPage /> },
+      { path: "register", element: <RegisterPage /> },
+    ],
+  },
+  {
+    path: "book/:id",
+    element: <BookDetailsPage />,
+  },
+  {
+    path: "*",
+    element: <Navigate to="/books" replace />,
   },
 ]);

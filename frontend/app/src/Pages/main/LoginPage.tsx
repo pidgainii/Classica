@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAuthContext } from "../Contexts/AuthContext";
-import type { UserLoginType } from "../Models/user";
+import { useAuthContext } from "../../Contexts/AuthContext";
+import type { UserLoginType } from "../../Models/user";
 import { Link, useNavigate } from "react-router";
 
 export default function LoginPage() {

@@ -799,3 +799,63 @@ useEffect(() => {
   }
 }, [searchTerm]);
 ```
+
+## October 20th
+
+### Favourite books feature
+
+I decided to create the functionality for users to add books to "Favourite" section.
+
+#### Frontend: Conditional Rendering
+
+On the frontend part, it was necessary to create a button that would only render if there was a signed-in user:
+
+```typescript
+{user && <FavouriteButton book_id={id} />}
+```
+
+This button component had **two responsabilities**:
+
+- Show if current book is added to favourites
+- Add / Unadd the book to favourites
+
+#### Backend
+
+> **IMPORTANT**: All this functions related to user actions need to know which user is making the request. As explained previously, this information is extracted from the access token attached in every request.
+
+Showing if book is added to favourites (CRUD layer):
+
+```python
+async def get_is_book_favourite(self, email: str, book_id: uuid.UUID) -> bool | None:
+  statement = select(User).where(User.email == email, User.favourite_books.any(Book.id == book_id))
+  result = await self.session.scalar(statement)
+  return result is not None
+```
+
+Adding / Unadding book to favourites (CRUD layer):
+
+```python
+async def add_book_favourite(self, email: str, book_id: uuid.UUID) -> bool | None:
+  user_repository = UserRepository(self.session)
+  book_repository = BookRepository(self.session)
+
+  user = await user_repository.get_by_email(email)
+  book = await book_repository.get_by_id(book_id)
+
+  if (book in user.favourite_books):
+      user.favourite_books.remove(book)
+      await self.session.commit()
+      return False
+  else:
+      user.favourite_books.append(book)
+      await self.session.commit()
+      return True
+```
+
+#### Frontend: Reusable Components
+
+I decided to separate the book grid into a **reusable component** (BookGrid) component to be able to see the favourite books list inside the Profile Page.
+
+#### Backend: Getting favourite books
+
+I created a new protected endpoint `/items/favourite-books` that would return the list of favourite books of a user (in the same **paginated format** as for normal book query).

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router";
 
-export default function MainNavigation() {
+export default function MainNavigationBar() {
   const { pathname } = useLocation();
   return (
     <nav className="w-full max-w-4xl mx-auto mt-8 border-t border-b border-gray-200 py-3 flex justify-center flex-wrap gap-x-8 gap-y-2 text-sm tracking-widest uppercase text-gray-500">

@@ -1,10 +1,10 @@
 import { noop, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuthContext } from "../Contexts/AuthContext";
-import { favouriteBooksRequest } from "../Services/api/service";
+import { useAuthContext } from "../../Contexts/AuthContext";
+import { favouriteBooksRequest } from "../../Services/api/service";
 import { useEffect, useState } from "react";
-import { getLocalStorageItem } from "../Utils/localStorageUtils";
-import { BOOKS_PER_PAGE, SORT_BY_OPTIONS } from "../Utils/Constants";
-import BookGrid from "../Components/ui/BookGrid";
+import { getLocalStorageItem } from "../../Utils/localStorageUtils";
+import { BOOKS_PER_PAGE, SORT_BY_OPTIONS } from "../../Utils/Constants";
+import BookGrid from "../../Components/ui/BookGrid";
 
 export default function FavouritesPage() {
   const queryClient = useQueryClient();
@@ -57,6 +57,9 @@ export default function FavouritesPage() {
   if (error) return <h1>Error</h1>;
 
   return (
-    <BookGrid page={page} setPage={setPage} paginatedBooks={paginatedBooks} />
+    <div>
+      <h1>Favourite Books: </h1>
+      <BookGrid page={page} setPage={setPage} paginatedBooks={paginatedBooks} />
+    </div>
   );
 }
