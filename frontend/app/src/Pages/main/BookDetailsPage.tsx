@@ -1,8 +1,8 @@
 import { useParams } from "react-router";
-import { bookRequest } from "../Services/api/service";
+import { bookRequest } from "../../Services/api/service";
 import { useQuery } from "@tanstack/react-query";
-import { useAuthContext } from "../Contexts/AuthContext";
-import FavouriteButton from "../Components/ui/FavouriteButton";
+import { useAuthContext } from "../../Contexts/AuthContext";
+import FavouriteButton from "../../Components/ui/FavouriteButton";
 
 export default function BookDetailsPage() {
   const { id } = useParams();

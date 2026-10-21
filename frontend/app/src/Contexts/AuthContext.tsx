@@ -16,9 +16,10 @@ import {
   loginRequest,
   logoutRequest,
 } from "../Services/api/service";
+import { clearLocalStorage } from "../Utils/localStorageUtils";
 
 interface AuthContextType {
-  user: UserType | null;
+  user: UserType | null | undefined;
   loading: boolean;
   error: any | null;
   accessToken: string | null;
@@ -32,7 +33,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Custom Auth Provider component
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<UserType | null>(null);
+  const [user, setUser] = useState<UserType | null | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<any | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -76,7 +77,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
             return api(originalRequest);
           } catch {
-            setAccessToken(null);
+            await logout();
           }
         }
         return Promise.reject(error);
@@ -103,7 +104,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       }
     };
     loadUser();
-  }, []);
+  }, [accessToken]);
 
   async function login(user: UserLoginType) {
     setLoading(true);
@@ -128,6 +129,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       await logoutRequest();
       setUser(null);
       setAccessToken(null);
+      clearLocalStorage();
       setLoading(false);
       const response: Response = { success: true };
       return response;

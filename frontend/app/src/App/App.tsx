@@ -1,6 +1,7 @@
-import { Outlet } from "react-router";
 import { AuthProvider } from "../Contexts/AuthContext";
+import { RouterProvider } from "react-router/dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { router } from "./router";
 
 const client = new QueryClient();
 
@@ -8,7 +9,7 @@ export default function App() {
   return (
     <QueryClientProvider client={client}>
       <AuthProvider>
-        <Outlet />
+        <RouterProvider router={router} />
       </AuthProvider>
     </QueryClientProvider>
   );

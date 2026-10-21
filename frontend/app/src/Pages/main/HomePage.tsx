@@ -1,8 +1,8 @@
 import { Outlet } from "react-router";
-import Footer from "../Components/primary/Footer";
-import Header from "../Components/primary/Header";
-import TopBar from "../Components/primary/TopBar";
-import MainNavigation from "../Components/primary/MainNavigation";
+import Footer from "../../Components/primary/Footer";
+import Header from "../../Components/primary/Header";
+import TopBar from "../../Components/primary/TopBar";
+import MainNavigationBar from "../../Components/ui/MainNavigationBar";
 
 export default function HomePage() {
   return (
@@ -10,7 +10,7 @@ export default function HomePage() {
       <TopBar />
 
       <Header>
-        <MainNavigation />
+        <MainNavigationBar />
       </Header>
 
       {/* Books or Blog Page */}

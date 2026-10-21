@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { registerRequest } from "../Services/api/service";
+import { registerRequest } from "../../Services/api/service";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState<string>("");
