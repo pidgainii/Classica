@@ -68,6 +68,7 @@ class AuthenticationService:
         password_hash = hash_password(user_register.password)
         
         user = User(
+            id=uuid.uuid4,
             email=user_register.email,
             first_name=user_register.first_name,
             last_name=user_register.last_name,

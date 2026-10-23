@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CategoryNavigation from "../secondary/CategoryNavigation";
 import HomeBookDisplay from "../secondary/HomeBookDisplay";
 import OrderFiltersNavigation from "../secondary/OrderFiltersNavigation";
@@ -38,10 +38,6 @@ export default function HomeBooksPage() {
     setLocalStorageItem("genres", filters.genres);
     setLocalStorageItem("languages", filters.languages);
   };
-
-  useEffect(() => {
-    setLocalStorageItem("page", page);
-  }, [page]);
 
   return (
     <div>

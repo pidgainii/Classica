@@ -859,3 +859,77 @@ I decided to separate the book grid into a **reusable component** (BookGrid) com
 #### Backend: Getting favourite books
 
 I created a new protected endpoint `/items/favourite-books` that would return the list of favourite books of a user (in the same **paginated format** as for normal book query).
+
+## October 21st
+
+### Profile page
+
+My idea is to create for subpages inside the profile page. This is a very simple design I made:
+
+![profiledesign](media/profiledesign.png)
+
+Each subpage had its own subroute, except Profile which was the one showing in `/profile` (`index: true`):
+
+- `/profile/my-library`
+- `/profile/my-posts`
+- `/profile/settings`
+
+### Protected route redirect issue
+
+I was having an issue with my protected routes. This is what I had:
+
+```typescript
+export default function UserRoutes() {
+  const { user, loading } = useAuthContext();
+
+  if (loading)
+    return <h1>Loading</h1>;
+
+  return user ? <Outlet /> : <Navigate to="/login" replace />;
+}
+
+export default function NoUserRoutes() {
+  const { user } = useAuthContext();
+
+  if (loading)
+    return <h1>Loading</h1>;
+
+  return user ? <Navigate to="/profile" replace /> : <Outlet />;
+}
+```
+
+The problem is that there was a fraction of a moment when **loading was false**, but user was still **undefined**.
+
+Therefore, if a logged in user was in `/profile/my-library` and reloaded the page. He was redirected to `/login`. And when the Auth Context had loaded the user, he was redirected to `/profile`. I added a new condition to show the loading element:
+
+```typescript
+if (loading == true || loading === undefined || user === undefined)
+  return <h1>Loading</h1>;
+```
+
+### Nested routes and Outlet
+
+> I learned something: Nested pages or components cannot replace their parent component. They have to be shown using Outlet.
+
+Therefore, I will not create the favourites page in `/profile/my-library/favourites`, but in `/favourites`.
+
+## October 22nd / 23rd
+
+### Book Shelves
+
+I wanted a feature called Book Shelves. Just simple lists where users can store books.
+
+![shelfdb](media/shelfdb.png)
+
+**SQLAlchemy model:**
+
+```python
+class Shelf(Base):
+    __tablename__ = "shelf"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    user: Mapped['User'] = relationship(back_populates="shelves")
+    books: Mapped[List['Book']] = relationship(secondary='shelves_books')
+```

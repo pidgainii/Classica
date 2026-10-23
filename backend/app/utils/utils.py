@@ -41,7 +41,7 @@ def decode_access_token_from_bearer(credentials: HTTPAuthorizationCredentials = 
     token = credentials.credentials
     
     if not token:
-        raise AccessTokenError("Unavailable Access Token")
+        raise AccessTokenError("ACCESS TOKEN NOT AVAILABLE")
     
     try:
         payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASHING_ALGORITHM])

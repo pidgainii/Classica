@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { booksRequest } from "../../Services/api/service";
 import { BOOKS_PER_PAGE } from "../../Utils/Constants";
 import BookGrid from "../ui/BookGrid";
+import { setLocalStorageItem } from "../../Utils/localStorageUtils";
 
 interface HomeBookDisplayProps {
   page: number;
@@ -69,6 +70,10 @@ export default function HomeBookDisplay(props: HomeBookDisplayProps) {
         .catch(noop);
     }
   }, [paginatedBooks, props.page, queryClient]);
+
+  useEffect(() => {
+    setLocalStorageItem("page", props.page);
+  }, [props.page]);
 
   if (isPending) return <h1>Loading</h1>;
 
