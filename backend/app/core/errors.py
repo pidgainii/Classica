@@ -43,3 +43,9 @@ class AccessTokenError(Error):
 class RefreshTokenError(Error):
     def __init__(self, message ="INVALID REFRESH TOKEN"):
         super().__init__(message)
+
+
+
+class ShelfNameAlreadyExistsError(Error):
+    def __init__(self, message ="SHELF NAME ALREADY EXISTS"):
+        super().__init__(message)

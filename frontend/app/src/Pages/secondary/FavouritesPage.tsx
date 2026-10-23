@@ -2,7 +2,10 @@ import { noop, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "../../Contexts/AuthContext";
 import { favouriteBooksRequest } from "../../Services/api/service";
 import { useEffect, useState } from "react";
-import { getLocalStorageItem } from "../../Utils/localStorageUtils";
+import {
+  getLocalStorageItem,
+  setLocalStorageItem,
+} from "../../Utils/localStorageUtils";
 import { BOOKS_PER_PAGE, SORT_BY_OPTIONS } from "../../Utils/Constants";
 import BookGrid from "../../Components/ui/BookGrid";
 
@@ -51,6 +54,10 @@ export default function FavouritesPage() {
         .catch(noop);
     }
   }, [paginatedBooks, page, queryClient]);
+
+  useEffect(() => {
+    setLocalStorageItem("favourites_page", page);
+  }, [page]);
 
   if (isPending) return <h1>Loading</h1>;
 

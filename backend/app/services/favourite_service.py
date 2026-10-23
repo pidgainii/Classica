@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
 from crud.favourite_repository import FavouriteRepository
+from crud.user_repository import UserRepository
 
 from schemas.tokens import AccessTokenDTO
 from schemas.books import BooksSearchFiltersDTO, BooksResponseDTO
@@ -26,19 +27,21 @@ class FavouriteService:
         return result
     
     async def get_favourite_books(self, access_token: AccessTokenDTO, books_search_filters: BooksSearchFiltersDTO, session: AsyncSession) -> BooksResponseDTO:
-        favourite_repository = FavouriteRepository(session)
+        user_repository = UserRepository(session)
         
-        response = await favourite_repository.get_favourite_books(access_token.email, books_search_filters)
+        user = await user_repository.get_by_email(access_token.email)
         
-        if response is None:
-            raise EntityFetchingError("UNABLE TO FETCH FAVOURITE BOOKS")
+        if not user:
+            raise EntityFetchingError(f"UNABLE TO LOAD USER {access_token.email}")
         
-        books_database = response["books"]
-        number_of_pages = response["number_of_pages"]
+        i1 = books_search_filters.perPage*(books_search_filters.page-1)
+        i2 = books_search_filters.perPage*books_search_filters.page
+        paginated_favourite_books_db = user.favourite_books[i1:i2]
+        number_of_pages = int(len(user.favourite_books) / books_search_filters.perPage)+1
         
-        books_dto = []
+        paginated_favourite_books_dto = []
+        for book in paginated_favourite_books_db:
+            paginated_favourite_books_dto.append(book_validation(book))
+            
         
-        for book in books_database:
-            books_dto.append(book_validation(book))
-        
-        return BooksResponseDTO(pages=number_of_pages, books=books_dto)
+        return BooksResponseDTO(pages=number_of_pages, books=paginated_favourite_books_dto)

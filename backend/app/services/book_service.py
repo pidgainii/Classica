@@ -8,6 +8,8 @@ from core.errors import EntityFetchingError
 
 from utils.SQLAlchemyPydanticValidation.book_validation import book_validation
 
+import uuid
+
 class BookService:
     
     async def get_books(self, books_search_filters: BooksSearchFiltersDTO, session: AsyncSession) -> BooksResponseDTO:
@@ -30,7 +32,7 @@ class BookService:
         
         return BooksResponseDTO(pages=number_of_pages, books=books_dto)
     
-    async def get_book(self, id: str, session: AsyncSession) -> BookBaseDTO:
+    async def get_book(self, id: uuid.UUID, session: AsyncSession) -> BookBaseDTO:
         book_repository = BookRepository(session)
         
         book_database = await book_repository.get_by_id(id)

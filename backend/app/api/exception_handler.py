@@ -78,3 +78,15 @@ def register_exception_handlers(app: FastAPI):
                 "detail": "Unauthorized"
             }
         )
+
+
+    
+    @app.exception_handler(ShelfNameAlreadyExistsError)
+    async def shelf_name_error_handler(request: Request, exc: ShelfNameAlreadyExistsError):
+        print(f"\n\nShelfNameAlreadyExistsError: {exc}\n\n")
+        return JSONResponse(
+            status_code=409,
+            content={
+                "detail": "Conflict"
+            }
+        )
