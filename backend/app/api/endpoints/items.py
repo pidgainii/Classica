@@ -60,3 +60,15 @@ async def get_shelves(access_token = Depends(decode_access_token_from_bearer), s
 async def get_shelf_books(books_search_filters: BooksSearchFiltersDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
     service = ShelfService()
     return await service.get_shelf_books(access_token, books_search_filters, session)
+
+
+# TODO: Add query params to get shelf name and book id.
+@router.get("/is-book-saved", response_model=bool)
+async def is_book_saved_in_shelf(access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = FavouriteService()
+    return await service.get_is_book_favourite(access_token, id, session)
+
+@router.post("/book-saved", response_model=bool)
+async def save_book_to_shelf(access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = FavouriteService()
+    return await service.add_book_favourite(access_token, id, session)
