@@ -89,7 +89,7 @@ export const isBookSavedRequest = async (
   book_id: any,
 ): Promise<boolean> => {
   const { data: result } = await api.get(
-    `items/is-book-saved?shelf_name=${shelf_name}&book_id=${book_id}`,
+    `items/is-book-saved/?shelf_name=${shelf_name}&book_id=${book_id}`,
   );
   return z.boolean().parse(result);
 };
@@ -99,7 +99,7 @@ export const bookSaveRequest = async (
   book_id: any,
 ): Promise<boolean> => {
   const { data: result } = await api.post(
-    `items/book-save?shelf_name=${shelf_name}&book_id=${book_id}`,
+    `items/save-book/?shelf_name=${shelf_name}&book_id=${book_id}`,
   );
   return result;
 };

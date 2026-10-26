@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import uuid
 
-from db.models import Shelf
+from db.models import Shelf, Book
 
 class ShelfRepository:
     def __init__(self, session: AsyncSession):
@@ -23,3 +23,16 @@ class ShelfRepository:
         await self.session.commit()
         await self.session.refresh(shelf)
         return shelf
+    
+    async def save_book(self, shelf: Shelf, book: Book) -> Shelf | None:
+        shelf.books.append(book)
+        await self.session.commit()
+        await self.session.refresh(shelf)
+        return shelf
+    
+    async def remove_book(self, shelf: Shelf, book: Book) -> Shelf | None:
+        shelf.books.remove(book)
+        await self.session.commit()
+        await self.session.refresh(shelf)
+        return shelf
+                

@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { shelvesRequest } from "../../Services/api/service";
 import { useAuthContext } from "../../Contexts/AuthContext";
+import SaveBookButton from "./SaveBookButton";
 
 interface SaveBookModalProps {
+  book_id: string;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }
@@ -35,7 +37,7 @@ export default function SaveBookModal(props: SaveBookModalProps) {
               key={shelf.id}
               className="flex flex-col items-center group cursor-pointer"
             >
-              <h3>{shelf.name}</h3>
+              <SaveBookButton shelf_name={shelf.name} book_id={props.book_id} />
             </div>
           </div>
         ))}

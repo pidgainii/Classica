@@ -18,6 +18,7 @@ class User(Base):
     
     favourite_books: Mapped[List['Book']] = relationship(secondary='users_favourite_books', lazy='selectin', back_populates="users_favourite")
     shelves: Mapped[List['Shelf']] = relationship(lazy='selectin', back_populates="user")
+    posts: Mapped[List['Post']] = relationship(lazy='selectin', back_populates="user")
     
 class Book(Base):
     __tablename__ = "book"
@@ -35,12 +36,12 @@ class Book(Base):
     
     genres: Mapped[List['Genre']] = relationship(secondary='books_genres', lazy='selectin', back_populates="books")
     users_favourite: Mapped[List['User']] = relationship(secondary='users_favourite_books', back_populates="favourite_books")
+    posts: Mapped[List['Post']] = relationship(lazy='selectin', back_populates="book")
     
     
 class Genre(Base):
     __tablename__ = "genre"
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)    
     title: Mapped[str] = mapped_column(String, unique=True, nullable=False)
 
     books: Mapped[List['Book']] = relationship(secondary='books_genres', back_populates="genres")
@@ -55,6 +56,20 @@ class Shelf(Base):
     user: Mapped['User'] = relationship(back_populates="shelves")
     books: Mapped[List['Book']] = relationship(secondary='shelves_books', lazy='selectin')
     
+
+class Post(Base):
+    __tablename__ = "post"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    content: Mapped[str] = mapped_column(String, nullable=False)
+    image_url: Mapped[str] = mapped_column(String, nullable=False)
+    
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    user: Mapped['User'] = relationship(back_populates="posts")
+    
+    book_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("book.id"))
+    book: Mapped['Book'] = relationship(back_populates="posts")
+        
     
     
 ############################################################################

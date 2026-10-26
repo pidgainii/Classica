@@ -25,7 +25,7 @@ export default function BookDetailsPage() {
 
   if (isPending) return <h1>Loading...</h1>;
 
-  if (error) return <h1>Error</h1>;
+  if (error || !id) return <h1>Error</h1>;
 
   return (
     <div>
@@ -64,6 +64,7 @@ export default function BookDetailsPage() {
 
           <section>
             <SaveBookModal
+              book_id={id}
               isOpen={isSaveBookModalOpen}
               setIsOpen={setIsSaveBookModalOpen}
             />

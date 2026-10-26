@@ -2,8 +2,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import uuid
 
-from schemas.books import BooksSearchFiltersDTO
-
 from db.models import User, Book
 
 from .user_repository import UserRepository
@@ -25,11 +23,17 @@ class FavouriteRepository:
         user = await user_repository.get_by_email(email)
         book = await book_repository.get_by_id(book_id)
         
-        if (book in user.favourite_books):
-            user.favourite_books.remove(book)
-            await self.session.commit()
-            return False
-        else:
-            user.favourite_books.append(book)
-            await self.session.commit()
-            return True
+        user.favourite_books.append(book)
+        await self.session.commit()
+        return True
+        
+    async def remove_book_favourite(self, email: str, book_id: uuid.UUID):
+        user_repository = UserRepository(self.session)
+        book_repository = BookRepository(self.session)
+        
+        user = await user_repository.get_by_email(email)
+        book = await book_repository.get_by_id(book_id)
+    
+        user.favourite_books.remove(book)
+        await self.session.commit()
+        return True

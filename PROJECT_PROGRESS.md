@@ -933,3 +933,56 @@ class Shelf(Base):
     user: Mapped['User'] = relationship(back_populates="shelves")
     books: Mapped[List['Book']] = relationship(secondary='shelves_books')
 ```
+
+#### New operations
+
+Introducing this new feature to the application implied creating some new functionalities:
+
+- Creating new shelf
+- Getting and visualizing existing shelves
+- Getting and visualizing books belonging to one shelf
+
+I created a new Pydantic model `ShelfDTO`. And I created three new **API endpoints**, with all it's **service** and **CRUD** logic:
+
+```python
+@router.post("/create-shelf", response_model=ShelfDTO)
+async def create_shelf(new_shelf_request: NewShelfRequestDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = ShelfService()
+    return await service.create_shelf(access_token, new_shelf_request, session)
+
+@router.get("/shelves", response_model=list[ShelfDTO])
+async def get_shelves(access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = ShelfService()
+    return await service.get_shelves(access_token, session)
+
+@router.post("/shelf-books", response_model=BooksResponseDTO)
+async def get_shelf_books(books_search_filters: BooksSearchFiltersDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = ShelfService()
+    return await service.get_shelf_books(access_token, books_search_filters, session)
+```
+
+#### Connecting it with frontend
+
+I created basic frontend components in order to check if everything worked fine. This is what I got in the frontend:
+
+![my-library](media/my-library.png)
+
+**I know this does not look good.** But as I have mentioned before, my goal is to create **functional** and clean **components** and make everything **work good together**, and add styling later.
+
+#### Adding books to shelves
+
+Next functionality to implement is to be able to add books to shelves.
+
+In order to do this, I decided to a **button** in the BookDetailsPage that would open **SaveBookModal** component. This component would display a list of **SaveBookButton**. This button should:
+
+- Display the name of the shelf.
+- Show if the book is currently added to that shelf.
+- Add / Unadd book to that shelf.
+
+This is my idea:
+
+![SaveBookModal](media/SaveBookModal.png)
+
+Of course I would like to make it similar to this (Pinterest):
+
+![SaveModalPinterest](media/SaveModalPinterest.png)

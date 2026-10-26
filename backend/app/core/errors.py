@@ -17,6 +17,10 @@ class EntityCreationError(Error):
 class EntityFetchingError(Error):
     def __init__(self, message ="UNABLE TO FETCH ENTITY"):
         super().__init__(message)
+        
+class EntityUpdateError(Error):
+    def __init__(self, message ="UNABLE TO UPDATE ENTITY"):
+        super().__init__(message)
 
 
 

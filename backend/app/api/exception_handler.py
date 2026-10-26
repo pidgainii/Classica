@@ -23,6 +23,16 @@ def register_exception_handlers(app: FastAPI):
                 "detail": "Internal Sever Error"
             }
         )
+        
+    @app.exception_handler(EntityUpdateError)
+    async def update_error_handler(request: Request, exc: EntityUpdateError):
+        print(f"\n\nEntityUpdateError: {exc}\n\n")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "detail": "Internal Sever Error"
+            }
+        )
     
     
     
