@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.book_service import BookService
 from services.favourite_service import FavouriteService
 from services.shelf_service import ShelfService
+from services.post_service import PostService
 
 from db.session import get_session
 
@@ -74,7 +75,18 @@ async def save_book_to_shelf(shelf_name = str, book_id = uuid.UUID, access_token
 
 
 ################### POSTS ###################
-# @router.post("/create-shelf", response_model=PostDTO)
-# async def create_shelf(new_post_request: NewPostRequestDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
-#     service = ShelfService()
-#     return await service.create_shelf(access_token, new_post_request, session)
+
+@router.post("/create-post", response_model=PostDTO)
+async def create_post(new_post_request: NewPostRequestDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = PostService()
+    return await service.create_post(access_token, new_post_request, session)
+
+@router.get("/posts", response_model=list[PostDTO])
+async def get_posts(session: AsyncSession = Depends(get_session)):
+    service = PostService()
+    return await service.get_posts(session)
+
+@router.get("/my-posts", response_model=list[PostDTO])
+async def get_posts(access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = PostService()
+    return await service.get_posts(access_token, session)

@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Table, Column, ForeignKey
+from sqlalchemy import String, DateTime, Table, Column, ForeignKey
+from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
+from datetime import datetime
 import uuid
 
 from typing import List
@@ -63,6 +65,8 @@ class Post(Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     content: Mapped[str] = mapped_column(String, nullable=False)
     image_url: Mapped[str] = mapped_column(String, nullable=False)
+    
+    posted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
     user: Mapped['User'] = relationship(back_populates="posts")

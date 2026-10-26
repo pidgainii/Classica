@@ -13,8 +13,9 @@ import MyProfilePage from "../Pages/secondary/MyProfilePage";
 import MyLibraryPage from "../Pages/secondary/MyLibraryPage";
 import MyPostsPage from "../Pages/secondary/MyPostsPage";
 import SettingsPage from "../Pages/secondary/SettingsPage";
-import FavouritesPage from "../Pages/secondary/FavouritesPage";
-import BookShelfPage from "../Pages/secondary/BookShelfPage";
+import FavouritesPage from "../Pages/main/FavouritesPage";
+import BookShelfPage from "../Pages/main/BookShelfPage";
+import CreatePostPage from "../Pages/main/CreatePostPage";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
       },
       { path: "favourites", element: <FavouritesPage /> },
       { path: "bookshelf/:name", element: <BookShelfPage /> },
+      { path: "newpost/:id", element: <CreatePostPage /> },
     ],
   },
   {
