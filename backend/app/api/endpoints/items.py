@@ -9,6 +9,7 @@ from db.session import get_session
 
 from schemas.books import BookBaseDTO, BooksSearchFiltersDTO, BooksResponseDTO
 from schemas.shelf import ShelfDTO, NewShelfRequestDTO
+from schemas.post import PostDTO, NewPostRequestDTO
 
 from utils.utils import decode_access_token_from_bearer
 
@@ -60,3 +61,20 @@ async def get_shelves(access_token = Depends(decode_access_token_from_bearer), s
 async def get_shelf_books(books_search_filters: BooksSearchFiltersDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
     service = ShelfService()
     return await service.get_shelf_books(access_token, books_search_filters, session)
+
+@router.get("/is-book-saved/", response_model=bool)
+async def is_book_saved_in_shelf(shelf_name = str, book_id = uuid.UUID, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = ShelfService()
+    return await service.get_is_book_saved(access_token, shelf_name, book_id, session)
+
+@router.post("/save-book", response_model=bool)
+async def save_book_to_shelf(shelf_name = str, book_id = uuid.UUID, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = ShelfService()
+    return await service.save_or_unsave_book_to_shelf(access_token, shelf_name, book_id, session)
+
+
+################### POSTS ###################
+# @router.post("/create-shelf", response_model=PostDTO)
+# async def create_shelf(new_post_request: NewPostRequestDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+#     service = ShelfService()
+#     return await service.create_shelf(access_token, new_post_request, session)

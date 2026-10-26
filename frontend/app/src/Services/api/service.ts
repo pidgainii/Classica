@@ -83,3 +83,23 @@ export const shelfBooksRequest = async (
   const { data: result } = await api.post("/items/shelf-books", filters);
   return booksPaginatedSchema.parse(result);
 };
+
+export const isBookSavedRequest = async (
+  shelf_name: string,
+  book_id: any,
+): Promise<boolean> => {
+  const { data: result } = await api.get(
+    `items/is-book-saved/?shelf_name=${shelf_name}&book_id=${book_id}`,
+  );
+  return z.boolean().parse(result);
+};
+
+export const bookSaveRequest = async (
+  shelf_name: string,
+  book_id: any,
+): Promise<boolean> => {
+  const { data: result } = await api.post(
+    `items/save-book/?shelf_name=${shelf_name}&book_id=${book_id}`,
+  );
+  return result;
+};

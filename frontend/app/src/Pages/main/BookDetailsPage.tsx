@@ -3,10 +3,15 @@ import { bookRequest } from "../../Services/api/service";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../../Contexts/AuthContext";
 import FavouriteButton from "../../Components/ui/FavouriteButton";
+import SaveBookModal from "../../Components/ui/SaveBookModal";
+import { useState } from "react";
 
 export default function BookDetailsPage() {
   const { id } = useParams();
   const { user } = useAuthContext();
+
+  const [isSaveBookModalOpen, setIsSaveBookModalOpen] =
+    useState<boolean>(false);
 
   const {
     data: book,
@@ -20,7 +25,7 @@ export default function BookDetailsPage() {
 
   if (isPending) return <h1>Loading...</h1>;
 
-  if (error) return <h1>Error</h1>;
+  if (error || !id) return <h1>Error</h1>;
 
   return (
     <div>
@@ -46,7 +51,26 @@ export default function BookDetailsPage() {
 
       <p>Genres: {book.genres}</p>
 
-      {user && <FavouriteButton book_id={id} />}
+      {user && (
+        <div>
+          <FavouriteButton book_id={id} />
+
+          <button
+            onClick={() => setIsSaveBookModalOpen(true)}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Save
+          </button>
+
+          <section>
+            <SaveBookModal
+              book_id={id}
+              isOpen={isSaveBookModalOpen}
+              setIsOpen={setIsSaveBookModalOpen}
+            />
+          </section>
+        </div>
+      )}
     </div>
   );
 }

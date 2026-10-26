@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../../Contexts/AuthContext";
 import {
   bookFavouriteRequest,
@@ -16,14 +16,16 @@ export default function FavouriteButton(props: FavouriteButtonProps) {
   const [isFavouriteAux, setIsFavouriteAux] = useState<boolean>(false);
 
   const { data: isFavourite } = useQuery({
-    queryKey: ["favourite", props.book_id, user?.email, setIsFavouriteAux],
+    queryKey: ["favourite", props.book_id, user?.email, isFavouriteAux],
     queryFn: () => isBookFavouriteRequest(props.book_id),
   });
 
-  const onClickFavouriteButton = async () => {
-    const result = await bookFavouriteRequest(props.book_id);
-    setIsFavouriteAux(result);
-  };
+  const { mutate } = useMutation({
+    mutationFn: () => bookFavouriteRequest(props.book_id),
+    onSuccess: (result) => {
+      setIsFavouriteAux(result);
+    },
+  });
 
   useEffect(() => {
     if (isFavourite != undefined) {
@@ -35,7 +37,7 @@ export default function FavouriteButton(props: FavouriteButtonProps) {
     <div>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={onClickFavouriteButton}
+        onClick={() => mutate()}
       >
         Favourite
       </button>

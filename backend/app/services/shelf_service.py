@@ -5,12 +5,13 @@ from db.models import Shelf
 
 from crud.user_repository import UserRepository
 from crud.shelf_repository import ShelfRepository
+from crud.book_repository import BookRepository
 
 from schemas.shelf import ShelfDTO, NewShelfRequestDTO
 from schemas.tokens import AccessTokenDTO
 from schemas.books import BooksSearchFiltersDTO, BooksResponseDTO
 
-from core.errors import EntityFetchingError, EntityCreationError, ShelfNameAlreadyExistsError
+from core.errors import EntityFetchingError, EntityCreationError, EntityUpdateError, ShelfNameAlreadyExistsError
 
 from utils.SQLAlchemyPydanticValidation.shelf_validation import shelf_validation
 from utils.SQLAlchemyPydanticValidation.book_validation import book_validation
@@ -75,12 +76,6 @@ class ShelfService:
         return shelves_dto
     
     async def get_shelf_books(self, access_token: AccessTokenDTO, books_search_filters: BooksSearchFiltersDTO, session: AsyncSession) -> BooksResponseDTO:
-        # We need to:
-        # Load the user
-        # Load the book shelf with that name and that user id (using page)
-        # From the list of books, we need to return only the ones we are asked for.
-        # Then we validate the books into dto.
-        
         user_repository = UserRepository(session)
         shelf_repository = ShelfRepository(session)
         
@@ -104,3 +99,56 @@ class ShelfService:
             paginated_shelf_books_dto.append(book_validation(book))
         
         return BooksResponseDTO(pages=number_of_pages, books=paginated_shelf_books_dto)
+    
+    async def get_is_book_saved(self, access_token: AccessTokenDTO, shelf_name: str, book_id: uuid.UUID, session: AsyncSession) -> bool: 
+        user_repository = UserRepository(session)
+        shelf_repository = ShelfRepository(session)
+        book_repository = BookRepository(session)
+        
+        user = await user_repository.get_by_email(access_token.email)
+        
+        if not user:
+            raise EntityFetchingError(f"UNABLE TO LOAD USER {access_token.email}")
+        
+        shelf = await shelf_repository.get_by_user_id_and_name(user.id, shelf_name)
+        
+        if not shelf:
+            raise EntityFetchingError("UNABLE TO LOAD SHELF")
+        
+        book = await book_repository.get_by_id(book_id)
+        
+        if not book:
+            raise EntityFetchingError("UNABLE TO LOAD BOOK")
+        
+        return (book in shelf.books)
+    
+    async def save_or_unsave_book_to_shelf(self, access_token: AccessTokenDTO, shelf_name: str, book_id: uuid.UUID, session: AsyncSession) -> bool:
+        user_repository = UserRepository(session)
+        shelf_repository = ShelfRepository(session)
+        book_repository = BookRepository(session)
+        
+        user = await user_repository.get_by_email(access_token.email)
+        
+        if not user:
+            raise EntityFetchingError(f"UNABLE TO LOAD USER {access_token.email}")
+        
+        shelf = await shelf_repository.get_by_user_id_and_name(user.id, shelf_name)
+        
+        if not shelf:
+            raise EntityFetchingError("UNABLE TO LOAD SHELF")
+        
+        book = await book_repository.get_by_id(book_id)
+        
+        if not book:
+            raise EntityFetchingError("UNABLE TO LOAD BOOK")
+        
+        if (book in shelf.books):
+            shelf = await shelf_repository.remove_book(shelf, book)
+            if not shelf:
+                raise EntityUpdateError("UNABLE REMOVE BOOK FROM SHELF")
+            return False
+        
+        shelf = await shelf_repository.save_book(shelf, book)
+        if not shelf:
+            raise EntityUpdateError("UNABLE SAVE BOOK TO SHELF")
+        return True
