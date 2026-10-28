@@ -49,7 +49,7 @@ export default function CreatePostPage() {
           className="w-full h-full object-cover"
         />
       </div>
-      <h2>Title: {book?.title}</h2>
+      <h2>{book?.title}</h2>
 
       <h1>New Post</h1>
       <div className="flex flex-col items-center justify-center">
@@ -63,7 +63,7 @@ export default function CreatePostPage() {
         <input
           type="content"
           className="rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0"
-          placeholder="Content"
+          placeholder="Reflection"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         ></input>

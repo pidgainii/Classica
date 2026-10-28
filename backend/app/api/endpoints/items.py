@@ -10,7 +10,7 @@ from db.session import get_session
 
 from schemas.books import BookBaseDTO, BooksSearchFiltersDTO, BooksResponseDTO
 from schemas.shelf import ShelfDTO, NewShelfRequestDTO
-from schemas.post import PostDTO, NewPostRequestDTO
+from schemas.post import PostDTO, NewPostRequestDTO, PostsResponseDTO
 
 from utils.utils import decode_access_token_from_bearer
 
@@ -43,7 +43,7 @@ async def is_favourite(id: uuid.UUID, access_token = Depends(decode_access_token
 @router.post("/book-favourite/{id}", response_model=bool)
 async def add_favourite(id: uuid.UUID, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
     service = FavouriteService()
-    return await service.add_book_favourite(access_token, id, session)
+    return await service.add_or_remove_book_favourite(access_token, id, session)
 
 
 ################### SHELVES ###################
@@ -81,12 +81,17 @@ async def create_post(new_post_request: NewPostRequestDTO, access_token = Depend
     service = PostService()
     return await service.create_post(access_token, new_post_request, session)
 
-@router.get("/posts", response_model=list[PostDTO])
-async def get_posts(session: AsyncSession = Depends(get_session)):
+@router.get("/posts", response_model=PostsResponseDTO)
+async def get_posts(page: int = 1, perPage: int = 10, session: AsyncSession = Depends(get_session)):
     service = PostService()
-    return await service.get_posts(session)
+    return await service.get_paginated_posts(page, perPage, session)
+
+@router.get("/post/{id}", response_model=PostDTO)
+async def get_user_post(id: uuid.UUID, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = PostService()
+    return await service.get_user_post(access_token, id, session)
 
 @router.get("/my-posts", response_model=list[PostDTO])
 async def get_posts(access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
     service = PostService()
-    return await service.get_posts(access_token, session)
+    return await service.get_user_posts(access_token, session)

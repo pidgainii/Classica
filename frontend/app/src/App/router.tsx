@@ -16,6 +16,7 @@ import SettingsPage from "../Pages/secondary/SettingsPage";
 import FavouritesPage from "../Pages/main/FavouritesPage";
 import BookShelfPage from "../Pages/main/BookShelfPage";
 import CreatePostPage from "../Pages/main/CreatePostPage";
+import PostDetailsPage from "../Pages/main/PostDetailsPage";
 
 export const router = createBrowserRouter([
   {
@@ -33,10 +34,7 @@ export const router = createBrowserRouter([
         element: <ProfilePage />,
         children: [
           { index: true, element: <MyProfilePage /> },
-          {
-            path: "my-library",
-            element: <MyLibraryPage />,
-          },
+          { path: "my-library", element: <MyLibraryPage /> },
           { path: "my-posts", element: <MyPostsPage /> },
           { path: "settings", element: <SettingsPage /> },
         ],
@@ -44,6 +42,7 @@ export const router = createBrowserRouter([
       { path: "favourites", element: <FavouritesPage /> },
       { path: "bookshelf/:name", element: <BookShelfPage /> },
       { path: "newpost/:id", element: <CreatePostPage /> },
+      { path: "post/:id", element: <PostDetailsPage /> },
     ],
   },
   {
@@ -53,12 +52,6 @@ export const router = createBrowserRouter([
       { path: "register", element: <RegisterPage /> },
     ],
   },
-  {
-    path: "book/:id",
-    element: <BookDetailsPage />,
-  },
-  {
-    path: "*",
-    element: <Navigate to="/books" replace />,
-  },
+  { path: "book/:id", element: <BookDetailsPage /> },
+  { path: "*", element: <Navigate to="/books" replace /> },
 ]);

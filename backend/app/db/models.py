@@ -69,10 +69,10 @@ class Post(Base):
     posted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
-    user: Mapped['User'] = relationship(back_populates="posts")
+    user: Mapped['User'] = relationship(lazy='selectin', back_populates="posts")
     
     book_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("book.id"))
-    book: Mapped['Book'] = relationship(back_populates="posts")
+    book: Mapped['Book'] = relationship(lazy='selectin', back_populates="posts")
         
     
     

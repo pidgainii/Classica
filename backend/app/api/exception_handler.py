@@ -4,6 +4,19 @@ from core.errors import *
 
 def register_exception_handlers(app: FastAPI):
 
+
+    @app.exception_handler(NotAllowedUserError)
+    async def not_allowed_error_handler(request: Request, exc: NotAllowedUserError):
+        print(f"\n\nNotAllowedUserError: {exc}\n\n")
+        return JSONResponse(
+            status_code=403,
+            content={
+                "detail": "Forbidden"
+            }
+        )
+
+
+
     @app.exception_handler(EntityCreationError)
     async def creation_error_handler(request: Request, exc: EntityCreationError):
         print(f"\n\nEntityCreationError: {exc}\n\n")

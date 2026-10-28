@@ -1,38 +1,80 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { postsRequest } from "../../Services/api/service";
+import { useInView } from "react-intersection-observer";
+import { useEffect } from "react";
+import PostCard from "../ui/PostCard";
 
 export default function HomeBlogPage() {
   const {
     data: posts,
     isPending,
     error,
-  } = useQuery({
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["posts"],
-    queryFn: () => postsRequest(),
+    queryFn: postsRequest,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.next_page,
   });
 
-  if (isPending) return <h1>Loading</h1>;
+  const { ref, inView } = useInView();
 
-  if (error) return <h1>Error</h1>;
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, inView]);
 
-  return (
-    <div>
-      <h1>Blog Page</h1>
-      {posts.map((post) => (
-        <div
-          key={post.id}
-          className="flex flex-col items-center group cursor-pointer"
-        >
-          <h2>Post title: {post.title}</h2>
-          <div className="w-70">
-            <img
-              src={post.image_url}
-              alt={`Portada de ${post.title}`}
-              className="w-full h-full object-cover"
-            />
+  return isPending ? (
+    <div>Loading...</div>
+  ) : error ? (
+    <div>{error.message}</div>
+  ) : (
+    <div className="flex flex-col gap-2">
+      {posts.pages.map((page) => {
+        return (
+          <div
+            key={page.current_page}
+            className="flex flex-col items-center group cursor-pointer"
+          >
+            {page.posts.map((post) => {
+              return <PostCard post={post}></PostCard>;
+            })}
           </div>
-        </div>
-      ))}
+        );
+      })}
+
+      <h1 ref={ref}>{isFetchingNextPage && "Loading..."}</h1>
     </div>
   );
 }
+
+// export default function HomeBlogPage() {
+//   const {
+//     data: posts,
+//     isPending,
+//     error,
+//   } = useQuery({
+//     queryKey: ["posts"],
+//     queryFn: () => postsRequest(),
+//   });
+
+//   if (isPending) return <h1>Loading</h1>;
+
+//   if (error) return <h1>Error</h1>;
+
+//   return (
+//     <div>
+//       <h1>Blog Page</h1>
+//       {posts.map((post) => (
+//         <div
+//           key={post.id}
+//           className="flex flex-col items-center group cursor-pointer"
+//         >
+//           <PostCard post={post} />
+//         </div>
+//       ))}
+//     </div>
+//   );
+// }

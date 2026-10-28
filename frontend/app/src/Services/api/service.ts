@@ -17,9 +17,12 @@ import z from "zod";
 import { shelfSchema, type ShelfType } from "../../Models/shelf";
 import {
   postSchema,
+  postsPaginatedSchema,
   type NewPostRequestDTO,
+  type PostsPaginatedType,
   type PostType,
 } from "../../Models/post";
+import { POSTS_PER_PAGE } from "../../Utils/Constants";
 
 ///////////////// AUTHENTICATION /////////////////
 
@@ -127,7 +130,23 @@ export const createPostRequest = async (
   return postSchema.parse(result);
 };
 
-export const postsRequest = async (): Promise<PostType[]> => {
-  const { data: result } = await api.get("/items/posts");
+export const postsRequest = async ({
+  pageParam,
+}: {
+  pageParam: number;
+}): Promise<PostsPaginatedType> => {
+  const { data: result } = await api.get(
+    `/items/posts/?page=${pageParam}&perPage=${POSTS_PER_PAGE}`,
+  );
+  return postsPaginatedSchema.parse(result);
+};
+
+export const postRequest = async (id: any): Promise<PostType> => {
+  const { data: result } = await api.get(`/items/post/${id}`);
+  return postSchema.parse(result);
+};
+
+export const myPostsRequest = async (): Promise<PostType[]> => {
+  const { data: result } = await api.get("/items/my-posts");
   return postSchema.array().parse(result);
 };

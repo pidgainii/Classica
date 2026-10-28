@@ -19,7 +19,7 @@ export default function BookDetailsPage() {
     isPending,
     error,
   } = useQuery({
-    queryKey: ["book"],
+    queryKey: ["book", id],
     queryFn: () => bookRequest(id),
     gcTime: 0,
   });

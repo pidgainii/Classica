@@ -22,7 +22,6 @@ class UserDatabaseDTO(UserBaseDTO):
     first_name: str
     last_name: str
     password_hash: str
-    # TODO: Add favourites maybe?
 
 # Model with register info about user
 class UserRegisterDTO(UserBaseDTO):
