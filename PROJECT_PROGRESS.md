@@ -1051,3 +1051,7 @@ Not very user friendly, I know. But it worked!
 Also, I had to display the posts in the Blog section (`/blog`) in **descending order** based on post datetime. So I did it:
 
 ![blog_section](media/blog_section.png)
+
+## October 28th
+
+Today's progress was amazing. Thank God.
