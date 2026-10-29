@@ -26,18 +26,21 @@ export default function SearchBar(props: SearchBarProps) {
   };
 
   return (
-    <div className="flex-1 flex justify-center md:justify-end">
-      <div className="relative w-full max-w-[200px]">
-        <input
-          type="text"
-          className="w-full border border-gray-300 px-3 py-1.5 pr-8 text-sm outline-none focus:border-gray-400"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <button onClick={onClickSearchButton}>
-          <Search className="absolute right-2 top-1.5 w-4 h-4 text-gray-400 cursor-pointer" />
-        </button>
-      </div>
+    <div className="relative w-full sm:w-[280px]">
+      <input
+        type="text"
+        placeholder="Search books..."
+        className="w-full bg-white border border-[#d6ccb8] px-3 py-2 pl-8 pr-8 text-xs text-[#5a4a42] placeholder-[#a69b90] outline-none focus:border-[#5a4a42] rounded-sm"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-[#a69b90] pointer-events-none" />
+      <button
+        onClick={onClickSearchButton}
+        className="absolute right-2.5 top-2.5"
+      >
+        <Search className="w-3.5 h-3.5 text-[#a69b90] cursor-pointer hover:text-[#5a4a42]" />
+      </button>
     </div>
   );
 }

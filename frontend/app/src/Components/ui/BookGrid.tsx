@@ -10,11 +10,8 @@ interface BookGridProps {
 
 export default function BookGrid(props: BookGridProps) {
   return (
-    <main className="bg-[#e8e8e8] py-16 px-8 min-h-screen border-t border-gray-300 shadow-inner">
-      <h3>Current Page: {props.page}</h3>
-      <div>&nbsp;</div>
-
-      <div className="max-w-[1400px] mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-x-6 gap-y-10">
+    <main className="w-full bg-[#f0ece1] py-16 px-6 md:px-16 border-t border-[#e6decb] shadow-inner flex flex-col items-center">
+      <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-x-6 gap-y-12">
         {props.paginatedBooks.books.map((book) => (
           <div
             key={book.id}
@@ -25,11 +22,13 @@ export default function BookGrid(props: BookGridProps) {
         ))}
       </div>
       {props.paginatedBooks.pages > 1 && (
-        <PaginationElement
-          page={props.page}
-          setPage={props.setPage}
-          totalPages={props.paginatedBooks.pages}
-        ></PaginationElement>
+        <div className="mt-16 flex justify-center w-full">
+          <PaginationElement
+            page={props.page}
+            setPage={props.setPage}
+            totalPages={props.paginatedBooks.pages}
+          />
+        </div>
       )}
     </main>
   );

@@ -6,15 +6,17 @@ import MainNavigationBar from "../../Components/ui/MainNavigationBar";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#f4f4f4] font-sans text-gray-800">
-      <TopBar />
-
-      <Header>
-        <MainNavigationBar />
-      </Header>
-
-      {/* Books or Blog Page */}
-      <Outlet />
+    <div className="min-h-screen w-full bg-[#f7f4ec] font-serif text-[#3e322c] flex flex-col justify-between">
+      <div>
+        <TopBar />
+        <Header>
+          <MainNavigationBar />
+        </Header>
+        {/* Books or Blog Page */}
+        <main className="w-full">
+          <Outlet />
+        </main>
+      </div>
 
       <Footer />
     </div>

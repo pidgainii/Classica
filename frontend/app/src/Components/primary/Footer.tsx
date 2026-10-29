@@ -1,46 +1,31 @@
 export default function Footer() {
   return (
-    <footer className="bg-[#f8f8f8] border-t border-gray-300 py-16 px-8">
+    <footer className="bg-[#f0ece1] border-t border-gray-300 py-16 px-8">
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
         {/* Columna 1 */}
         <div>
           <h4 className="text-gray-800 uppercase tracking-wide text-sm mb-4">
-            ABOUT US
+            TECHNOLOGICAL STACK
           </h4>
           <ul className="space-y-2 text-xs text-gray-500">
             <li>
               <a href="#" className="hover:text-gray-800">
-                • About Us
+                • Frontend
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • Customer Service
+                • Backend
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • Site Map
+                • Database
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • Search Terms
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-gray-800">
-                • Advanced Search
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-gray-800">
-                • Orders and Returns
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-gray-800">
-                • Contact
+                • Other
               </a>
             </li>
           </ul>
@@ -49,32 +34,32 @@ export default function Footer() {
         {/* Columna 2 */}
         <div>
           <h4 className="text-gray-800 uppercase tracking-wide text-sm mb-4">
-            WHY BUY FROM US
+            SOFTWARE PRACTICES
           </h4>
           <ul className="space-y-2 text-xs text-gray-500">
             <li>
               <a href="#" className="hover:text-gray-800">
-                • Shipping & Returns
+                • Authentication
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • Secure Shopping
+                • Route Protection
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • International Shipping
+                • Pagination
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • Affiliates
+                • State Persistence
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • Group Sales
+                • Components
               </a>
             </li>
           </ul>
@@ -88,27 +73,32 @@ export default function Footer() {
           <ul className="space-y-2 text-xs text-gray-500">
             <li>
               <a href="#" className="hover:text-gray-800">
-                • My Account
+                • Profile
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • My Wishlist
+                • My Library
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • My Cart
+                • My Posts
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
-                • Checkout
+                • Settings
               </a>
             </li>
             <li>
               <a href="#" className="hover:text-gray-800">
                 • Log In
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-gray-800">
+                • Register
               </a>
             </li>
           </ul>
@@ -117,7 +107,7 @@ export default function Footer() {
         {/* Columna 4 (Newsletter) */}
         <div>
           <h4 className="text-gray-800 uppercase tracking-wide text-sm mb-4">
-            EMAIL SIGNUP
+            LOG IN
           </h4>
           <div className="flex mt-2">
             <input
@@ -126,8 +116,7 @@ export default function Footer() {
               className="w-full border border-gray-300 px-3 py-2 text-xs outline-none focus:border-gray-400 bg-white"
             />
             <button className="bg-gray-200 border border-l-0 border-gray-300 px-3 text-xs hover:bg-gray-300 transition-colors">
-              <span className="opacity-0">▶</span>{" "}
-              {/* Puedes poner un pequeño icono de flecha aquí */}
+              <span className="opacity-40">▶</span>{" "}
             </button>
           </div>
         </div>
@@ -135,7 +124,7 @@ export default function Footer() {
 
       {/* Copyright */}
       <div className="max-w-6xl mx-auto mt-16 pt-4 text-xs text-gray-400">
-        © 2026 Magento Demo Store. All Rights Reserved.
+        © 2026 Yevgen Petronyuk Pidhaynyy. All Rights Reserved.
       </div>
     </footer>
   );

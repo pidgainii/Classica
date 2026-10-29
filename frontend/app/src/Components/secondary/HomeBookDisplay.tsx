@@ -5,11 +5,12 @@ import { booksRequest } from "../../Services/api/service";
 import { BOOKS_PER_PAGE } from "../../Utils/Constants";
 import BookGrid from "../ui/BookGrid";
 import { setLocalStorageItem } from "../../Utils/localStorageUtils";
+import Loading from "../../Utils/Loading";
+import Error from "../../Utils/Error";
 
 interface HomeBookDisplayProps {
   page: number;
   setPage: (page: number) => void;
-
   searchQuery: string;
   sortBy: string;
   genres: string[];
@@ -75,9 +76,12 @@ export default function HomeBookDisplay(props: HomeBookDisplayProps) {
     setLocalStorageItem("page", props.page);
   }, [props.page]);
 
-  if (isPending) return <h1>Loading</h1>;
+  if (isPending) return <Loading />;
 
-  if (error) return <h1>Error</h1>;
+  if (error)
+    return (
+      <Error message="Books could not be loaded. Please try again later." />
+    );
 
   return (
     <BookGrid

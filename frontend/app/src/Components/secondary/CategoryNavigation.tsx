@@ -40,30 +40,32 @@ export default function CategoryNavigation(props: CategoryNavigationProps) {
   };
 
   return (
-    <div className="flex justify-center flex-wrap gap-x-6 gap-y-2 text-xs text-gray-400 py-4 max-w-5xl mx-auto">
-      <div
-        onClick={onClickBiographies}
-        className="hover:text-gray-600 hover:underline"
-      >
-        <button>Biographies & Memoirs</button>
-      </div>
-      <div
-        onClick={onClickChildren}
-        className="hover:text-gray-600 hover:underline"
-      >
-        <button>Children's Books</button>
-      </div>
-      <div
-        onClick={onClickChristian}
-        className="hover:text-gray-600 hover:underline"
-      >
-        <button>Christian Books</button>
-      </div>
-      <div
-        onClick={onClickPoetry}
-        className="hover:text-gray-600 hover:underline"
-      >
-        <button>Poetry</button>
+    <div className="w-full bg-[#f7f4ec] pb-6 pt-2 px-8">
+      <div className="max-w-5xl mx-auto flex justify-center flex-wrap gap-x-10 gap-y-2 text-xs font-serif tracking-widest text-[#5a4a42]">
+        <button
+          onClick={onClickBiographies}
+          className="hover:text-black hover:underline uppercase transition-colors"
+        >
+          Biographies & Memoirs
+        </button>
+        <button
+          onClick={onClickChildren}
+          className="hover:text-black hover:underline uppercase transition-colors"
+        >
+          Children's Books
+        </button>
+        <button
+          onClick={onClickChristian}
+          className="hover:text-black hover:underline uppercase transition-colors"
+        >
+          Christian Books
+        </button>
+        <button
+          onClick={onClickPoetry}
+          className="hover:text-black hover:underline uppercase transition-colors"
+        >
+          Poetry
+        </button>
       </div>
     </div>
   );
