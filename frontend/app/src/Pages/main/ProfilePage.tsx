@@ -21,6 +21,8 @@ export default function ProfilePage() {
     <div>
       <h2>Welcome back, {user?.first_name}</h2>
       <p></p>
+      <button onClick={() => navigate("/")}>Home</button>
+      <p></p>
       <button onClick={onClickLogout}>Log out</button>
       <ProfileNavigationBar />
       <Outlet />

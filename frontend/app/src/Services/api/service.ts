@@ -15,6 +15,16 @@ import { tokenSchema, type TokenType } from "../../Models/token";
 import api from "./api";
 import z from "zod";
 import { shelfSchema, type ShelfType } from "../../Models/shelf";
+import {
+  postSchema,
+  postsPaginatedSchema,
+  type NewPostRequestDTO,
+  type PostsPaginatedType,
+  type PostType,
+} from "../../Models/post";
+import { POSTS_PER_PAGE } from "../../Utils/Constants";
+
+///////////////// AUTHENTICATION /////////////////
 
 export const loginRequest = async (user: UserLoginType): Promise<TokenType> => {
   const { data: result } = await api.post("/auth/login", user);
@@ -33,6 +43,8 @@ export const currentUserRequest = async (): Promise<UserType> => {
   const { data: result } = await api.get("/auth/me");
   return userSchema.parse(result);
 };
+
+///////////////// BOOKS /////////////////
 
 export const bookRequest = async (id: any): Promise<BookType> => {
   const { data: result } = await api.get(`items/book/${id}`);
@@ -62,6 +74,8 @@ export const bookFavouriteRequest = async (id: any): Promise<boolean> => {
   const { data: result } = await api.post(`items/book-favourite/${id}`);
   return result;
 };
+
+///////////////// SHELVES /////////////////
 
 export const createBookShelfRequest = async (
   name: string,
@@ -102,4 +116,37 @@ export const bookSaveRequest = async (
     `items/save-book/?shelf_name=${shelf_name}&book_id=${book_id}`,
   );
   return result;
+};
+
+///////////////// POSTS /////////////////
+
+export const createPostRequest = async (
+  new_post_request: NewPostRequestDTO,
+): Promise<PostType> => {
+  const { data: result } = await api.post(
+    "/items/create-post",
+    new_post_request,
+  );
+  return postSchema.parse(result);
+};
+
+export const postsRequest = async ({
+  pageParam,
+}: {
+  pageParam: number;
+}): Promise<PostsPaginatedType> => {
+  const { data: result } = await api.get(
+    `/items/posts/?page=${pageParam}&perPage=${POSTS_PER_PAGE}`,
+  );
+  return postsPaginatedSchema.parse(result);
+};
+
+export const postRequest = async (id: any): Promise<PostType> => {
+  const { data: result } = await api.get(`/items/post/${id}`);
+  return postSchema.parse(result);
+};
+
+export const myPostsRequest = async (): Promise<PostType[]> => {
+  const { data: result } = await api.get("/items/my-posts");
+  return postSchema.array().parse(result);
 };

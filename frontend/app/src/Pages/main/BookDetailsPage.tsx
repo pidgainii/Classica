@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { bookRequest } from "../../Services/api/service";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthContext } from "../../Contexts/AuthContext";
@@ -9,6 +9,7 @@ import { useState } from "react";
 export default function BookDetailsPage() {
   const { id } = useParams();
   const { user } = useAuthContext();
+  const navigate = useNavigate();
 
   const [isSaveBookModalOpen, setIsSaveBookModalOpen] =
     useState<boolean>(false);
@@ -18,7 +19,7 @@ export default function BookDetailsPage() {
     isPending,
     error,
   } = useQuery({
-    queryKey: ["book"],
+    queryKey: ["book", id],
     queryFn: () => bookRequest(id),
     gcTime: 0,
   });
@@ -62,13 +63,20 @@ export default function BookDetailsPage() {
             Save
           </button>
 
-          <section>
-            <SaveBookModal
-              book_id={id}
-              isOpen={isSaveBookModalOpen}
-              setIsOpen={setIsSaveBookModalOpen}
-            />
-          </section>
+          <SaveBookModal
+            book_id={id}
+            isOpen={isSaveBookModalOpen}
+            setIsOpen={setIsSaveBookModalOpen}
+          />
+
+          <p></p>
+
+          <button
+            onClick={() => navigate(`/newpost/${id}`)}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Create Post
+          </button>
         </div>
       )}
     </div>

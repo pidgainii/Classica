@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc, asc, func, or_
 import uuid
-from math import ceil
 
 from db.models import Book, Genre
 
@@ -43,7 +42,7 @@ class BookRepository:
         )
         return result.scalars().all()
     
-    async def get_number_pages(self, books_search_filters: BooksSearchFiltersDTO) -> int | None:
+    async def get_number_of_books(self, books_search_filters: BooksSearchFiltersDTO) -> int | None:
         search_filters = []
         if (books_search_filters.searchQuery != ""):
             search_filters.append(Book.title.ilike(f"%{books_search_filters.searchQuery}%"))
@@ -65,10 +64,9 @@ class BookRepository:
                 .subquery()
                 )
         )
-        numBooks = result.scalar_one()
-        return ceil(numBooks / books_search_filters.perPage)
+        return result.scalar_one()
     
     async def get_by_id(self, id: uuid.UUID) -> Book | None:
-            statement = select(Book).where(Book.id == id)
-            result = await self.session.execute(statement)
-            return result.scalar_one_or_none()
+        statement = select(Book).where(Book.id == id)
+        result = await self.session.execute(statement)
+        return result.scalar_one_or_none()

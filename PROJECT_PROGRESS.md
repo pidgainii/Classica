@@ -986,3 +986,72 @@ This is my idea:
 Of course I would like to make it similar to this (Pinterest):
 
 ![SaveModalPinterest](media/SaveModalPinterest.png)
+
+## October 26th
+
+In the backend, I created two API endpoint functions that would be called from the frontend by the **SaveBookButton**:
+
+```python
+@router.get("/is-book-saved/", response_model=bool)
+async def is_book_saved_in_shelf(shelf_name = str, book_id = uuid.UUID, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = ShelfService()
+    return await service.get_is_book_saved(access_token, shelf_name, book_id, session)
+
+@router.post("/save-book", response_model=bool)
+async def save_book_to_shelf(shelf_name = str, book_id = uuid.UUID, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = ShelfService()
+    return await service.save_or_unsave_book_to_shelf(access_token, shelf_name, book_id, session)
+
+```
+
+#### Query Parameters in POST method?
+
+Although the second function is a **POST** method, I used **query parameters** to send the shelf name and book id. I did this because in this **particular case**, both functions are very related one to each other, and will mainly be used together. In order to avoid creating **unnecessary DTO objects** both in backend and in frontend, I decided that using the same query parameters in both endpoints is a valid approach **(please notify me if I am wrong)**.
+
+### Blog Section
+
+My idea is to create a Blog section. Users will be able to create posts associated to books, and view other user's posts.
+
+I created the **SQLAlchemy model**:
+
+```python
+class Post(Base):
+    __tablename__ = "post"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    content: Mapped[str] = mapped_column(String, nullable=False)
+    image_url: Mapped[str] = mapped_column(String, nullable=False)
+
+    posted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    user: Mapped['User'] = relationship(back_populates="posts")
+
+    book_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("book.id"))
+    book: Mapped['Book'] = relationship(back_populates="posts")
+```
+
+Then I created two new **API endpoints**:
+
+- `/items/create-post`
+- `/items/posts`
+
+And implemented all the **service and CRUD logic**.
+
+#### Frontend
+
+On the frontend, I decided that the functionality to create a new Post will be available in the BookDetailsPage.
+
+My idea is that the user would **upload a photo**, write a **title for the post**, and a **reflection on the book**. I will create the image uploading functionality later. For now, we will just save a image url. This is what I got:
+
+![new_post](media/new_post.png)
+
+Not very user friendly, I know. But it worked!
+
+Also, I had to display the posts in the Blog section (`/blog`) in **descending order** based on post datetime. So I did it:
+
+![blog_section](media/blog_section.png)
+
+## October 28th
+
+Today's progress was amazing. Thank God.

@@ -4,12 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.book_service import BookService
 from services.favourite_service import FavouriteService
 from services.shelf_service import ShelfService
+from services.post_service import PostService
 
 from db.session import get_session
 
 from schemas.books import BookBaseDTO, BooksSearchFiltersDTO, BooksResponseDTO
 from schemas.shelf import ShelfDTO, NewShelfRequestDTO
-from schemas.post import PostDTO, NewPostRequestDTO
+from schemas.post import PostDTO, NewPostRequestDTO, PostsResponseDTO
 
 from utils.utils import decode_access_token_from_bearer
 
@@ -42,7 +43,7 @@ async def is_favourite(id: uuid.UUID, access_token = Depends(decode_access_token
 @router.post("/book-favourite/{id}", response_model=bool)
 async def add_favourite(id: uuid.UUID, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
     service = FavouriteService()
-    return await service.add_book_favourite(access_token, id, session)
+    return await service.add_or_remove_book_favourite(access_token, id, session)
 
 
 ################### SHELVES ###################
@@ -74,7 +75,23 @@ async def save_book_to_shelf(shelf_name = str, book_id = uuid.UUID, access_token
 
 
 ################### POSTS ###################
-# @router.post("/create-shelf", response_model=PostDTO)
-# async def create_shelf(new_post_request: NewPostRequestDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
-#     service = ShelfService()
-#     return await service.create_shelf(access_token, new_post_request, session)
+
+@router.post("/create-post", response_model=PostDTO)
+async def create_post(new_post_request: NewPostRequestDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = PostService()
+    return await service.create_post(access_token, new_post_request, session)
+
+@router.get("/posts", response_model=PostsResponseDTO)
+async def get_posts(page: int = 1, perPage: int = 10, session: AsyncSession = Depends(get_session)):
+    service = PostService()
+    return await service.get_paginated_posts(page, perPage, session)
+
+@router.get("/post/{id}", response_model=PostDTO)
+async def get_user_post(id: uuid.UUID, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = PostService()
+    return await service.get_user_post(access_token, id, session)
+
+@router.get("/my-posts", response_model=list[PostDTO])
+async def get_posts(access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = PostService()
+    return await service.get_user_posts(access_token, session)

@@ -8,6 +8,10 @@ class Error(Exception):
         return self.message
     
 
+class NotAllowedUserError(Error):
+    def __init__(self, message ="USER NOT ALLOWED"):
+        super().__init__(message)
+        
 
 
 class EntityCreationError(Error):

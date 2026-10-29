@@ -9,6 +9,7 @@ from core.errors import EntityFetchingError
 from utils.SQLAlchemyPydanticValidation.book_validation import book_validation
 
 import uuid
+from math import ceil
 
 class BookService:
     
@@ -17,7 +18,8 @@ class BookService:
         
         books_database = await book_repository.get_books(books_search_filters)
         
-        number_of_pages = await book_repository.get_number_pages(books_search_filters)
+        number_of_books = await book_repository.get_number_of_books(books_search_filters)
+        number_of_pages = ceil(number_of_books / books_search_filters.perPage)
         
         if books_database is None:
             raise EntityFetchingError("UNABLE TO FETCH BOOKS")
