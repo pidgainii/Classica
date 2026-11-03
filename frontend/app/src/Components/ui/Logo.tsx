@@ -1,6 +1,9 @@
 export default function Logo() {
   return (
-    <h1 className="text-5xl font-serif tracking-widest text-[#333] flex-1 text-center mb-4 md:mb-0">
+    <h1
+      className="text-4xl md:text-6xl tracking-[0.3em] text-[#3e322c] text-center uppercase font-normal"
+      style={{ fontFamily: "'Cinzel', serif" }}
+    >
       Classica
     </h1>
   );

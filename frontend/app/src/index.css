@@ -65,8 +65,16 @@
   box-sizing: border-box;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
+
 body {
+  font-family: 'Lora', serif;
+  background-color: #f7f4ec;
+  color: #3e322c;
   margin: 0;
+  padding: 0;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 h1,

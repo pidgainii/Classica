@@ -26,11 +26,11 @@ export default function HomeBlogPage() {
     }
   }, [fetchNextPage, inView]);
 
-  return isPending ? (
-    <div>Loading...</div>
-  ) : error ? (
-    <div>{error.message}</div>
-  ) : (
+  if (isPending) return <h1>Loading...</h1>;
+
+  if (error) return <h1>Error</h1>;
+
+  return (
     <div className="flex flex-col gap-2">
       {posts.pages.map((page) => {
         return (
@@ -49,32 +49,3 @@ export default function HomeBlogPage() {
     </div>
   );
 }
-
-// export default function HomeBlogPage() {
-//   const {
-//     data: posts,
-//     isPending,
-//     error,
-//   } = useQuery({
-//     queryKey: ["posts"],
-//     queryFn: () => postsRequest(),
-//   });
-
-//   if (isPending) return <h1>Loading</h1>;
-
-//   if (error) return <h1>Error</h1>;
-
-//   return (
-//     <div>
-//       <h1>Blog Page</h1>
-//       {posts.map((post) => (
-//         <div
-//           key={post.id}
-//           className="flex flex-col items-center group cursor-pointer"
-//         >
-//           <PostCard post={post} />
-//         </div>
-//       ))}
-//     </div>
-//   );
-// }

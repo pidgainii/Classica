@@ -28,6 +28,7 @@ export default function PostCard(props: PostCardProps) {
           alt={`Portada de ${props.post.title}`}
           className="w-70"
         />
+        <h4>{props.post.content}</h4>
       </div>
     </div>
   );

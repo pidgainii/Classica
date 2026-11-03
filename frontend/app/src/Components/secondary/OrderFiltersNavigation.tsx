@@ -61,32 +61,45 @@ export default function OrderFiltersNavigation(
   }, [searchQuery]);
 
   return (
-    <div className="flex justify-center flex-wrap gap-x-6 gap-y-2 text-xs text-gray-400 py-4 max-w-5xl mx-auto">
-      <h3>Current genres: {genres}</h3>
-      <h3>Current languages: {languages}</h3>
+    <div className="w-full bg-[#f7f4ec] py-4 px-8 border-b border-[#e6decb]">
+      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4 text-xs text-[#5a4a42]">
+        <SearchBar setSearchQuery={setSearchQuery} />
 
-      <SelectionElement
-        title={"Sort By"}
-        availableElements={SORT_BY_OPTIONS}
-        currentElement={sortBy}
-        setElement={setSortBy}
-      />
+        <SelectionElement
+          title={"Sort By"}
+          availableElements={SORT_BY_OPTIONS}
+          currentElement={sortBy}
+          setElement={setSortBy}
+        />
 
-      <MultipleSelectionElement
-        title={"Genres"}
-        availableElements={GENRES}
-        currentElements={genres}
-        setElements={setGenres}
-      />
-      <MultipleSelectionElement
-        title="Languages"
-        availableElements={LANGUAGES}
-        currentElements={languages}
-        setElements={setLanguages}
-      />
-      <button onClick={onClickApplyFilters}>Apply Filters</button>
-      <button onClick={onClickClearFilters}>Clear Filters</button>
-      <SearchBar setSearchQuery={setSearchQuery}></SearchBar>
+        <MultipleSelectionElement
+          title={"Genres"}
+          availableElements={GENRES}
+          currentElements={genres}
+          setElements={setGenres}
+        />
+
+        <MultipleSelectionElement
+          title="Languages"
+          availableElements={LANGUAGES}
+          currentElements={languages}
+          setElements={setLanguages}
+        />
+
+        <button
+          onClick={onClickApplyFilters}
+          className="bg-[#5a4a42] text-[#f7f4ec] px-6 py-2 rounded-sm text-xs tracking-wider uppercase hover:bg-[#4a3b32] transition-colors"
+        >
+          Apply
+        </button>
+
+        <button
+          onClick={onClickClearFilters}
+          className="text-[#5a4a42] hover:text-black tracking-wider uppercase underline text-xs"
+        >
+          Clear
+        </button>
+      </div>
     </div>
   );
 }

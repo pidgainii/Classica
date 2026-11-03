@@ -1055,3 +1055,96 @@ Also, I had to display the posts in the Blog section (`/blog`) in **descending o
 ## October 28th
 
 Today's progress was amazing. Thank God.
+
+Each Post should include information about the book and also about the user. Therefore, the DTO passed to the frontend should include both fields. Therefore I modified the Pydantic model in the backend and the **Zod object** in the frontend:
+
+```typescript
+export const postSchema = z.object({
+  id: z.uuid(),
+  title: z.string(),
+  content: z.string(),
+  image_url: z.string(),
+  posted_at: z.iso.datetime(),
+  user: userSchema,
+  book: bookSchema,
+});
+```
+
+### My Posts page
+
+In the profile page, I added a subsection called **My Posts**. This page should retrieve the user's posts and display them in a grid. So that is what I did:
+
+![my_posts](media/my_posts.png)
+
+### Post details page
+
+I made each Post clickable so that the user could see the Post details:
+
+![post_details](media/post_details.png)
+
+The book is also clickable, and redirects to the book details page.
+
+### Infinite pagination
+
+Next feature I wanted to implement is to make the Blog section have infinite pagination (infinite scrolling).
+
+This I achieved using `useInfiniteQuery()` from TanStack Query.
+
+After watching this tutorial: https://youtu.be/aMfBeXD_rnE I understood how this hook works. I adapted the code shown in the video to my own app.
+
+To be able to achieve this pagination functionality, I adapted the backend to return a structured object with information about the current page and the next page (if available). I also created a Zod object in the frontend to validate this paginated response:
+
+```typescript
+export const postsPaginatedSchema = z.object({
+  current_page: z.int(),
+  next_page: z.int().nullable(),
+  posts: z.array(postSchema),
+});
+```
+
+**Infinite pagination was working !**
+
+![infinite_pagination](media/infinite_pagination.png)
+
+I also made the book image of the Post be clickable (book details page), for other users to be able to check information about the book:
+
+![clickable_post_book](media/clickable_post_book.png)
+
+## October 29th
+
+Now it is time to make UI look better. For this purpose, I am using Artificial Intelligence.
+
+My objective is to leave logic as it is, and only modify the style.
+
+I gave the **HomePage** a classical minimalistic style:
+
+![better_homepage](media/better_homepage.png)
+
+## November 2nd / 3rd
+
+### Production mode
+
+In order to run the React application in production mode, I used a different Dockerfile configuration. This is what I learnt:
+
+### NGINX
+
+NGINX is a web server we can use to serve an already built application. When we build the app with `npm run build`, we are getting optimized code in the form of static files. This reduces memory usage, processing and networking resources. The **problem** I was encountering is that **NGINX was not able to solve routes when accessed manually** (or when refreshing page). This is because the configuration in the nginx.conf file was not correct. **React creates SPAs** (Single Page Application), which means that **routes are managed by the application** (in my case, React Router) and not by the server. Therefore, we needed to **tell NGINX to let our application manage routes**.
+
+This is the configuration we needed:
+
+```
+server {
+  listen       80;
+  location / {
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+    try_files $uri $uri/ /index.html;
+  }
+}
+```
+
+The **try_files** configuration tells NGINX to fallback to index.html when the route cannot be solved. Therefore, it lets out application manage routes.
+
+### Backend startup service
+
+I need a startup service in order to populate the database with the books and genres. In order to do this, I need to add a lifespan function to the FastAPI app.

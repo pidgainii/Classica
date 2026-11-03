@@ -40,7 +40,7 @@ export default function HomeBooksPage() {
   };
 
   return (
-    <div>
+    <div className="w-full flex flex-col items-center">
       <OrderFiltersNavigation triggerNewQuery={triggerNewQuery} />
       <CategoryNavigation triggerNewQuery={triggerNewQuery} />
       <HomeBookDisplay

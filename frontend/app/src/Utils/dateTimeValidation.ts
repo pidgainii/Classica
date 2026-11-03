@@ -6,10 +6,6 @@ export function dateTimeValidation(datetime: string) {
   const date = new Date(datetime); // had to remove the colon (:) after the T in order to make it work
   const day = date.getDate();
   const monthIndex = date.getMonth();
-  const year = date.getFullYear();
-  const minutes = date.getMinutes();
-  const hours = date.getHours();
-  const seconds = date.getSeconds();
   const myFormattedDate = day + "/" + (monthIndex + 1);
 
   return myFormattedDate;
