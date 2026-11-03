@@ -20,13 +20,6 @@ Classica is a classical book searching and review website. Classica is an educat
   <img src="https://img.shields.io/badge/HeroUI-000000?style=for-the-badge&logo=nextui&logoColor=white" alt="HeroUI" />
 </p>
 
-- React + Typescript
-- Vite
-- TanStack Query
-- Zod validation
-- Axios
-- HeroUI library
-
 ### Backend
 
 <p>
@@ -36,19 +29,12 @@ Classica is a classical book searching and review website. Classica is an educat
   <img src="https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="SQLAlchemy" />
 </p>
 
-- Python FastAPI
-- Pydantic
-- SQLAlchemy
-
 ### Database
 
 <p>
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/pgAdmin-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="pgAdmin" />
 </p>
-
-- PostgreSQL
-- pgAdmin
 
 ### Other
 
@@ -57,10 +43,6 @@ Classica is a classical book searching and review website. Classica is an educat
   <img src="https://img.shields.io/badge/Alembic-6C757D?style=for-the-badge&logo=alembic&logoColor=white" alt="Alembic" />
   <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git" />
 </p>
-
-- Docker containerization
-- Alembic for Database migrations
-- Git for version control
 
 ## ℹ️ Description
 
