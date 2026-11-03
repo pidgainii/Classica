@@ -1109,3 +1109,42 @@ export const postsPaginatedSchema = z.object({
 I also made the book image of the Post be clickable (book details page), for other users to be able to check information about the book:
 
 ![clickable_post_book](media/clickable_post_book.png)
+
+## October 29th
+
+Now it is time to make UI look better. For this purpose, I am using Artificial Intelligence.
+
+My objective is to leave logic as it is, and only modify the style.
+
+I gave the **HomePage** a classical minimalistic style:
+
+![better_homepage](media/better_homepage.png)
+
+## November 2nd / 3rd
+
+### Production mode
+
+In order to run the React application in production mode, I used a different Dockerfile configuration. This is what I learnt:
+
+### NGINX
+
+NGINX is a web server we can use to serve an already built application. When we build the app with `npm run build`, we are getting optimized code in the form of static files. This reduces memory usage, processing and networking resources. The **problem** I was encountering is that **NGINX was not able to solve routes when accessed manually** (or when refreshing page). This is because the configuration in the nginx.conf file was not correct. **React creates SPAs** (Single Page Application), which means that **routes are managed by the application** (in my case, React Router) and not by the server. Therefore, we needed to **tell NGINX to let our application manage routes**.
+
+This is the configuration we needed:
+
+```
+server {
+  listen       80;
+  location / {
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+    try_files $uri $uri/ /index.html;
+  }
+}
+```
+
+The **try_files** configuration tells NGINX to fallback to index.html when the route cannot be solved. Therefore, it lets out application manage routes.
+
+### Backend startup service
+
+I need a startup service in order to populate the database with the books and genres. In order to do this, I need to add a lifespan function to the FastAPI app.

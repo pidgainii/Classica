@@ -6,6 +6,10 @@ Classica is a classical book searching and review website. Classica is an educat
 
 This a container-based system where Frontend, Backend and Database run on independent Docker services and communicate through API REST.
 
+# Screenshots
+
+![better_homepage](media/better_homepage.png)
+
 # Key Features
 
 Some of the key features of Classica are:
@@ -63,7 +67,6 @@ Some of the key features of Classica are:
 - Page-Based Pagination (Books and Posts).
 - JWT token encoding and decoding.
 - Refresh Token setting and retrieval from HTTP-only Cookie.
--
 
 ## Database
 
@@ -73,23 +76,20 @@ Some of the key features of Classica are:
 ## Containerization
 
 - Hot reloading for development phase using bind mounts.
+- API REST communication between containers.
 
 # Installation
 
-### 1
+1. Clone the repository
 
-```
-git clone https://github.com/pidgainii/Classica
-```
+   ```
+   git clone https://github.com/pidgainii/Classica
+   ```
 
-### 2
+2. Add **.env** file with the variables specified in **.env.example**
 
-Add **.env** file with the variables specified in **.env.example**
+3. Build the docker containers. Run this command in the route of the project (where **docker-compose.yml** file is)
 
-### 3
-
-In the route of the project (where **docker-compose.yml** file is)
-
-```
-docker compose up --build
-```
+   ```
+   docker compose up --build
+   ```

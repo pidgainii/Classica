@@ -1,11 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from api import router
 
 from api.exception_handler import register_exception_handlers
 
+from services.startup_service import import_books
 
-app = FastAPI(title="CLASSICA")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await import_books()
+    yield
+
+app = FastAPI(title="CLASSICA", lifespan=lifespan)
 
 app.include_router(router.router)
 
