@@ -1147,4 +1147,15 @@ The **try_files** configuration tells NGINX to fallback to index.html when the r
 
 ### Backend startup service
 
-I need a startup service in order to populate the database with the books and genres. In order to do this, I need to add a lifespan function to the FastAPI app.
+I need a startup service in order to populate the database with the books and genres. In order to do this, I need to add a lifespan function to the FastAPI app:
+
+```python
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await import_books()
+    yield
+
+app = FastAPI(title="CLASSICA", lifespan=lifespan)
+```
+
+If the database is empty, this function loads the books and genres.

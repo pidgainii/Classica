@@ -5,7 +5,7 @@ import {
   isBookFavouriteRequest,
 } from "../../Services/api/service";
 import { useEffect, useState } from "react";
-import { Heart, HeartOff } from "lucide-react";
+import { Heart } from "lucide-react";
 
 interface FavouriteButtonProps {
   book_id: string | undefined;
@@ -34,14 +34,18 @@ export default function FavouriteButton(props: FavouriteButtonProps) {
   }, [isFavourite]);
 
   return (
-    <div>
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={() => mutate()}
-      >
-        Favourite
-      </button>
-      {isFavouriteAux ? <Heart /> : <HeartOff />}
-    </div>
+    <button
+      className={`flex items-center space-x-2 font-sans text-xs uppercase tracking-wider py-2.5 px-6 rounded-sm transition-all shadow-sm border ${
+        isFavouriteAux
+          ? "bg-[#6b3e3e] border-[#6b3e3e] text-white hover:bg-[#583333]"
+          : "bg-[#5a4a42] border-[#5a4a42] text-[#f7f4ec] hover:bg-[#4a3b32]"
+      }`}
+      onClick={() => mutate()}
+    >
+      <Heart
+        className={`w-4 h-4 ${isFavouriteAux ? "fill-current text-white" : ""}`}
+      />
+      <span>{isFavouriteAux ? "Favorited" : "Add to Favourites"}</span>
+    </button>
   );
 }
