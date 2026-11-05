@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "@heroui/styles"; 
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
+
 
 :root {
   --text: #6b6375;
@@ -65,7 +67,6 @@
   box-sizing: border-box;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
 
 body {
   font-family: 'Lora', serif;

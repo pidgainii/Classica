@@ -2,7 +2,7 @@
 
 # 📜 CLASSICA
 
-Classica is a classical book searching and review website. Classica is an educational project. The goal is not to create a large scale website, but to consolidate software engineering concepts and acquire knowledge on full stack development.
+Classica is a classical book searching and review website. Classica is an educational project. The goal is not to create a large scale website, but to consolidate software engineering concepts and acquire knowledge on full stack development. \*_All the progress is being written down in `PROJECT_PROGRESS.md` file._
 
 </div>
 
@@ -51,56 +51,60 @@ This a container-based system where Frontend, Backend and Database run on indepe
 ## 🖼️ Screenshots
 
 <p align="center">
-  <img src=media/better_homepage.png width="550" height="360">
+  <img src=media/better_homepage.png width="400" height="270">
 </p>
 
 <p align="center">
-  <img src=media/book_details_page.png width="550" height="330">
+  <img src=media/book_details_page.png width="330" height="200">
 </p>
 
 <p align="center">
-  <img src=media/save_book_modal.png width="500" height="350">
+  <img src=media/save_book_modal.png width="330" height="240">
+</p>
+
+<p align="center">
+  <img src=media/my_library_page.png width="400" height="240">
 </p>
 
 ## ✨ Key Features
 
 Some of the key features of Classica are:
 
-- Book **Searching**, **Sorting** and **Filtering** by Genre and Language.
-- Exploring **Special Categories**.
-- **Creating an account** gives users the possibility to save books to **Favourites**, create **Book Shelves** and **upload Posts**.
-- **Blog Section** is available, where users can check other user's posts.
+- Book Searching, Sorting and Filtering by Genre and Language.
+- Exploring Special Categories.
+- Creating an account gives users the possibility to save books to Favourites, create Book Shelves and upload Posts.
+- Blog Section is available, where users can check other user's posts.
 
 ## 💡 Software Concepts
 
 ### Frontend
 
-- Component based architecture.
-- Global Authentication Context using React Context.
-- Access and Refresh token management with Axios interceptors.
-- Route Navigation and Route Protection with React Router.
-- Caching queries using TanStack Query.
-- Infinite Pagination using TanStack Query.
-- Data validation with Zod.
+- **Component** based architecture.
+- Global **Authentication Context** using React Context.
+- **Access and Refresh token** management with Axios interceptors.
+- Route **Navigation** and Route **Protection** with React Router.
+- **Caching** queries using TanStack Query.
+- Infinite **Pagination** using TanStack Query.
+- **Data validation** with Zod.
 
 ### Backend
 
-- Three layer architecture: API - Service - CRUD.
-- Data validation using Pydantic.
-- Global Error Handling System.
+- Three layer architecture: **API - Service - CRUD**.
+- **Data validation** using Pydantic.
+- Global **Error Handling** System.
 - Page-Based Pagination (Books and Posts).
-- JWT token encoding and decoding.
-- Refresh Token setting and retrieval from HTTP-only Cookie.
+- **JWT** token encoding and decoding.
+- Refresh Token setting and retrieval from **HTTP-only Cookie**.
 
 ### Database
 
-- Column indexing for efficient search.
-- Associate tables for complex relationships.
+- Column **indexing** for efficient search.
+- Associate tables for **complex relationships**.
 
 ### Containerization
 
-- Hot reloading for development phase using bind mounts.
-- API REST communication between containers.
+- **Hot reloading** for development phase using bind mounts.
+- **API REST** communication between containers.
 
 ## ⚙️ Installation
 
