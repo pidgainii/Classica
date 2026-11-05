@@ -51,19 +51,19 @@ This a container-based system where Frontend, Backend and Database run on indepe
 ## 🖼️ Screenshots
 
 <p align="center">
-  <img src=media/better_homepage.png width="400" height="270">
+  <img src=media/better_homepage.png width="550" height="330">
 </p>
 
 <p align="center">
-  <img src=media/book_details_page.png width="330" height="200">
+  <img src=media/my_library_page.png width="550" height="320">
 </p>
 
 <p align="center">
-  <img src=media/save_book_modal.png width="330" height="240">
+  <img src=media/book_details_page.png width="550" height="320">
 </p>
 
 <p align="center">
-  <img src=media/my_library_page.png width="400" height="240">
+  <img src=media/save_book_modal.png width="550" height="380">
 </p>
 
 ## ✨ Key Features
