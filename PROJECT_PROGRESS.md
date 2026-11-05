@@ -1159,3 +1159,11 @@ app = FastAPI(title="CLASSICA", lifespan=lifespan)
 ```
 
 If the database is empty, this function loads the books and genres.
+
+### November 4th
+
+I am using ChatGPT and Gemini to upgrade the UI of the website. Today I am updating the BookDetailsPage:
+
+![book_details_page](media/book_details_page.png)
+
+**Now it looks much better**
