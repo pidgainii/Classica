@@ -1167,3 +1167,25 @@ I am using ChatGPT and Gemini to upgrade the UI of the website. Today I am updat
 ![book_details_page](media/book_details_page.png)
 
 **Now it looks much better**
+
+### November 5th
+
+Today I will make the Profile page and My Library page look better.
+
+#### Profile Page UI upgrade
+
+The profile page just contains the user's information:
+
+![my_profile_page](media/my_profile_page.png)
+
+Pretty simple, but nice.
+
+#### My Library Page UI upgrade
+
+Now, I wanted the My Library page to look like it had actual book shelves. Therefore, I decided that the buttons to **Favourites** page and each **Book Shelf** should look like shelves, showing a list of books.
+
+This is what I managed to achieve using Gemini:
+
+![my_library_page_upgrade](media/my_library_page_upgrade.png)
+
+Pretty nice.
