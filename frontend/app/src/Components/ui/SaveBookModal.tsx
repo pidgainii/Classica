@@ -32,7 +32,7 @@ export default function SaveBookModal(props: SaveBookModalProps) {
       <div className="bg-[#f7f4ec] border border-[#d6ccb8] shadow-2xl rounded-sm p-6 w-full max-w-md mx-4 animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center pb-3 border-b border-[#e6decb] mb-4">
           <h3 className="font-serif text-base text-[#3e322c] uppercase tracking-widest font-semibold">
-            Save to Reading Shelf
+            Save to Book Shelf
           </h3>
           <button
             onClick={() => props.setIsOpen(false)}

@@ -50,17 +50,31 @@ This a container-based system where Frontend, Backend and Database run on indepe
 
 ## 🖼️ Screenshots
 
+### Books Page:
+
 <p align="center">
   <img src=media/better_homepage.png width="550" height="330">
 </p>
+
+### Blog Page:
+
+<p align="center">
+  <img src=media/blog_page.png width="550" height="330">
+</p>
+
+### My Library:
 
 <p align="center">
   <img src=media/my_library_page.png width="550" height="320">
 </p>
 
+### Book Details:
+
 <p align="center">
   <img src=media/book_details_page.png width="550" height="320">
 </p>
+
+### Saving Book:
 
 <p align="center">
   <img src=media/save_book_modal.png width="550" height="380">
