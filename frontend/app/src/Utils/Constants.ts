@@ -1,4 +1,4 @@
-export const BOOKS_PER_PAGE = 14;
+export const BOOKS_PER_PAGE = 21;
 export const POSTS_PER_PAGE = 10;
 
 export const GENRES = [

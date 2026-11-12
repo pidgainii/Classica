@@ -61,7 +61,7 @@ export default function OrderFiltersNavigation(
   }, [searchQuery]);
 
   return (
-    <div className="w-full bg-[#f7f4ec] py-4 px-8 border-b border-[#e6decb]">
+    <div className="w-full bg-[#f7f4ec] py-4 px-8 border-[#e6decb]">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4 text-xs text-[#5a4a42]">
         <SearchBar setSearchQuery={setSearchQuery} />
 
