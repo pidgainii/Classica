@@ -53,7 +53,7 @@ This a container-based system where Frontend, Backend and Database run on indepe
 ### Books Page:
 
 <p align="center">
-  <img src=media/better_homepage.png width="550" height="330">
+  <img src=media/better_homepage.jpg width="550" height="680">
 </p>
 
 ### Blog Page:

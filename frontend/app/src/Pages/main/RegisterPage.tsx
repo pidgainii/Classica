@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { registerRequest } from "../../Services/api/service";
+import { Link, useNavigate } from "react-router";
+import {
+  BookOpen,
+  Mail,
+  Lock,
+  User,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState<string>("");
@@ -11,7 +20,9 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const { mutate } = useMutation({
+  const navigate = useNavigate();
+
+  const { mutate, isPending } = useMutation({
     mutationFn: () =>
       registerRequest({
         email: email,
@@ -20,58 +31,125 @@ export default function RegisterPage() {
         password: password,
       }),
     onSuccess: () => {
-      setSuccessMessage("Register completed!");
+      setSuccessMessage("Register completed! Redirecting...");
+      setErrorMessage(null);
       setEmail("");
       setFirstName("");
       setLastName("");
       setPassword("");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
     },
     onError: () => {
-      setErrorMessage("Not able to register");
+      setErrorMessage("Not able to register. Please check your details.");
+      setSuccessMessage(null);
     },
   });
 
   return (
-    <div>
-      <h1>Register Page</h1>
-      <div className="flex flex-col items-center justify-center">
-        <input
-          type="email"
-          className="rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        ></input>
-        <input
-          type="firstname"
-          className="rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0"
-          placeholder="First Name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        ></input>
-        <input
-          type="lastname"
-          className="rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0"
-          placeholder="Last Name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        ></input>
-        <input
-          type="password"
-          className="rounded-2xl px-2 py-1 w-4/5 md:w-full border-[1px] border-blue-400 m-1 focus:shadow-md focus:border-pink-400 focus:outline-none focus:ring-0"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        ></input>
-        <button
-          onClick={() => mutate()}
-          className="rounded-2xl m-2 text-white bg-blue-400 w-2/5 px-4 py-2 shadow-md hover:text-blue-400 hover:bg-white transition duration-200 ease-in"
-        >
-          Register
-        </button>
+    <div className="w-full min-h-screen bg-[#f7f4ec] flex items-center justify-center py-12 px-4">
+      <div className="bg-white border border-[#d6ccb8] shadow-xl rounded-sm flex flex-col w-full max-w-md p-8 md:p-10 items-center">
+        {/* Logo / Brand Header */}
+        <div className="w-12 h-12 bg-[#f0ece1] border border-[#d6ccb8] rounded-full flex items-center justify-center mb-3 text-[#5a4a42]">
+          <BookOpen className="w-6 h-6" />
+        </div>
 
-        <h2>{successMessage ? successMessage : ""}</h2>
-        <h2>{errorMessage ? errorMessage : ""}</h2>
+        <h2
+          className="text-3xl font-serif text-[#3e322c] tracking-widest uppercase font-normal mb-1"
+          style={{ fontFamily: "'Cinzel', serif" }}
+        >
+          Classica
+        </h2>
+        <div className="w-12 h-[1px] bg-[#d6ccb8] my-3"></div>
+        <h3 className="text-xs font-sans uppercase tracking-widest text-[#7a6b63] mb-6">
+          Create a New Account
+        </h3>
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs px-3 py-2.5 rounded-sm mb-4 flex items-center space-x-2">
+            <CheckCircle className="w-4 h-4 shrink-0" />
+            <span>{successMessage}</span>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {errorMessage && (
+          <div className="w-full bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-2.5 rounded-sm mb-4 flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
+        {/* Form Inputs */}
+        <div className="w-full flex flex-col space-y-4">
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 w-4 h-4 text-[#a69b90]" />
+            <input
+              type="email"
+              className="w-full bg-[#f7f4ec] border border-[#d6ccb8] px-3 py-2.5 pl-10 text-xs text-[#5a4a42] placeholder-[#a69b90] outline-none focus:border-[#5a4a42] rounded-sm"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="relative">
+            <User className="absolute left-3 top-3 w-4 h-4 text-[#a69b90]" />
+            <input
+              type="text"
+              className="w-full bg-[#f7f4ec] border border-[#d6ccb8] px-3 py-2.5 pl-10 text-xs text-[#5a4a42] placeholder-[#a69b90] outline-none focus:border-[#5a4a42] rounded-sm"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </div>
+
+          <div className="relative">
+            <User className="absolute left-3 top-3 w-4 h-4 text-[#a69b90]" />
+            <input
+              type="text"
+              className="w-full bg-[#f7f4ec] border border-[#d6ccb8] px-3 py-2.5 pl-10 text-xs text-[#5a4a42] placeholder-[#a69b90] outline-none focus:border-[#5a4a42] rounded-sm"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 w-4 h-4 text-[#a69b90]" />
+            <input
+              type="password"
+              className="w-full bg-[#f7f4ec] border border-[#d6ccb8] px-3 py-2.5 pl-10 text-xs text-[#5a4a42] placeholder-[#a69b90] outline-none focus:border-[#5a4a42] rounded-sm"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            onClick={() => mutate()}
+            disabled={isPending}
+            className="w-full bg-[#5a4a42] hover:bg-[#4a3b32] text-[#f7f4ec] font-sans text-xs uppercase tracking-widest py-3 rounded-sm transition-colors cursor-pointer shadow-sm mt-2 disabled:opacity-50"
+          >
+            {isPending ? "Registering..." : "Register"}
+          </button>
+        </div>
+
+        <div className="w-12 h-[1px] bg-[#e6decb] my-6"></div>
+
+        {/* Login Redirect */}
+        <div className="text-center space-y-1">
+          <p className="text-xs font-sans text-[#7a6b63]">
+            Already have an account?
+          </p>
+          <Link to="/login">
+            <span className="text-xs font-sans font-medium uppercase tracking-wider text-[#3e322c] hover:underline cursor-pointer">
+              Sign In
+            </span>
+          </Link>
+        </div>
       </div>
     </div>
   );
