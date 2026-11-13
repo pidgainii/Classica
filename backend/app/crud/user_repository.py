@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 import uuid
 
 from db.models import User
@@ -23,3 +23,13 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(user)
         return user
+    
+    async def modify_email(self, id: uuid.UUID, email: str) -> User | None:
+        statement = update(User).where(User.id == id).values(email=email)
+        result = await self.session.execute(statement)
+        return result.scalar_one_or_none()
+    
+    async def modify_password_hash(self, id: uuid.UUID, password_hash: str) -> User | None:
+        statement = update(User).where(User.id == id).values(password_hash=password_hash)
+        result = await self.session.execute(statement)
+        return result.scalar_one_or_none()

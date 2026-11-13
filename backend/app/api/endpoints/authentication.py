@@ -6,7 +6,7 @@ from services.user_service import UserService
 
 from db.session import get_session
 
-from schemas.user import UserRegisterDTO, UserLoginDTO
+from schemas.user import UserRegisterDTO, UserLoginDTO, ModifyAccountDTO
 
 from utils.utils import decode_refresh_token_from_cookie, decode_access_token_from_bearer
 
@@ -55,3 +55,10 @@ async def refresh(refresh_token = Depends(decode_refresh_token_from_cookie), ses
 async def current_user(access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
     service = UserService()
     return await service.get_user_information(access_token, session)
+
+# NOT TESTED YET.
+# TODO: CHECK IF WORKS
+@router.post("/modify")
+async def modify(info: ModifyAccountDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = AuthenticationService()
+    return await service.modify_account(access_token, info, session)

@@ -17,6 +17,8 @@ import FavouritesPage from "../Pages/main/FavouritesPage";
 import BookShelfPage from "../Pages/main/BookShelfPage";
 import CreatePostPage from "../Pages/main/CreatePostPage";
 import PostDetailsPage from "../Pages/main/PostDetailsPage";
+import GeneralSettingsPage from "../Pages/tertiary/GeneralSettingsPage";
+import DeleteAccountPage from "../Pages/tertiary/DeleteAccountPage";
 
 export const router = createBrowserRouter([
   {
@@ -36,7 +38,14 @@ export const router = createBrowserRouter([
           { index: true, element: <MyProfilePage /> },
           { path: "my-library", element: <MyLibraryPage /> },
           { path: "my-posts", element: <MyPostsPage /> },
-          { path: "settings", element: <SettingsPage /> },
+          {
+            path: "settings",
+            element: <SettingsPage />,
+            children: [
+              { index: true, element: <GeneralSettingsPage /> },
+              { path: "delete-account", element: <DeleteAccountPage /> },
+            ],
+          },
         ],
       },
       { path: "favourites", element: <FavouritesPage /> },

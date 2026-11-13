@@ -32,3 +32,8 @@ class UserRegisterDTO(UserBaseDTO):
 # Model with login info about user
 class UserLoginDTO(UserBaseDTO):
     password: str
+    
+# Model with account modification info about user
+class ModifyAccountDTO(UserBaseDTO):
+    current_password: str
+    new_password: str

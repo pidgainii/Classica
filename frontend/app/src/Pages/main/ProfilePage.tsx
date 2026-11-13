@@ -53,7 +53,7 @@ export default function ProfilePage() {
       <ProfileNavigationBar />
 
       {/* Nested Subpages (e.g. MyProfilePage, Library, Posts, Settings) */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-6 py-10">
+      <main className="flex-1 w-full mx-auto px-6 py-10">
         <Outlet />
       </main>
     </div>

@@ -4,13 +4,13 @@ import uuid
 
 from crud.user_repository import UserRepository
 
-from schemas.user import UserRegisterDTO, UserLoginDTO
+from schemas.user import UserRegisterDTO, UserLoginDTO, ModifyAccountDTO, UserApiDTO
 from schemas.refresh import RefreshResponseDTO
 from schemas.tokens import AccessTokenDTO, RefreshTokenDTO
 
 from db.models import User
 
-from core.errors import UserNotFoundError, IncorrectPasswordError, UserAlreadyExistsError, EntityCreationError, EntityFetchingError, RefreshTokenError
+from core.errors import UserNotFoundError, IncorrectPasswordError, UserAlreadyExistsError, EntityCreationError, EntityFetchingError, EntityUpdateError
 
 from utils.utils import hash_password, verify_password, create_access_token, create_refresh_token
 
@@ -99,3 +99,34 @@ class AuthenticationService:
         encoded_access_token = create_access_token(access_token)
         
         return RefreshResponseDTO(access_token = encoded_access_token)
+    
+    # TODO: CHECK IF WORKS
+    async def modify_account(self, access_token: AccessTokenDTO, info: ModifyAccountDTO, session: AsyncSession):
+        # We should:
+        #   extract user using access token email
+        #   check if password is the same
+        #   if OK, modify user and return new user info.
+        
+        user_repository = UserRepository(session)
+        
+        user = await user_repository.get_by_email(access_token.email)
+        
+        if not user:
+            raise UserNotFoundError()
+        
+        if not verify_password(info.current_password, user.password_hash):
+            raise IncorrectPasswordError()
+        
+        if (access_token.email != info.email):
+            existing_email_user = await user_repository.get_by_email(info.email)
+            if (existing_email_user):
+                raise UserAlreadyExistsError()
+            
+            if not (await user_repository.modify_email(user.id, info.email)):
+                raise EntityUpdateError("UNABLE TO MODIFY USER EMAIL")
+        
+        if (info.new_password != ""):
+            password_hash = hash_password(info.new_password)
+            if not (await user_repository.modify_password_hash(user.id, password_hash)):
+                raise EntityUpdateError("UNABLE TO MODIFY USER PASSWORD")
+        

@@ -37,7 +37,8 @@ export default function ProfileNavigationBar() {
       <Link
         to="/profile/settings"
         className={`pb-1 border-b-2 transition-all ${
-          pathname === "/profile/settings"
+          pathname === "/profile/settings" ||
+          pathname === "/profile/settings/delete-account"
             ? "border-[#4a3b32] text-[#3e322c] font-semibold"
             : "border-transparent hover:text-[#3e322c]"
         }`}
