@@ -1,3 +1,7 @@
+<br>
+<br>
+<br>
+
 <div align="center">
 
 # 📜 CLASSICA
@@ -5,6 +9,10 @@
 Classica is a classical book searching and review website. Classica is an educational project. The goal is not to create a large scale website, but to consolidate software engineering concepts and acquire knowledge on full stack development. \*_All the progress is being written down in `PROJECT_PROGRESS.md` file._
 
 </div>
+
+<br>
+<br>
+<br>
 
 ## 🛠️ Technological Stack
 
@@ -44,9 +52,17 @@ Classica is a classical book searching and review website. Classica is an educat
   <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git" />
 </p>
 
+<br>
+<br>
+<br>
+
 ## ℹ️ Description
 
 This a container-based system where Frontend, Backend and Database run on independent Docker services and communicate through API REST.
+
+<br>
+<br>
+<br>
 
 ## 🖼️ Screenshots
 
@@ -59,13 +75,13 @@ This a container-based system where Frontend, Backend and Database run on indepe
 ### Blog Page:
 
 <p align="center">
-  <img src=media/blog_page.png width="550" height="330">
+  <img src=media/blog_page.jpg width="550" height="1100">
 </p>
 
 ### My Library:
 
 <p align="center">
-  <img src=media/my_library_page.png width="550" height="320">
+  <img src=media/my_library_page.jpg width="550" height="300">
 </p>
 
 ### Book Details:
@@ -80,6 +96,10 @@ This a container-based system where Frontend, Backend and Database run on indepe
   <img src=media/save_book_modal.png width="550" height="380">
 </p>
 
+<br>
+<br>
+<br>
+
 ## ✨ Key Features
 
 Some of the key features of Classica are:
@@ -88,6 +108,10 @@ Some of the key features of Classica are:
 - Exploring Special Categories.
 - Creating an account gives users the possibility to save books to Favourites, create Book Shelves and upload Posts.
 - Blog Section is available, where users can check other user's posts.
+
+<br>
+<br>
+<br>
 
 ## 💡 Software Concepts
 
@@ -120,6 +144,10 @@ Some of the key features of Classica are:
 - **Hot reloading** for development phase using bind mounts.
 - **API REST** communication between containers.
 
+<br>
+<br>
+<br>
+
 ## ⚙️ Installation
 
 1. Clone the repository
@@ -137,6 +165,33 @@ Some of the key features of Classica are:
    ```
 
 4. Open your browser (`localhost:3000`) and enjoy the project!
+
+<br>
+<br>
+<br>
+
+# ⏩ TO DO: Unimplemented features
+
+- Settings Page
+- Post creation
+- Email Registration
+- Profile Editing
+- Informative pages on Footer buttons
+- Favourites and Book Shelves Pages
+
+<br>
+<br>
+<br>
+
+## Dataset Attribution
+
+Used **Best Books Ever Dataset**, from Lorena Casanova Lozano and Sergio Costa Planells.
+
+Link to Dataset: https://zenodo.org/records/4265096
+
+<br>
+<br>
+<br>
 
 ## 📬 Contact
 
