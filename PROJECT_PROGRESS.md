@@ -1189,3 +1189,34 @@ This is what I managed to achieve using Gemini:
 ![my_library_page_upgrade](media/my_library_page_upgrade.png)
 
 Pretty nice.
+
+### November 13th
+
+After having made some UI upgrades to our application, I decided to get the application finished. It was time to create the settings page. The Settings Page will give the user the chance to change his email or password.
+
+In order to implement this functionality, I had to:
+
+- Create new mutation in the frontend that calls service function, that calls backend API:
+
+  ```typescript
+  const { mutate, isPending } = useMutation({
+    mutationFn: () =>
+      modifyAccountRequest({
+        email: email,
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    onSuccess: () => setMessage("Success !"),
+  });
+  ```
+
+- Create new endpoint in backend to modify user's data:
+
+  ```python
+  @router.post("/modify")
+  async def modify(info: ModifyAccountDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+      service = AuthenticationService()
+      return await service.modify_account(access_token, info, session)
+  ```
+
+- And implement all the service and CRUD logic.

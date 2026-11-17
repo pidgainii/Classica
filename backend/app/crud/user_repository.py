@@ -25,11 +25,13 @@ class UserRepository:
         return user
     
     async def modify_email(self, id: uuid.UUID, email: str) -> User | None:
-        statement = update(User).where(User.id == id).values(email=email)
-        result = await self.session.execute(statement)
-        return result.scalar_one_or_none()
+        user = await self.get_by_id(id)
+        user.email = email
+        await self.session.commit()
+        return user
     
     async def modify_password_hash(self, id: uuid.UUID, password_hash: str) -> User | None:
-        statement = update(User).where(User.id == id).values(password_hash=password_hash)
-        result = await self.session.execute(statement)
-        return result.scalar_one_or_none()
+        user = await self.get_by_id(id)
+        user.password_hash = password_hash
+        await self.session.commit()
+        return user

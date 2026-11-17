@@ -69,16 +69,13 @@ def register_exception_handlers(app: FastAPI):
             }
         )
     
-    # We are not going to notify frontend, as it may be dangerous
-    # Frontend will just show a user friendly message saying that if account
-    # does not exist yet, the user will receive an email
     @app.exception_handler(UserAlreadyExistsError)
     async def user_already_exists_error_handler(request: Request, exc: UserAlreadyExistsError):
         print(f"\n\nUserAlreadyExistsError: {exc}\n\n")
         return JSONResponse(
-            status_code=200,
+            status_code=409,
             content={
-                "detail": "OK"
+                "detail": "Conflict"
             }
         )
 

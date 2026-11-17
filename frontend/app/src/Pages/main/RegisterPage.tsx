@@ -10,6 +10,7 @@ import {
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
+import type { AxiosError } from "axios";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState<string>("");
@@ -41,8 +42,10 @@ export default function RegisterPage() {
         navigate("/login");
       }, 1500);
     },
-    onError: () => {
-      setErrorMessage("Not able to register. Please check your details.");
+    onError: (error: AxiosError) => {
+      if (error.status == 409)
+        setErrorMessage("An account with this email already exists.");
+      else setErrorMessage("Not able to register. Please check your details.");
       setSuccessMessage(null);
     },
   });

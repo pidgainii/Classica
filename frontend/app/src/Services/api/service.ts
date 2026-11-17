@@ -48,7 +48,11 @@ export const currentUserRequest = async (): Promise<UserType> => {
 ///////////////// SETTINGS /////////////////
 
 export const modifyAccountRequest = async (user: ModifyAccountType) => {
-  return await api.post("/", user);
+  return await api.post("/auth/modify", user);
+};
+
+export const deleteAccountRequest = async () => {
+  return await api.delete("/auth/delete");
 };
 
 ///////////////// BOOKS /////////////////

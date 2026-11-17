@@ -56,9 +56,12 @@ async def current_user(access_token = Depends(decode_access_token_from_bearer), 
     service = UserService()
     return await service.get_user_information(access_token, session)
 
-# NOT TESTED YET.
-# TODO: CHECK IF WORKS
 @router.post("/modify")
 async def modify(info: ModifyAccountDTO, access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
     service = AuthenticationService()
     return await service.modify_account(access_token, info, session)
+
+@router.delete("/delete")
+async def delete(access_token = Depends(decode_access_token_from_bearer), session: AsyncSession = Depends(get_session)):
+    service = AuthenticationService()
+    return await service.delete_account(access_token, session)
