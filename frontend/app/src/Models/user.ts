@@ -24,3 +24,10 @@ export const userRegisterSchema = userBaseSchema.extend({
 });
 
 export type UserRegisterType = z.infer<typeof userRegisterSchema>;
+
+export const modifyAccountSchema = userBaseSchema.extend({
+  current_password: z.string(),
+  new_password: z.string(),
+});
+
+export type ModifyAccountType = z.infer<typeof modifyAccountSchema>;

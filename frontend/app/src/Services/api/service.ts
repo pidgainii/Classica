@@ -1,4 +1,5 @@
 import type {
+  ModifyAccountType,
   UserLoginType,
   UserRegisterType,
   UserType,
@@ -42,6 +43,12 @@ export const logoutRequest = async () => {
 export const currentUserRequest = async (): Promise<UserType> => {
   const { data: result } = await api.get("/auth/me");
   return userSchema.parse(result);
+};
+
+///////////////// SETTINGS /////////////////
+
+export const modifyAccountRequest = async (user: ModifyAccountType) => {
+  return await api.post("/", user);
 };
 
 ///////////////// BOOKS /////////////////
