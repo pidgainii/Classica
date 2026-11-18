@@ -1,5 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { deleteAccountRequest } from "../../Services/api/service";
+import { useAuthContext } from "../../Contexts/AuthContext";
+import { useNavigate } from "react-router";
 
 interface DeleteAccountModalProps {
   isOpen: boolean;
@@ -7,10 +9,15 @@ interface DeleteAccountModalProps {
 }
 
 export default function DeleteAccountModal(props: DeleteAccountModalProps) {
+  const { logout } = useAuthContext();
+  const navigate = useNavigate();
+
   const { mutate, isPending } = useMutation({
     mutationFn: deleteAccountRequest,
-    onSuccess: () => {
+    onSuccess: async () => {
       props.setIsOpen(false);
+      await logout();
+      navigate("/login");
     },
   });
 

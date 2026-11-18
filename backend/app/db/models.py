@@ -19,7 +19,7 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String, nullable=True)
     
     favourite_books: Mapped[List['Book']] = relationship(secondary='users_favourite_books', lazy='selectin', back_populates="users_favourite")
-    shelves: Mapped[List['Shelf']] = relationship(lazy='selectin', back_populates="user")
+    shelves: Mapped[List['Shelf']] = relationship(lazy='selectin', back_populates="user", cascade="all, delete")
     posts: Mapped[List['Post']] = relationship(lazy='selectin', back_populates="user")
     
 class Book(Base):
@@ -54,7 +54,7 @@ class Shelf(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String, nullable=False)
     
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("user.id", ondelete="CASCADE", name="shelf_user_id_fkey"))
     user: Mapped['User'] = relationship(back_populates="shelves")
     books: Mapped[List['Book']] = relationship(secondary='shelves_books', lazy='selectin')
     
@@ -83,8 +83,8 @@ class Post(Base):
 users_favourite_books = Table(
     "users_favourite_books",
     Base.metadata,
-    Column("user_id", ForeignKey("user.id"), primary_key=True),
-    Column("book_id", ForeignKey("book.id"), primary_key=True),
+    Column("user_id", ForeignKey("user.id", ondelete="CASCADE", name="users_favourite_books_user_id_fkey"), primary_key=True),
+    Column("book_id", ForeignKey("book.id", ondelete="CASCADE", name="users_favourite_books_book_id_fkey"), primary_key=True),
 )
 
 books_genres = Table(
@@ -97,6 +97,6 @@ books_genres = Table(
 shelves_books = Table(
     "shelves_books",
     Base.metadata,
-    Column("shelf_id", ForeignKey("shelf.id"), primary_key=True),
-    Column("book_id", ForeignKey("book.id"), primary_key=True),
+    Column("shelf_id", ForeignKey("shelf.id", ondelete="CASCADE", name="shelves_books_shelf_id_fkey"), primary_key=True),
+    Column("book_id", ForeignKey("book.id", ondelete="CASCADE", name="shelves_books_book_id_fkey"), primary_key=True),
 )

@@ -57,7 +57,7 @@ export default function LoginPage() {
             <Mail className="absolute left-3 top-3 w-4 h-4 text-[#a69b90]" />
             <input
               type="email"
-              className="w-full bg-[#f7f4ec] border border-[#d6ccb8] px-3 py-2.5 pl-10 text-xs text-[#5a4a42] placeholder-[#a69b90] outline-none focus:border-[#5a4a42] rounded-sm"
+              className="w-full bg-[#f7f4ec] border border-[#d6ccb8] px-3 py-2.5 pl-10 text-[#5a4a42] placeholder-[#a69b90] outline-none focus:border-[#5a4a42] rounded-sm"
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -68,7 +68,7 @@ export default function LoginPage() {
             <Lock className="absolute left-3 top-3 w-4 h-4 text-[#a69b90]" />
             <input
               type="password"
-              className="w-full bg-[#f7f4ec] border border-[#d6ccb8] px-3 py-2.5 pl-10 text-xs text-[#5a4a42] placeholder-[#a69b90] outline-none focus:border-[#5a4a42] rounded-sm"
+              className="w-full bg-[#f7f4ec] border border-[#d6ccb8] px-3 py-2.5 pl-10 text-[#5a4a42] placeholder-[#a69b90] outline-none focus:border-[#5a4a42] rounded-sm"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

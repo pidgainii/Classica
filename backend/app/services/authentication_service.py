@@ -129,6 +129,7 @@ class AuthenticationService:
         
         user = await user_repository.get_by_email(access_token.email)
         
-        # TODO
-        # DELETE ALL FAVOURITE RELATIONSHIPS
-        # DELETE ALL BOOK SHELVES AND RELATIONSHIPS INSIDE OF IT
+        if not user:
+            raise UserNotFoundError()
+        
+        await user_repository.delete(user)

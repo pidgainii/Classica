@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select, delete
 import uuid
 
 from db.models import User
@@ -24,6 +24,10 @@ class UserRepository:
         await self.session.refresh(user)
         return user
     
+    async def delete(self, user: User):
+        await self.session.delete(user)
+        await self.session.commit()
+        
     async def modify_email(self, id: uuid.UUID, email: str) -> User | None:
         user = await self.get_by_id(id)
         user.email = email
