@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAuthContext } from "../../Contexts/AuthContext";
 import { useMutation } from "@tanstack/react-query";
 import { modifyAccountRequest } from "../../Services/api/service";
+import type { AxiosError } from "axios";
 
 export default function GeneralSettingsPage() {
   const { user } = useAuthContext();
@@ -22,6 +23,10 @@ export default function GeneralSettingsPage() {
         new_password: newPassword,
       }),
     onSuccess: () => setMessage("Success !"),
+    onError: (error: AxiosError) => {
+      if (error.status == 409) setMessage("Email already used");
+      else setMessage("Error modifying user account");
+    },
   });
 
   if (isPending) return <h1>Loading</h1>;

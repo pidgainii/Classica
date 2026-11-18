@@ -100,13 +100,7 @@ class AuthenticationService:
         
         return RefreshResponseDTO(access_token = encoded_access_token)
     
-    # TODO: CHECK IF WORKS
     async def modify_account(self, access_token: AccessTokenDTO, info: ModifyAccountDTO, session: AsyncSession):
-        # We should:
-        #   extract user using access token email
-        #   check if password is the same
-        #   if OK, modify user and return new user info.
-        
         user_repository = UserRepository(session)
         
         user = await user_repository.get_by_email(access_token.email)
@@ -129,4 +123,13 @@ class AuthenticationService:
             password_hash = hash_password(info.new_password)
             if not (await user_repository.modify_password_hash(user.id, password_hash)):
                 raise EntityUpdateError("UNABLE TO MODIFY USER PASSWORD")
+
+    async def delete_account(self, access_token: AccessTokenDTO, session: AsyncSession):
+        user_repository = UserRepository(session)
         
+        user = await user_repository.get_by_email(access_token.email)
+        
+        if not user:
+            raise UserNotFoundError()
+        
+        await user_repository.delete(user)

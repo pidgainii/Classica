@@ -64,6 +64,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         const originalRequest = error.config;
 
         if (
+          originalRequest.url != "/auth/login" &&
           error.response.status === 401 &&
           error.response.statusText === "Unauthorized" &&
           !originalRequest._retry
@@ -107,17 +108,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [accessToken]);
 
   async function login(user: UserLoginType) {
-    setLoading(true);
-
     try {
       const data = await loginRequest(user);
       setAccessToken(data.access_token);
-      setLoading(false);
       const response: Response = { success: true };
       return response;
     } catch (error: any) {
       setError(error);
-      setLoading(false);
       const response: Response = { success: false };
       return response;
     }
